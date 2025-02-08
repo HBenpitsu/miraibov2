@@ -1032,23 +1032,23 @@ Root presenter and root controller composite them.
 
 ## 4.1. PlanningPage
 
-`PlanningPage` consists of two screens. So, `SchedulingPage` presenter of composites two classes that corresponding to each screen:
+`PlanningPage` consists of two screens. So, `PlanningPage` presenter of composites two classes that corresponding to each screen:
 
 - (presenter of) `MonthlyScreen`
 - (presenter of) `DailyScreen`
 
-Also `SchedulingPage` have two states:
+Also `PlanningPage` have two states:
 
 - `DailyScreenIsShown: bool`
 - `ShownDate: date`
 
-Both can be set through controller of `SchedulingPage`:
+Both can be set through controller of `PlanningPage`:
 
 - `showDailyScreenCenteredOn(date)`
 - `showMonthlyScreenCenteredOn(date)`
 
 `MonthlyScreen` presents existence of events for bunch of days.
-`DailyScreen` presents tickets which is tied with `ShownDate` (and days next to it). It also presents `ShownDate` itself. Additionally, `TicketCreateWindow` and `TicketEditWindow` can be shown through `DailyScreen`. So, `DailyScreen` composites them.
+`DailyScreen` presents tickets which belongs to `ShownDate` (and days next to it). It also presents `ShownDate` itself. Additionally, `TicketCreateWindow` and `TicketEditWindow` can be shown through `DailyScreen`. So, `DailyScreen` composites them.
 
 `TicketCreateWindow` presents all categories ,all currencies, default currency and presets.
 Of course,  it is exists to create new ticket (receipt log, plan, estimation scheme or display scheme). So the controller of `TicketCreateWindow` provides that feature.
@@ -1079,8 +1079,6 @@ DataPage consists of:
 - chart kind selector
 - period selector
 - target category selector
-
-That means `Chart` needs to composite controllers/presenters of them.
 
 Also, `TemporaryMonitor/EstimationTicket` needs to composite `TemporaryTicketConfigWindow` to configure it.
 
