@@ -236,15 +236,15 @@ The client needs to create, integrate, and rename categories. To list all catego
 
 Additionally, the client needs to create, integrate, and rename currencies, and update the currency ratios. To list all currencies, use `fetchAllCurrencies`.
 
-|      method      | Category             | Currency             |
-| :--------------: | -------------------- | -------------------- |
-|    **create**    | makeCategory         | makeCurrency         |
-|     **save**     | saveCategory         | saveCurrency         |
-|  **integrate**   | integrateCategory    | integrateCurrency    |
-| **setAsDefault** | setCategoryAsDefault | setCurrencyAsDefault |
+|      method      | Category          | Currency             |
+| :--------------: | ----------------- | -------------------- |
+|    **create**    | createCategory    | createCurrency       |
+|     **edit**     | editCategory      | editCurrency         |
+|  **integrate**   | integrateCategory | integrateCurrency    |
+| **setAsDefault** |                   | setCurrencyAsDefault |
 
 - The `create` method creates a new category and returns the ID of the newly created category.
-- The `save` method edits an existing entity. It requires the ID of the entity in addition to the parameters of the `create` method.
+- The `edit` method edits an existing entity. It requires the ID of the entity in addition to the parameters of the `create` method.
 - The `integrate` method takes `replaceeId` and `replacerId`. It replaces an entity whose ID is `replaceeId` with an entity whose ID is `replacerId`.
 - The `setAsDefault` method sets the default entity. There should be exactly one default entity.
 
@@ -659,6 +659,7 @@ The date of the created `ReceiptLog` is based on the schedule. Other attributes 
 `Monitor` is a type of ticket. A Monitor consists of a `MonitorScheme` and a price.
 `MonitorScheme` consists of:
 
+- `id`
 - `period`
 - `displayConfig`: a `MonitorDisplayConfig`. It affects the price of the ticket.
 - `categories`
