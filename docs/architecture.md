@@ -140,6 +140,11 @@ flowchart TB
 	main-->skeleton
 	main-->Database
 	main-->Model
+
+	DataTransferObject{{DataTransferObject}}
+	Usecase-->DataTransferObject
+	isoglue-->DataTransferObject
+	skeleton-->DataTransferObject
 ```
 
 - **main**
@@ -172,6 +177,8 @@ flowchart TB
 		- declares the functions that the Database should provide.
 - **Database**
 	- Supports data perpetuation and caching.
+- **DataTransferObject**
+	- Objects to transfer data across layers. That should not have any method other than constructor.
 
 # 3. Model
 

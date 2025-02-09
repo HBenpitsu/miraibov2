@@ -1,6 +1,4 @@
-import 'package:miraibo/model/usecase/general_primitives.dart';
-
-// <schedule>
+import 'package:miraibo/dto/general.dart';
 
 sealed class Schedule {
   const Schedule();
@@ -50,9 +48,3 @@ class AnnualSchedule extends Schedule {
     this.period,
   );
 }
-
-// </schedule>
-
-enum MonitorDisplayConfig { summation, mean, quartileMean }
-
-enum EstimationDisplayConfig { perDay, perWeek, perMonth, perYear }

@@ -1,6 +1,6 @@
-import 'package:miraibo/model/usecase/general_primitives.dart';
-export 'package:miraibo/model/usecase/general_primitives.dart';
+import 'package:miraibo/dto/dto.dart';
 
+/// {@template getValuesOfPieChart}
 /// returns the values to make a pie chart.
 ///
 /// [currencyId] is the id of the currency to convert all currencies to.
@@ -11,18 +11,13 @@ export 'package:miraibo/model/usecase/general_primitives.dart';
 /// [categoryIds] is the list of category ids to analyze.
 /// If it is not empty, only records whose category is in the given list are counted.
 /// If it is empty, all categories are counted.
+/// {@endtemplate}
 Future<List<PieChartChip>> getValuesOfPieChart(
     int currencyId, OpenPeriod analysisRange, List<int> categoryIds) async {
   throw UnimplementedError();
 }
 
-class PieChartChip {
-  final String categoryName;
-  final double amount;
-
-  const PieChartChip(this.categoryName, this.amount);
-}
-
+/// {@template getValuesOfAccumulationChart}
 /// returns the values to make a accumulation chart.
 ///
 /// [currencyId] is the id of the currency to convert all currencies to.
@@ -51,6 +46,7 @@ class PieChartChip {
 /// x-axis of the chart is 2021-01-01,2021-01-02,2021-01-03,2021-01-04.
 ///
 /// The end of the chart is often more important than the beginning. So, the end of the chart is always the end of [viewportRange].
+/// {@endtemplate}
 Future<List<AccumulatedBar>> getValuesOfAccumulationChart(
     int currencyId,
     OpenPeriod analysisRange,
@@ -60,13 +56,7 @@ Future<List<AccumulatedBar>> getValuesOfAccumulationChart(
   throw UnimplementedError();
 }
 
-class AccumulatedBar {
-  final Date date;
-  final double amount;
-
-  const AccumulatedBar(this.date, this.amount);
-}
-
+/// {@template getValuesOfSubtotalChart}
 /// returns the values to make a subtotal chart.
 ///
 /// [currencyId] is the id of the currency to convert all currencies to.
@@ -91,17 +81,11 @@ class AccumulatedBar {
 /// Each bar represents the sum of the records in the day of the bar.
 ///
 /// The end of the chart is often more important than the beginning. So, the end of the chart is always the end of [viewportRange].
+/// {@endtemplate}
 Future<List<SubtotalBar>> getValuesOfSubtotalChart(
     int currencyId,
     ClosedPeriod viewportRange,
     List<int> categoryIds,
     int intervalInDays) async {
   throw UnimplementedError();
-}
-
-class SubtotalBar {
-  final Date date;
-  final double amount;
-
-  const SubtotalBar(this.date, this.amount);
 }

@@ -1,16 +1,12 @@
-import 'package:miraibo/model/usecase/ticket_primitives.dart';
-export 'package:miraibo/model/usecase/ticket_primitives.dart';
-import 'package:miraibo/model/usecase/general_primitives.dart';
-export 'package:miraibo/model/usecase/general_primitives.dart';
-
-// Ticket managing usecase
+import 'package:miraibo/dto/dto.dart';
 
 // <for ReceiptLog>
 
+/// {@template createReceiptLog}
 /// returns the id of the created receipt log
+/// {@endtemplate}
 Future<int> createReceiptLog(Date originDate, Price price, int categoryId,
     String description, bool confirmed) async {
-  // access to iso-glue
   throw UnimplementedError();
 }
 
@@ -22,7 +18,6 @@ Future<void> editReceiptLog(
     String description, // description
     bool confirmed // confirmed
     ) async {
-  // access to iso-glue
   throw UnimplementedError();
 }
 
@@ -33,7 +28,9 @@ Future<void> deleteReceiptLog(int id) async {
 // </for ReceiptLog>
 // <for Plan>
 
+/// {@template createPlan}
 /// returns the id of the created plan
+/// {@endtemplate}
 Future<int> createPlan(
   Schedule schedule,
   Price price,
@@ -61,7 +58,9 @@ Future<void> deletePlan(String id) async {
 // </for Plan>
 // <for EstimationScheme>
 
+/// {@template createEstimationScheme}
 /// returns the id of the created estimation scheme
+/// {@endtemplate}
 Future<int> createEstimationScheme(
   OpenPeriod period,
   EstimationDisplayConfig displayConfig,
@@ -86,7 +85,9 @@ Future<void> deleteEstimationScheme(int id) async {
 // </for EstimationScheme>
 // <for MonitorScheme>
 
+/// {@template createMonitorScheme}
 /// returns the id of the created monitor scheme
+/// {@endtemplate}
 Future<int> createMonitorScheme(
   OpenPeriod period,
   MonitorDisplayConfig displayConfig,
@@ -109,40 +110,3 @@ Future<void> deleteMonitorScheme(int id) async {
 }
 
 // </for MonitorScheme>
-// <fetch necessary data>
-
-/// returns the list of all categories (list of pairs of name and id of category)
-Future<List<Category>> fetchAllCategories() async {
-  throw UnimplementedError();
-}
-
-/// returns the list of all currencies (list of pairs of name and id of currency)
-Future<List<Currency>> fetchAllCurrencies() async {
-  throw UnimplementedError();
-}
-
-/// returns the default currency (list of pairs of name and id of currency)
-Future<Currency> fetchDefaultCurrency() async {
-  throw UnimplementedError();
-}
-
-// </fetch necessary data>
-
-// <data classes>
-
-class Category {
-  final int id;
-  final String name;
-
-  const Category(this.id, this.name);
-}
-
-class Currency {
-  final int id;
-  final String name;
-  // there is no need to have ratio of the currency because the price conversion should not be done in the usecase or upper layer.
-
-  const Currency(this.id, this.name);
-}
-
-// </data classes>
