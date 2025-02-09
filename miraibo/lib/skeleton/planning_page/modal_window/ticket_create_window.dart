@@ -1,0 +1,3 @@
+class TicketCreateWindowPresenter {}
+
+class TicketCreateWindowController {}

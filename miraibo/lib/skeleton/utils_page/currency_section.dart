@@ -1,0 +1,3 @@
+class CurrencySectionPresenter {}
+
+class CurrencySectionController {}

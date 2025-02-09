@@ -1,0 +1,3 @@
+class MonitorSchemeEditWindowPresenter {}
+
+class MonitorSchemeEditWindowController {}

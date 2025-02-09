@@ -1,0 +1,3 @@
+class CurrencyEditWindowPresenter {}
+
+class CurrencyEditWindowController {}

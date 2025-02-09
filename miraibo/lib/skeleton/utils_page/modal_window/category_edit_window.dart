@@ -1,0 +1,3 @@
+class CategoryEditWindowPresenter {}
+
+class CategoryEditWindowController {}

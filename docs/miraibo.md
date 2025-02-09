@@ -486,4 +486,3 @@ Each `Receipt Data` should have **a single** `Category`.
 - Payment
 - Other Income
 - Adjustment
-

@@ -1,0 +1,3 @@
+class MonthlyScreenPresenter {}
+
+class MonthlyScreenController {}
