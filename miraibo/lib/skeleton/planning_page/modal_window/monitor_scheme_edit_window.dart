@@ -1,3 +1,0 @@
-class MonitorSchemeEditWindowPresenter {}
-
-class MonitorSchemeEditWindowController {}

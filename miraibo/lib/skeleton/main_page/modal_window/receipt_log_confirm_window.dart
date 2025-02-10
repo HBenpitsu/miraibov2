@@ -1,3 +1,0 @@
-class ReceiptLogConfirmWindowPresenter {}
-
-class ReceiptLogConfirmWindowController {}

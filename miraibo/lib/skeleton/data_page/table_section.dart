@@ -1,3 +1,0 @@
-class TableSectionPresenter {}
-
-class TableSectionController {}

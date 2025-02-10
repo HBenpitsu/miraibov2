@@ -1,3 +1,0 @@
-class EstimationSchemeEditWindowPresenter {}
-
-class EstimationSchemeEditWindowController {}

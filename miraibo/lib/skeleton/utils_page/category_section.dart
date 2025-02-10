@@ -1,3 +1,0 @@
-class CategorySectionPresenter {}
-
-class CategorySectionController {}

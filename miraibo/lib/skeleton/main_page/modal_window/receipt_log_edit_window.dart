@@ -1,3 +1,0 @@
-class ReceiptLogEditWindowPresenter {}
-
-class ReceiptLogEditWindowController {}

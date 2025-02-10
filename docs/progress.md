@@ -2,6 +2,7 @@
 # to do
 
 - complete usecase
+- make interface for skeleton
 - complete skeleton
 - complete view
 
@@ -12,5 +13,6 @@
 - directory-design
 - prepare usecase
 - complete isolate-glue layer
+- complete screen-io design
 
 # backlog

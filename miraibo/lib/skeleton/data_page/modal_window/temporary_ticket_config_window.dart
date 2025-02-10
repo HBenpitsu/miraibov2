@@ -1,3 +1,0 @@
-class TemporaryTicketConfigWindowPresenter {}
-
-class TemporaryTicketConfigWindowController {}

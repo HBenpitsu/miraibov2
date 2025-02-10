@@ -62,8 +62,7 @@
 - [6. View and Database](#6-view-and-database)
 - [7. main (entry point)](#7-main-entry-point)
 - [8. External Interaction](#8-external-interaction)
-	- [8.1. format of backup file](#81-format-of-backup-file)
-	- [8.2. format of csv file](#82-format-of-csv-file)
+	- [8.1. format of csv file](#81-format-of-csv-file)
 - [9. Error Handling](#9-error-handling)
 - [10. Test Strategy](#10-test-strategy)
 	- [10.1. unit test](#101-unit-test)
@@ -145,6 +144,7 @@ flowchart TB
 	Usecase-->DataTransferObject
 	isoglue-->DataTransferObject
 	skeleton-->DataTransferObject
+	view-->DataTransferObject
 ```
 
 - **main**
@@ -269,6 +269,17 @@ Client need to get values to make a chart.
 	- returns subtotal of price within viewport period.
 	- Interval is a duration no less than a day (the finest unit is a day). `interval` is an interval between two succeeding dates.
 		- If the interval is grater than a day, it returns subtotals of a period between the day and the day before duration of interval.
+
+### 3.1.7. external interaction
+
+Client need to extract receipt log data out of the app.
+Also, they need to import data from external environment. So, following usecases exist:
+
+- **export**(path to csv file): export receipt log data to csv file.
+- **import**(path to csv file): import receipt log data from csv file.
+- **overwrite**(path to csv file): delete all existing data and import receipt log data from csv file.
+
+The format of csv file is specified in [[#8. External Interaction]].
 
 ## 3.2. Model-core
 
@@ -874,8 +885,6 @@ A service to return value according to MonitorScheme by using repository.
 
 This is a service to handle cooperation with external environment. For example:
 
-- `backup`: extract all of app data and makes backup-file so that user can store backup anywhere.
-- `restore`: overwrite all data of the app from given backup-file.
 - `export`: extract some of app data in CSV format so that user can use the data as they like.
 - `import`: import the data of given CSV-file. This do not override existing data.
 - `overwrite`: overwrite the data of the app with the data of given CSV-file.
@@ -1149,28 +1158,7 @@ especially, it calls:
 
 In this section, we defines way to interact with the external environment.
 
-## 8.1. format of backup file
-
-Although the format of backup file depends on detail of Database, it is convenient for users if the backup file is a single file. So, the backup content of each repository is packed into a single large file with following format:
-
-```json
-{
-"meta":
-	{
-	"app_version":xxx
-	},
-"content":
-	{
-	"<repository>":"<back up content>",
-	"<repository>":"<back up content>",
-	...
-	}
-}
-```
-
-the meta data is used when migration is needed.
-
-## 8.2. format of csv file
+## 8.1. format of csv file
 
 The content of ReceiptLog-repository can be exported and imported with csv file.
 The first line of the csv file is header. And all following lines are data.
