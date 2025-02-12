@@ -11,3 +11,12 @@ abstract interface class PlanningPage {
 }
 
 // </interface>
+
+// <mock>
+class MockPlanningPage implements PlanningPage {
+  @override
+  MonthlyScreen showInitialScreen() {
+    throw UnimplementedError();
+  }
+}
+// </mock>

@@ -23,8 +23,13 @@ class ReceiptLogTicket extends Ticket with ReceiptLogAndMonitorTicket {
   final String categoryName;
   final bool confirmed;
 
-  const ReceiptLogTicket(this.id, this.date, this.price, this.description,
-      this.categoryName, this.confirmed);
+  const ReceiptLogTicket(
+      {required this.id,
+      required this.date,
+      required this.price,
+      required this.description,
+      required this.categoryName,
+      required this.confirmed});
 }
 
 class PlanTicket extends Ticket {
@@ -35,7 +40,11 @@ class PlanTicket extends Ticket {
   final String categoryName;
 
   const PlanTicket(
-      this.id, this.schedule, this.price, this.description, this.categoryName);
+      {required this.id,
+      required this.schedule,
+      required this.price,
+      required this.description,
+      required this.categoryName});
 }
 
 class EstimationTicket extends Ticket with MonitorAndEstimationTicket {
@@ -46,7 +55,11 @@ class EstimationTicket extends Ticket with MonitorAndEstimationTicket {
   final List<String> categoryNames;
 
   const EstimationTicket(
-      this.id, this.period, this.price, this.displayConfig, this.categoryNames);
+      {required this.id,
+      required this.period,
+      required this.price,
+      required this.displayConfig,
+      required this.categoryNames});
 }
 
 class MonitorTicket extends Ticket
@@ -58,5 +71,9 @@ class MonitorTicket extends Ticket
   final List<String> categoryNames;
 
   const MonitorTicket(
-      this.id, this.period, this.price, this.displayConfig, this.categoryNames);
+      {required this.id,
+      required this.period,
+      required this.price,
+      required this.displayConfig,
+      required this.categoryNames});
 }

@@ -7,7 +7,7 @@ sealed class Schedule {
 class OneshotSchedule extends Schedule {
   final Date date;
 
-  const OneshotSchedule(this.date);
+  const OneshotSchedule({required this.date});
 }
 
 class IntervalSchedule extends Schedule {
@@ -15,7 +15,8 @@ class IntervalSchedule extends Schedule {
   final OpenPeriod period;
   final int interval; // interval
 
-  const IntervalSchedule(this.originDate, this.period, this.interval);
+  const IntervalSchedule(
+      {required this.originDate, required this.period, required this.interval});
 }
 
 class WeeklySchedule extends Schedule {
@@ -28,23 +29,27 @@ class WeeklySchedule extends Schedule {
   final bool friday;
   final bool saturday;
 
-  const WeeklySchedule(this.period, this.sunday, this.monday, this.tuesday,
-      this.wednesday, this.thursday, this.friday, this.saturday);
+  const WeeklySchedule(
+      {required this.period,
+      required this.sunday,
+      required this.monday,
+      required this.tuesday,
+      required this.wednesday,
+      required this.thursday,
+      required this.friday,
+      required this.saturday});
 }
 
 class MonthlySchedule extends Schedule {
   final OpenPeriod period;
   final int offset; // offset
 
-  const MonthlySchedule(this.period, this.offset);
+  const MonthlySchedule({required this.period, required this.offset});
 }
 
 class AnnualSchedule extends Schedule {
   final Date originDate;
   final OpenPeriod period;
 
-  const AnnualSchedule(
-    this.originDate,
-    this.period,
-  );
+  const AnnualSchedule({required this.originDate, required this.period});
 }

@@ -12,7 +12,7 @@ abstract interface class PlanEditWindow {
   ///
 
   // <states>
-  abstract int targetPlanId;
+  int get targetPlanId;
   // </states>
 
   // <presenters>
@@ -38,3 +38,83 @@ abstract interface class PlanEditWindow {
   // </controllers>
 }
 // </interface>
+
+// <mock>
+
+class MockPlanEditWindow implements PlanEditWindow {
+  @override
+  final int targetPlanId;
+  final Sink ticketsStream;
+  final List<Ticket> tickets;
+
+  static const List<Currency> currencyList = [
+    Currency(id: 0, symbol: 'JPY'),
+    Currency(id: 1, symbol: 'USD'),
+    Currency(id: 2, symbol: 'EUR'),
+  ];
+
+  static List<Category> categoryList = [
+    for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
+  ];
+
+  MockPlanEditWindow(this.targetPlanId, this.ticketsStream, this.tickets);
+
+  @override
+  Future<List<Category>> getCategoryOptions() async {
+    return categoryList;
+  }
+
+  @override
+  Future<List<Currency>> getCurrencyOptions() async {
+    return currencyList;
+  }
+
+  @override
+  Future<RawPlan> getOriginalPlan() {
+    var today = DateTime.now();
+    return Future.value(RawPlan(
+        id: targetPlanId,
+        category: categoryList[0],
+        schedule:
+            OneshotSchedule(date: Date(today.year, today.month, today.day)),
+        price: PriceInfo(
+            amount: 1000,
+            currencyId: 0,
+            currencySymbol: currencyList[0].symbol),
+        description: 'original discription of the plan'));
+  }
+
+  @override
+  Future<void> updatePlan(int categoryId, String description, Price price,
+      Schedule schedule) async {
+    List<Ticket> newTickets = [];
+    while (tickets.isNotEmpty) {
+      var ticket = tickets.removeAt(0);
+      if (ticket is! PlanTicket) {
+        newTickets.add(ticket);
+        continue;
+      }
+      if (ticket.id != targetPlanId) {
+        newTickets.add(ticket);
+        continue;
+      }
+      newTickets.add(PlanTicket(
+        id: targetPlanId,
+        price: price,
+        schedule: schedule,
+        description: description,
+        categoryName: categoryList[categoryId].name,
+      ));
+    }
+    tickets.addAll(newTickets);
+    ticketsStream.add(tickets);
+  }
+
+  @override
+  Future<void> deletePlan() async {
+    tickets.removeWhere(
+        (element) => element is PlanTicket && element.id == targetPlanId);
+    ticketsStream.add(tickets);
+  }
+}
+// </mock>

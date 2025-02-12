@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:miraibo/skeleton/planning_page/daily_screen/estimation_scheme_edit_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/monitor_scheme_edit_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/receipt_log_edit_window.dart';
@@ -24,10 +26,10 @@ abstract interface class DailyScreen {
   // <states>
   /// The [centeredDate] serves as a reference point for the daily screen, determining what index-0 represents.
   /// shownDate should not be mutated during the lifecycle of the daily screen.
-  abstract Date centeredDate;
+  Date get centeredDate;
 
   /// the offset is a offset of currently centered date from the [centeredDate].
-  abstract Date offset;
+  abstract int offset;
   // </states>
 
   // <presenters>
@@ -61,3 +63,239 @@ abstract interface class DailyScreen {
 }
 
 // </interface>
+
+// <mock>
+class MockDailyScreen implements DailyScreen {
+  @override
+  late final Date centeredDate;
+
+  @override
+  int offset = 0;
+
+  final StreamController<Date> _labelStream = StreamController();
+  late final List<Ticket> tickets;
+  final StreamController<List<Ticket>> ticketStreams = StreamController();
+  MockDailyScreen(int year, int month, int day) {
+    centeredDate = Date(year, month, day);
+    _labelStream.add(centeredDate);
+
+    // <make mock tickets>
+
+    var today = DateTime(year, month, day);
+    var twoMonthAgo = today.subtract(const Duration(days: 2 * 31));
+    var twoMonthLater = today.add(const Duration(days: 2 * 31));
+    var startlessPeriod = OpenPeriod(
+        begins: null,
+        ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
+    var endlessPeriod = OpenPeriod(
+        begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
+        ends: null);
+    var closedPeriod = OpenPeriod(
+        begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
+        ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
+    var price = const Price(amount: 1000, symbol: 'JPY');
+
+    tickets = [
+      MonitorTicket(
+          id: 0,
+          period: startlessPeriod,
+          price: price,
+          displayConfig: MonitorDisplayConfig.mean,
+          categoryNames: ['list of categories']),
+      MonitorTicket(
+          id: 1,
+          period: endlessPeriod,
+          price: price,
+          displayConfig: MonitorDisplayConfig.quartileMean,
+          categoryNames: ['category1', 'category2']),
+      MonitorTicket(
+          id: 2,
+          period: closedPeriod,
+          price: price,
+          displayConfig: MonitorDisplayConfig.summation,
+          categoryNames: []),
+      PlanTicket(
+          id: 3,
+          schedule: OneshotSchedule(date: Date(year, month, day)),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 4,
+          schedule: IntervalSchedule(
+              originDate: Date(year, month, day),
+              period: const OpenPeriod(),
+              interval: 1),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 5,
+          schedule: IntervalSchedule(
+              originDate: Date(year, month, day),
+              period: OpenPeriod(
+                  begins: Date(
+                      twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day)),
+              interval: 1),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 6,
+          schedule: IntervalSchedule(
+              originDate: Date(year, month, day),
+              period: OpenPeriod(
+                  ends: Date(twoMonthLater.year, twoMonthLater.month,
+                      twoMonthLater.day)),
+              interval: 3),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 7,
+          schedule: IntervalSchedule(
+              originDate: Date(year, month, day),
+              period: OpenPeriod(
+                  begins: Date(
+                      twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
+                  ends: Date(twoMonthLater.year, twoMonthLater.month,
+                      twoMonthLater.day)),
+              interval: 1),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 8,
+          schedule: WeeklySchedule(
+              period: closedPeriod,
+              sunday: true,
+              monday: false,
+              tuesday: false,
+              wednesday: false,
+              thursday: true,
+              friday: false,
+              saturday: false),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 9,
+          schedule: MonthlySchedule(period: closedPeriod, offset: 1),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 10,
+          schedule: MonthlySchedule(period: closedPeriod, offset: -1),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      PlanTicket(
+          id: 11,
+          schedule: AnnualSchedule(
+              period: closedPeriod, originDate: Date(year, month, day)),
+          price: price,
+          description: 'this is a description of the plan.',
+          categoryName: 'category'),
+      EstimationTicket(
+          id: 12,
+          period: startlessPeriod,
+          price: price,
+          displayConfig: EstimationDisplayConfig.perDay,
+          categoryNames: ['list of categories']),
+      EstimationTicket(
+          id: 13,
+          period: endlessPeriod,
+          price: price,
+          displayConfig: EstimationDisplayConfig.perMonth,
+          categoryNames: ['category1', 'category2']),
+      EstimationTicket(
+          id: 14,
+          period: closedPeriod,
+          price: price,
+          displayConfig: EstimationDisplayConfig.perWeek,
+          categoryNames: []),
+      EstimationTicket(
+          id: 15,
+          period: closedPeriod,
+          price: price,
+          displayConfig: EstimationDisplayConfig.perYear,
+          categoryNames: []),
+      ReceiptLogTicket(
+          id: 16,
+          date: Date(year, month, day),
+          price: price,
+          description: 'this is a description of the receipt log.',
+          categoryName: 'category0',
+          confirmed: true),
+      ReceiptLogTicket(
+          id: 17,
+          date: Date(year, month, day),
+          price: price,
+          description: 'this is a description of the receipt log.',
+          categoryName: 'category0',
+          confirmed: false)
+    ];
+
+    // </make mock tickets>
+
+    ticketStreams.add(tickets);
+  }
+
+  @override
+  Stream<List<Ticket>> getTicketsOn(int index) {
+    return ticketStreams.stream;
+  }
+
+  @override
+  Stream<Date> getLabel() {
+    return _labelStream.stream;
+  }
+
+  @override
+  MonthlyScreen navigateToMonthlyScreen() {
+    var currentDate = DateTime(
+        centeredDate.year, centeredDate.month, centeredDate.day + offset);
+    return MockMonthlyScreen(
+        Date(currentDate.year, currentDate.month, currentDate.day));
+  }
+
+  @override
+  MonitorSchemeEditWindow openMonitorSchemeEditWindow(int targetTicketId) {
+    return MockMonitorSchemeEditWindow(
+        targetTicketId, ticketStreams.sink, tickets);
+  }
+
+  @override
+  PlanEditWindow openPlanEditWindow(int targetTicketId) {
+    return MockPlanEditWindow(targetTicketId, ticketStreams.sink, tickets);
+  }
+
+  @override
+  EstimationSchemeEditWindow openEstimationSchemeEditWindow(
+      int targetTicketId) {
+    return MockEstimationSchemeEditWindow(
+        targetTicketId, ticketStreams.sink, tickets);
+  }
+
+  @override
+  ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId) {
+    return MockReceiptLogEditWindow(
+        targetTicketId, ticketStreams.sink, tickets);
+  }
+
+  @override
+  TicketCreateWindow openTicketCreateWindow() {
+    return MockTicketCreateWindow(tickets, ticketStreams.sink);
+  }
+
+  @override
+  Future<void> setOffset(int offset) async {
+    this.offset = offset;
+    var currentDate = DateTime(
+        centeredDate.year, centeredDate.month, centeredDate.day + offset);
+    _labelStream
+        .add(Date(currentDate.year, currentDate.month, currentDate.day));
+  }
+}
+// </mock>

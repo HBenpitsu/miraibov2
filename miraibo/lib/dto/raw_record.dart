@@ -10,8 +10,13 @@ class RawReceiptLog {
   final Category category;
   final bool confirmed;
 
-  const RawReceiptLog(this.id, this.date, this.price, this.description,
-      this.category, this.confirmed);
+  const RawReceiptLog(
+      {required this.id,
+      required this.date,
+      required this.price,
+      required this.description,
+      required this.category,
+      required this.confirmed});
 }
 
 class RawPlan {
@@ -22,7 +27,11 @@ class RawPlan {
   final Category category;
 
   const RawPlan(
-      this.id, this.schedule, this.price, this.description, this.category);
+      {required this.id,
+      required this.schedule,
+      required this.price,
+      required this.description,
+      required this.category});
 }
 
 class RawEstimationScheme {
@@ -33,7 +42,11 @@ class RawEstimationScheme {
   final List<Category> categories;
 
   const RawEstimationScheme(
-      this.id, this.period, this.price, this.displayConfig, this.categories);
+      {required this.id,
+      required this.period,
+      required this.price,
+      required this.displayConfig,
+      required this.categories});
 }
 
 class RawMonitorScheme {
@@ -44,5 +57,9 @@ class RawMonitorScheme {
   final List<Category> categories;
 
   const RawMonitorScheme(
-      this.id, this.period, this.price, this.displayConfig, this.categories);
+      {required this.id,
+      required this.period,
+      required this.price,
+      required this.displayConfig,
+      required this.categories});
 }

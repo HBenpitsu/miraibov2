@@ -11,7 +11,7 @@ class ClosedPeriod {
   final Date begins;
   final Date ends;
 
-  const ClosedPeriod(this.begins, this.ends);
+  const ClosedPeriod({required this.begins, required this.ends});
 }
 
 /// Open period means that the period whose beginning and ending can be null.
@@ -21,31 +21,34 @@ class OpenPeriod {
   final Date? begins;
   final Date? ends;
 
-  const OpenPeriod(this.begins, this.ends);
+  const OpenPeriod({this.begins, this.ends});
 }
 
 /// Contains the data to 'show' price.
 class Price {
   final int amount;
-  final String currencyName;
+  final String symbol;
 
-  const Price(this.amount, this.currencyName);
+  const Price({required this.amount, required this.symbol});
 }
 
 /// Contains the data to 'manage' price.
 class PriceInfo {
   final int amount;
   final int currencyId;
-  final String currencyName;
+  final String currencySymbol;
 
-  const PriceInfo(this.amount, this.currencyId, this.currencyName);
+  const PriceInfo(
+      {required this.amount,
+      required this.currencyId,
+      required this.currencySymbol});
 }
 
 class Currency {
   final int id;
   final String symbol;
 
-  const Currency(this.id, this.symbol);
+  const Currency({required this.id, required this.symbol});
 }
 
 class CurrencyInfo {
@@ -53,12 +56,13 @@ class CurrencyInfo {
   final String symbol;
   final double ratio;
 
-  const CurrencyInfo(this.id, this.symbol, this.ratio);
+  const CurrencyInfo(
+      {required this.id, required this.symbol, required this.ratio});
 }
 
 class Category {
   final int id;
   final String name;
 
-  const Category(this.id, this.name);
+  const Category({required this.id, required this.name});
 }

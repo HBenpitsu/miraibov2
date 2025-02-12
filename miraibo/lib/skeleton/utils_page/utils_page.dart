@@ -81,16 +81,17 @@ class MockUtilsPage implements UtilsPage {
 
   @override
   Stream<CategorySection> categorySection() {
-    return _categoryStream.stream.map((data) =>
-        data.entries.map((entry) => Category(entry.key, entry.value)).toList());
+    return _categoryStream.stream.map((data) => data.entries
+        .map((entry) => Category(id: entry.key, name: entry.value))
+        .toList());
   }
 
   @override
   CurrencySection currencySection() {
     return CurrencySection(
         currencies: _currencyStream.stream.map((data) => data.entries
-            .map((entry) =>
-                CurrencyInfo(entry.key, entry.value.$1, entry.value.$2))
+            .map((entry) => CurrencyInfo(
+                id: entry.key, symbol: entry.value.$1, ratio: entry.value.$2))
             .toList()),
         defaultId: _defaultCurrencyStream.stream);
   }

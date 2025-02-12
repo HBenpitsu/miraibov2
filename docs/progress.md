@@ -2,7 +2,6 @@
 # to do
 
 - complete usecase
-- make interface for skeleton
 - complete skeleton
 - complete view
 
@@ -18,5 +17,7 @@
 - complete interfaces for main-page skeleton
 - complete interfaces for planning-page skeleton
 - complete interfaces for skeleton
+- complete mock-skeleton for utils-page
+- complete mock-skeleton for planning-page
 
 # backlog

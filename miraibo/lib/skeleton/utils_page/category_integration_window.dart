@@ -42,7 +42,7 @@ class MockCategoryIntegrationWindow implements CategoryIntegrationWindow {
   Future<List<Category>> getOptions() async {
     return _categories.entries
         .where((entry) => entry.key != replaceeId)
-        .map((entry) => Category(entry.key, entry.value))
+        .map((entry) => Category(id: entry.key, name: entry.value))
         .toList();
   }
 

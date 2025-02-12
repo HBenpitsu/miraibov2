@@ -42,7 +42,7 @@ class MockCurrencyIntegrationWindow implements CurrencyIntegrationWindow {
   Future<List<Currency>> getOptions() async {
     return _currencies.entries
         .where((entry) => entry.key != replaceeId)
-        .map((entry) => Currency(entry.key, entry.value.$1))
+        .map((entry) => Currency(id: entry.key, symbol: entry.value.$1))
         .toList();
   }
 
