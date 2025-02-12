@@ -3,7 +3,13 @@ import 'package:miraibo/dto/dto.dart';
 
 // <interface>
 abstract interface class PieChartSection {
-  /// pie chart section consists of selectors to make a chart scheme.
+  /// pie chart section consists of:
+  ///
+  /// - multiple category selector
+  /// - currency selector
+  /// - range selector
+  ///
+  /// there is a button to apply the scheme.
 
   // <states>
   abstract ChartScheme currentChartScheme;

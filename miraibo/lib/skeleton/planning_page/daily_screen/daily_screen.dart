@@ -16,10 +16,10 @@ abstract interface class DailyScreen {
   ///
   /// Also, following components are also included:
   /// - A button to create a new ticket.
-  /// - A label to show which date is centered and navigate to Monthly Screen.
+  /// - A label to show which date is centered and to navigate to Monthly Screen.
   ///
   /// The daily screen is scrollable horizontally. So, the centered date can be changed.
-  /// It should be notified to the [DailyScreen] to update the Label and so on.
+  /// It should be notified to the [DailyScreen] through [setOffset] to update the state and the Label.
 
   // <states>
   /// The [centeredDate] serves as a reference point for the daily screen, determining what index-0 represents.

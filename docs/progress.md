@@ -17,5 +17,6 @@
 - complete interfaces for utils-page skeleton
 - complete interfaces for main-page skeleton
 - complete interfaces for planning-page skeleton
+- complete interfaces for skeleton
 
 # backlog

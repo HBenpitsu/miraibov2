@@ -3,8 +3,8 @@ import 'package:miraibo/skeleton/main_page/receipt_log_edit_window.dart';
 
 // <interface>
 abstract interface class ReceiptLogConfirmationWindow {
-  /// receipt log confirmation window is shown when a unconfirmed receipt log is selected.
-  /// The window shows the receipt log and the button to confirm/edit the receipt log.
+  /// receipt log confirmation window is shown when a unconfirmed receipt log is tapped.
+  /// The window shows the receipt log and the buttons to confirm/edit the receipt log.
 
   // <states>
   abstract int targetReceiptLogId;

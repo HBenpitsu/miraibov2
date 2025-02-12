@@ -15,3 +15,19 @@ abstract interface class Root {
   //</navigators>
 }
 // </interface>
+
+// <mock>
+class MockRoot implements Root {
+  @override
+  PlanningPage get planningPage => throw UnimplementedError();
+
+  @override
+  MainPage get mainPage => throw UnimplementedError();
+
+  @override
+  DataPage get dataPage => throw UnimplementedError();
+
+  @override
+  UtilsPage get utilsPage => MockUtilsPage();
+}
+// </mock>

@@ -3,7 +3,14 @@ import 'package:miraibo/dto/dto.dart';
 
 // <interface>
 abstract interface class SubtotalChartSection {
-  /// subtotal chart section consists of selectors to make a chart scheme.
+  /// subtotal chart section consists of:
+  ///
+  /// - multiple category selector
+  /// - currency selector
+  /// - viewport range selector
+  /// - interval selector
+  ///
+  /// there is a button to apply the scheme.
 
   // <states>
   abstract ChartScheme currentChartScheme;

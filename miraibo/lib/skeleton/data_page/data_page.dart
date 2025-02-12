@@ -34,10 +34,9 @@ abstract interface class DataPage {
   // </states>
 
   // <presenters>
-  Stream<List<ChartChip>> getChart();
+  Stream<List<ChartChip>?> getChart();
   Stream<MonitorAndEstimationTicket?> getTemporaryTicket();
-  Stream<TableRebuildingNotification> listenToTableRebuildingNotification();
-  Stream<TableSegment> getTableSegment();
+  Future<TableSegment> getTableSegment();
   // </presenters>
 
   // <navigators>
@@ -59,20 +58,21 @@ abstract interface class DataPage {
 // </interface>
 
 // <view model>
-
-class TableRebuildingNotification {
-  final DateTime timestamp;
-  const TableRebuildingNotification(this.timestamp);
-
-  bool rebuildRequired(TableRebuildingNotification lastNotification) {
-    return timestamp.isAfter(lastNotification.timestamp);
-  }
-}
-
 class TableSegment {
-  final int topIndex;
-  final int bottomIndex;
-  final List<RawReceiptLog> records;
-  const TableSegment(this.records, this.topIndex, this.bottomIndex);
+  final int minimumIndexInSegment;
+  final int maximumIndexInSegment;
+
+  /// broadcast true when there are more records than the segment can show.
+  /// when there are 25 records in database and two segments show 10 records each,
+  /// each segment's overflow stream will broadcast true.
+  /// when there are 25 records in database and three segments show at most 10 records each,
+  /// the first two segments' overflow stream will broadcast true.
+  /// the last segment's overflow stream will broadcast false.
+  final Stream<bool> overflow;
+
+  /// stream of records becomes null when rebuilding is needed.
+  final Stream<List<Stream<RawReceiptLog>>?> records;
+  const TableSegment(this.records, this.overflow, this.minimumIndexInSegment,
+      this.maximumIndexInSegment);
 }
 // </view model>

@@ -3,7 +3,15 @@ import 'package:miraibo/dto/dto.dart';
 
 // <interface>
 abstract interface class AccumulationChartSection {
-  /// accumulation chart section consists of selectors to make a chart scheme.
+  /// accumulation chart section consists of:
+  ///
+  /// - multiple category selector
+  /// - currency selector
+  /// - analysis range selector
+  /// - viewport range selector
+  /// - interval selector
+  ///
+  /// there is a button to apply the scheme.
 
   // <states>
   abstract ChartScheme currentChartScheme;
