@@ -4,17 +4,14 @@ import 'package:miraibo/skeleton/planning_page/planning_page.dart';
 import 'package:miraibo/skeleton/utils_page/utils_page.dart';
 
 // <interface>
-abstract interface class RootPresenter {
-  PlanningPagePresenter get planningPagePresenter;
-  MainPagePresenter get mainPagePresenter;
-  DataPagePresenter get dataPagePresenter;
-  UtilsPagePresenter get utilsPagePresenter;
-}
+abstract interface class Root {
+  /// root consists of four pages: planning page, main page, data page, and utils page.
 
-abstract interface class RootController {
-  PlanningPageController get planningPageController;
-  MainPageController get mainPageController;
-  DataPageController get dataPageController;
-  UtilsPageController get utilsPageController;
+  //<navigators>
+  PlanningPage get planningPage;
+  MainPage get mainPage;
+  DataPage get dataPage;
+  UtilsPage get utilsPage;
+  //</navigators>
 }
 // </interface>

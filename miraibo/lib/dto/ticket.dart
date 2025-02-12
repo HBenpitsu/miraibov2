@@ -11,11 +11,11 @@ sealed class Ticket {
   const Ticket();
 }
 
-sealed class ReceiptLogAndMonitorTicket extends Ticket {
-  const ReceiptLogAndMonitorTicket();
-}
+mixin ReceiptLogAndMonitorTicket on Ticket {}
 
-class ReceiptLogTicket extends ReceiptLogAndMonitorTicket {
+mixin MonitorAndEstimationTicket on Ticket {}
+
+class ReceiptLogTicket extends Ticket with ReceiptLogAndMonitorTicket {
   final int id; // only id is the clue to identify the entity
   final Date date;
   final Price price;
@@ -38,22 +38,25 @@ class PlanTicket extends Ticket {
       this.id, this.schedule, this.price, this.description, this.categoryName);
 }
 
-class EstimationTicket extends Ticket {
+class EstimationTicket extends Ticket with MonitorAndEstimationTicket {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
+  final Price price;
   final EstimationDisplayConfig displayConfig;
   final List<String> categoryNames;
 
   const EstimationTicket(
-      this.id, this.period, this.displayConfig, this.categoryNames);
+      this.id, this.period, this.price, this.displayConfig, this.categoryNames);
 }
 
-class MonitorTicket extends ReceiptLogAndMonitorTicket {
+class MonitorTicket extends Ticket
+    with MonitorAndEstimationTicket, ReceiptLogAndMonitorTicket {
   final int id; // only id is the clue to identify the entity
-  final Schedule schedule;
+  final OpenPeriod period;
+  final Price price;
   final MonitorDisplayConfig displayConfig;
-  final List<String> categoryName;
+  final List<String> categoryNames;
 
   const MonitorTicket(
-      this.id, this.schedule, this.displayConfig, this.categoryName);
+      this.id, this.period, this.price, this.displayConfig, this.categoryNames);
 }

@@ -4,17 +4,15 @@ import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/plan_section.dart';
 
 // <interface>
-abstract interface class TicketCreateWindowPresenter {
-  PlanSectionPresenter get planSectionPresenter;
-  ReceiptLogSectionPresenter get receiptLogSectionPresenter;
-  EstimationSchemeSectionPresenter get estimationSchemeSectionPresenter;
-  MonitorSchemeSectionPresenter get monitorSchemeSectionPresenter;
+abstract interface class TicketCreateWindow {
+  /// ticket create window is shown when user wants to create a new ticket.
+
+  // <naviagtors>
+  PlanSection get planSection;
+  EstimationSchemeSection get estimationSchemeSection;
+  MonitorSchemeSection get monitorSchemeSection;
+  ReceiptLogSection get receiptLogSection;
+  // </navigators>
 }
 
-abstract interface class TicketCreateWindowController {
-  PlanSectionController get planSectionController;
-  ReceiptLogSectionController get receiptLogSectionController;
-  EstimationSchemeSectionController get estimationSchemeSectionController;
-  MonitorSchemeSectionController get monitorSchemeSectionController;
-}
 // </interface>

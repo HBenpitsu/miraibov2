@@ -1,20 +1,24 @@
 import 'package:miraibo/dto/general.dart';
 
-class PieChartChip {
+sealed class ChartChip {
+  const ChartChip();
+}
+
+class PieChartChip extends ChartChip {
   final String categoryName;
   final double amount;
 
   const PieChartChip(this.categoryName, this.amount);
 }
 
-class AccumulatedBar {
+class AccumulatedBar extends ChartChip {
   final Date date;
   final double amount;
 
   const AccumulatedBar(this.date, this.amount);
 }
 
-class SubtotalBar {
+class SubtotalBar extends ChartChip {
   final Date date;
   final double amount;
 

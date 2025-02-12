@@ -84,7 +84,8 @@ flowchart TB
 	subgraph skeleton
 
 		subgraph ui-core
-			Controller-->Presenter
+			Controller
+			Actions-->Presenter
 		end
 
 		ViewModel{{ViewModel}}

@@ -21,15 +21,3 @@ Future<List<ReceiptLogAndMonitorTicket>>
   return compute(__fetchReceiptLogsAndMonitorsForToday, ());
 }
 // </fetchReceiptLogsAndMonitorsForToday>
-
-// <fetchReceiptLogs>
-Future<ReceiptLogTicket> __fetchReceiptLogs((int, int) param) async {
-  return usecase.fetchReceiptLogs(param.$1, param.$2);
-}
-
-/// {@macro fetchReceiptLogs}
-Future<ReceiptLogTicket> fetchReceiptLogs(
-    int limitOfRecords, int skipFirstRecords) async {
-  return compute(__fetchReceiptLogs, (limitOfRecords, skipFirstRecords));
-}
-// </fetchReceiptLogs>

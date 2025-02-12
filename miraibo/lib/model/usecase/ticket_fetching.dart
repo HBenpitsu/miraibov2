@@ -15,11 +15,3 @@ Future<List<ReceiptLogAndMonitorTicket>>
     fetchReceiptLogsAndMonitorsForToday() async {
   throw UnimplementedError();
 }
-
-/// {@template fetchReceiptLogs}
-/// fetches tickets for this week
-/// {@endtemplate}
-Future<ReceiptLogTicket> fetchReceiptLogs(
-    int limitOfRecords, int skipFirstRecords) async {
-  throw UnimplementedError();
-}

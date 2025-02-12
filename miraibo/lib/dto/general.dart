@@ -24,9 +24,41 @@ class OpenPeriod {
   const OpenPeriod(this.begins, this.ends);
 }
 
+/// Contains the data to 'show' price.
 class Price {
   final int amount;
-  final int currencyId;
+  final String currencyName;
 
-  const Price(this.amount, this.currencyId);
+  const Price(this.amount, this.currencyName);
+}
+
+/// Contains the data to 'manage' price.
+class PriceInfo {
+  final int amount;
+  final int currencyId;
+  final String currencyName;
+
+  const PriceInfo(this.amount, this.currencyId, this.currencyName);
+}
+
+class Currency {
+  final int id;
+  final String symbol;
+
+  const Currency(this.id, this.symbol);
+}
+
+class CurrencyInfo {
+  final int id;
+  final String symbol;
+  final double ratio;
+
+  const CurrencyInfo(this.id, this.symbol, this.ratio);
+}
+
+class Category {
+  final int id;
+  final String name;
+
+  const Category(this.id, this.name);
 }
