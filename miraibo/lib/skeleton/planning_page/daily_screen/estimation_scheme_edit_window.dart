@@ -1,40 +1,44 @@
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-/// estimation scheme edit window is shown when user wants to edit estimation scheme.
+/// EstimationSchemeEditWindow is shown when the user wants to edit an estimation scheme.
 ///
-/// estimation scheme consists of following information:
-///
+/// An estimation scheme consists of the following information:
 /// - which categories should be counted
 /// - what period should be counted
-/// - how to display estimation
-///    - which display config does the ticket follow
-///    - which currency does the ticket use
+/// - how to display the estimation
+///   - which display config the ticket follows
+///   - which currency the ticket uses
 ///
 abstract interface class EstimationSchemeEditWindow {
   // <states>
+  /// The ID of the target estimation scheme.
+  /// This is used to identify the estimation scheme to be edited.
   int get targetSchemeId;
   // </states>
 
   // <presenters>
-  /// categories counted should be specified.
-  /// all of categories are shown as options.
+  /// Categories counted should be specified.
+  /// All categories are shown as options.
   Future<List<Category>> getCategoryOptions();
 
-  /// currency in which the ticket shown should be specified.
-  /// all of currencies are shown as options.
+  /// The currency in which the ticket is shown should be specified.
+  /// All currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  // here, we do not need default currency, because original estimation scheme already has currency.
-
-  /// get original estimation scheme. original configuration should be supplied when users editing it.
+  /// Get the original estimation scheme.
+  /// The original configuration should be supplied when users are editing it.
   Future<EstimationScheme> getOriginalEstimationScheme();
   // </presenters>
 
   // <controllers>
+  /// Update the estimation scheme with the specified parameters.
+  /// [targetSchemeId] is used to identify the estimation scheme to be updated.
   Future<void> updateEstimationScheme(List<int> categoryIds, OpenPeriod period,
       EstimationDisplayConfig displayConfig, int currencyId);
 
+  /// Delete the estimation scheme.
+  /// [targetSchemeId] is used to identify the estimation scheme to be deleted.
   Future<void> deleteEstimationScheme();
   // </controllers>
 }

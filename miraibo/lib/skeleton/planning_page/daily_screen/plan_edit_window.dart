@@ -2,45 +2,48 @@ import 'package:miraibo/dto/dto.dart';
 
 // <interface>
 /// PlanEditWindow is a window to edit a plan.
-/// A plan consists of following information:
+/// A plan consists of the following information:
 ///
 /// - which category the plan belongs to
 /// - what the plan is
 /// - how much the plan will cost
 /// - when the plan will be executed
 ///
-
 abstract interface class PlanEditWindow {
   // <states>
+  /// The ID of the target plan.
+  /// This is used to identify the plan to be edited.
   int get targetPlanId;
   // </states>
 
   // <presenters>
-  /// category to which the plan belongs should be specified.
-  /// all of categories are shown as options.
+  /// The category to which the plan belongs should be specified.
+  /// All categories are shown as options.
   Future<List<Category>> getCategoryOptions();
 
-  /// currency in which the plan costs should be specified.
-  /// all of currencies are shown as options.
+  /// The currency in which the plan costs should be specified.
+  /// All currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  // here, we do not need default currency, because original plan already has currency.
-
-  /// get original plan. original configuration should be supplied when users editing it.
+  /// Get the original plan.
+  /// The original scheme of the plan should be supplied when users are editing it.
   Future<PlanScheme> getOriginalPlan();
   // </presenters>
 
   // <controllers>
+  /// Update the plan with the specified parameters.
+  /// [targetPlanId] is used to identify the plan to be updated.
   Future<void> updatePlan(
       int categoryId, String description, Price price, Schedule schedule);
 
+  /// Delete the plan.
+  /// [targetPlanId] is used to identify the plan to be deleted.
   Future<void> deletePlan();
   // </controllers>
 }
 // </interface>
 
 // <mock>
-
 class MockPlanEditWindow implements PlanEditWindow {
   @override
   final int targetPlanId;
@@ -81,7 +84,7 @@ class MockPlanEditWindow implements PlanEditWindow {
             amount: 1000,
             currencyId: 0,
             currencySymbol: currencyList[0].symbol),
-        description: 'original discription of the plan'));
+        description: 'original description of the plan'));
   }
 
   @override

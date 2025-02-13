@@ -8,29 +8,36 @@ import 'package:miraibo/dto/dto.dart';
 /// - which categories should be counted
 /// - what period should be counted
 /// - how to display the monitor
-///    - which display config does the ticket follow
-///    - which currency does the ticket use
+///    - which display config the ticket follows
+///    - which currency the ticket uses
 ///
-
 abstract interface class MonitorSchemeSection {
   // <states>
+  /// The initial temporary ticket scheme.
+  /// The initial configuration should be supplied when users are creating a new scheme.
   TemporaryTicketScheme get initialScheme;
+
+  /// The current temporary ticket scheme.
+  /// This will be changed on the end of the section-lifecycle.
   set currentScheme(TemporaryTicketScheme value);
   // </states>
 
   // <presenters>
-  /// categories counted should be specified.
-  /// all of categories are shown as options.
+  /// Categories counted should be specified.
+  /// All categories are shown as options.
   Future<List<Category>> getCategoryOptions();
 
-  /// currency in which the ticket shown should be specified.
-  /// all of currencies are shown as options.
+  /// The currency in which the ticket is shown should be specified.
+  /// All currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
+  /// Get the initial configuration of the temporary monitor scheme.
+  /// If [initialScheme] is not [TemporaryMonitorScheme], this method provides a default scheme.
   Future<TemporaryMonitorScheme> getInitialConfig();
   // </presenters>
 
   // <actions>
+  /// Apply the specified monitor scheme to [currentScheme].
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId);
   // </actions>
