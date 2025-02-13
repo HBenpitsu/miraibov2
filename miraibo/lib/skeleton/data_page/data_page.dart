@@ -52,18 +52,32 @@ abstract interface class DataPage {
 
   // <navigators>
   // chart section
+  /// on tapping the chart section, open the chart configuration window.
   ChartConfigurationWindow openChartConfigurationWindow();
   // temporary ticket section
+  /// on tapping the temporary ticket, open the temporary ticket configuration window.
   TemporaryTicketConfigWindow openTemporaryTicketConfigWindow();
   // operation section
+  /// on tapping the import button, open the importation window.
   ExportationWindow openExportationWindow();
+
+  /// on tapping the export button, open the exportation window.
   ImportationWindow openImportationWindow();
+
+  /// on tapping the overwrite button, open the overwrite window.
   OverwriteWindow openOverwriteWindow();
+
+  /// on tapping the backup button, open the backup window.
   BackupWindow openBackupWindow();
+
+  /// on tapping the restore button, open the restore window.
   RestoreWindow openRestoreWindow();
   // table section
+  /// on tapping a row of the table, open the receipt log edit window
+  /// that edits the receipt log of the row.
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetReceiptLogId);
   // </navigators>
+  void dispose();
 }
 
 // </interface>
@@ -71,38 +85,62 @@ abstract interface class DataPage {
 // <view model>
 typedef TableRecord = Stream<ReceiptLogScheme?>;
 
+/// Table segment is a set of table rows.
+/// It provides some features to show the table efficiently.
 class TableSegment {
-  /// success key is provided from stream.
+  /// success key is provided from stream. It represents the key of the next segment.
   /// if there is no segment to fetch, the success key is null.
   final Stream<int?> successKey;
 
   /// record is a stream of receipt log configs.
   /// it reflects the mutation of the receipt logs.
-  /// the stream for each record emits null the record is no longer exists.
+  /// the stream for each record emits null the receipt log is no longer exists.
   /// the stream for bunch of records emits null when all of the records are no longer exists.
   late final Stream<List<TableRecord>?> records;
+  late int numberOfRecords;
 
-  /// when the record is null, the null count is incremented.
-  /// when [nullCount] gets equal to the length of the [_records], the segment is no longer needed.
+  /// when records get null, the [nullCount] is incremented.
+  /// when [nullCount] gets equal to the length of the [numberOfRecords],
+  /// there is no meaning for the segment to exist any more.
   int nullCount = 0;
 
   TableSegment(List<TableRecord> records, this.successKey) {
+    // make a stream that emits null (that is [this.records]) when all of the records are null.
+
+    // to make that complex stream, we need:
+    // - to count up the number of null records.
+    // - compare the number of null records with the number of records on each record update.
+    // - emit null on the check if the condition is satisfied.
+    // this can be achieved by using StreamController.
     StreamController<List<TableRecord>?> recordsStream = StreamController();
-    int numberOfRecords = records.length;
+    numberOfRecords = records.length;
     for (var record in records) {
+      // listen to every record update.
       record.asBroadcastStream().listen((record) {
         if (record != null) return;
+        // count up the number of null records.
         nullCount++;
         if (nullCount >= numberOfRecords) {
+          // emit null when all of the records are null.
           recordsStream.add(null);
         }
       });
     }
+    // we could implement 'null emitting'.
+
+    // also, [this.records] should orovide the stream of the records
+    // if there is some non-null records.
+    // initially, it is expected that all of the records are non-null.
     recordsStream.add(records);
+
+    // after initialization above, we can provide the stream of the records.
     this.records = recordsStream.stream;
   }
 }
 
+/// Chart is a view model that represents a chart.
+/// It contains the all data to draw the chart.
+/// It does not contain any data not to draw the chart.
 sealed class Chart {
   const Chart();
 }
@@ -148,6 +186,9 @@ class AccumulationChart extends Chart {
 
 class ChartUnspecified extends Chart {}
 
+/// TemporaryTicket is a view model that represents a temporary ticket.
+/// It contains the all data to show the ticket.
+/// It does not contain any data not to show the ticket.
 sealed class TemporaryTicket {
   const TemporaryTicket();
 }
@@ -359,6 +400,13 @@ class MockDataPage implements DataPage {
     var (records, successkey) = mockVault.getReceiptLogs(key, limit);
     return Future.value(TableSegment(records, successkey));
   }
+
+  @override
+  void dispose() {
+    chartStream.close();
+    temporaryTicketStream.close();
+    mockVault.dispose();
+  }
 }
 
 class MockReceiptLogVault {
@@ -454,6 +502,11 @@ class MockReceiptLogVault {
     });
 
     return (recordsBox.toList(), successKeyBox.stream);
+  }
+
+  void dispose() {
+    receiptLogsStream.close();
+    firstRecordStream.close();
   }
 }
 // </mock>

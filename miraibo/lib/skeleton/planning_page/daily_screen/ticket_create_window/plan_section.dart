@@ -26,9 +26,11 @@ abstract interface class PlanSection {
   // </presenters>
 
   // <controllers>
+  /// create the plan with the specified scheme.
   Future<void> createPlan(
       int categoryId, String description, Price price, Schedule schedule);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -77,5 +79,8 @@ class MockPlanSection implements PlanSection {
         categoryName: categoryList[categoryId].name));
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

@@ -18,11 +18,19 @@ import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window
 /// Each sections are shown as tabs.
 abstract interface class TicketCreateWindow {
   // <naviagtors>
+  /// a tab of the window.
   PlanSection get planSection;
+
+  /// a tab of the window.
   EstimationSchemeSection get estimationSchemeSection;
+
+  /// a tab of the window.
   MonitorSchemeSection get monitorSchemeSection;
+
+  /// a tab of the window.
   ReceiptLogSection get receiptLogSection;
   // </navigators>
+  void dispose();
 }
 
 // </interface>
@@ -45,6 +53,14 @@ class MockTicketCreateWindow implements TicketCreateWindow {
         MockEstimationSchemeSection(tickets, ticketsStream);
     monitorSchemeSection = MockMonitorSchemeSection(tickets, ticketsStream);
     receiptLogSection = MockReceiptLogSection(tickets, ticketsStream);
+  }
+
+  @override
+  void dispose() {
+    planSection.dispose();
+    estimationSchemeSection.dispose();
+    monitorSchemeSection.dispose();
+    receiptLogSection.dispose();
   }
 }
 // </mock>

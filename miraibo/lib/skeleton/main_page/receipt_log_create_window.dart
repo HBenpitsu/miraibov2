@@ -3,7 +3,7 @@ import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-/// ReceiptLogSection is a section to create a receipt log.
+/// ReceiptLogWindow is a window to create a receipt log.
 /// A receipt log consists of the following information:
 ///
 /// - which category the receipt log belongs to
@@ -12,7 +12,9 @@ import 'package:miraibo/dto/dto.dart';
 /// - when the receipt log was created
 /// - whether the receipt log is confirmed
 ///
-
+/// Although this window is virtually the same as [ReceiptLogSection],
+/// the difference is that they are window and section(not window).
+/// This difference keep [ReceiptLogSection] and [ReceiptLogCreateWindow] separate.
 abstract interface class ReceiptLogCreateWindow {
   // <presenters>
   /// category to which the receipt log belongs should be specified.
@@ -28,9 +30,11 @@ abstract interface class ReceiptLogCreateWindow {
   // </presenters>
 
   // <controllers>
+  /// create the receipt log with the specified scheme.
   Future<void> createReceiptLog(int categoryId, String description, Price price,
       Date date, bool confirmed);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -80,5 +84,8 @@ class MockReceiptLogCreateWindow implements ReceiptLogCreateWindow {
         confirmed: confirmed));
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

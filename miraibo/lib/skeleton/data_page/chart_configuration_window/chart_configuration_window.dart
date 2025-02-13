@@ -9,15 +9,26 @@ import 'package:miraibo/skeleton/data_page/chart_configuration_window/subtotal_c
 /// There are three sections for each type of chart.
 abstract interface class ChartConfigurationWindow {
   // <states>
+  /// The chart scheme when the window is created.
+  /// This will not be changed while the window is alive.
+  /// And this will be shared with the sections.
   ChartScheme get initialScheme;
+
+  /// This will be changed on the end of the window-lifecycle.
   set currentScheme(ChartScheme value);
   // </states>
 
   // <navigators>
+  /// A tab of the window.
   AccumulationChartSection get accumulationChartSection;
+
+  /// A tab of the window.
   PieChartSection get pieChartSection;
+
+  /// A tab of the window.
   SubtotalChartSection get subtotalChartSection;
   // </navigators>
+  void dispose();
 }
 // </interface>
 
@@ -29,6 +40,15 @@ class MockChartConfigurationWindow implements ChartConfigurationWindow {
   @override
   set currentScheme(ChartScheme value) => schemeSetter(value);
 
+  @override
+  late final AccumulationChartSection accumulationChartSection;
+
+  @override
+  late final PieChartSection pieChartSection;
+
+  @override
+  late final SubtotalChartSection subtotalChartSection;
+
   MockChartConfigurationWindow(this.initialScheme, this.schemeSetter) {
     accumulationChartSection =
         MockAccumulationChartSection(initialScheme, schemeSetter);
@@ -38,12 +58,10 @@ class MockChartConfigurationWindow implements ChartConfigurationWindow {
   }
 
   @override
-  late final AccumulationChartSection accumulationChartSection;
-
-  @override
-  late final PieChartSection pieChartSection;
-
-  @override
-  late final SubtotalChartSection subtotalChartSection;
+  void dispose() {
+    accumulationChartSection.dispose();
+    pieChartSection.dispose();
+    subtotalChartSection.dispose();
+  }
 }
 // </mock>

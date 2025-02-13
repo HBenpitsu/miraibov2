@@ -12,7 +12,11 @@ import 'package:miraibo/dto/dto.dart';
 /// there is a button to apply the scheme.
 abstract interface class SubtotalChartSection {
   // <states>
+  /// The chart scheme when the section is created.
+  /// This will not be changed while the section is alive.
   ChartScheme get initialScheme;
+
+  /// This may be changed on the end of the section-lifecycle.
   set currentScheme(ChartScheme value);
   // </states>
 
@@ -26,6 +30,7 @@ abstract interface class SubtotalChartSection {
   Future<void> applyScheme(List<int> categoryIds, int currencyId,
       ClosedPeriod viewportRange, int intervalInDays);
   // </actions>
+  void dispose();
 }
 // </interface>
 
@@ -86,5 +91,8 @@ class MockSubtotalChartSection implements SubtotalChartSection {
         categories: categoryIds.map((id) => categoryList[id]).toList(),
         intervalInDays: intervalInDays);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

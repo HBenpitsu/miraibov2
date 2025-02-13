@@ -33,25 +33,38 @@ abstract interface class DailyScreen {
   // </states>
 
   // <presenters>
+  /// Get the tickets which belongs to the date which the specified [index] represents.
+  ///
   /// The origin of the [index] is [initiallyCenteredDate].
   /// When [initiallyCenteredDate] is 2022-02-01, the [index] of 2022-02-01 is `0`,
   /// the [index] of 2022-02-02 is `1`, the [index] of 2022-01-31 is `-1`.
   Stream<List<Ticket>> getTicketsOn(int index);
 
+  /// Get the label of the currently centered date.
+  /// It is calculatedd by [initiallyCenteredDate] + [offset].
   Stream<Date> getLabel();
   // </presenters>
 
   // <navigators>
   // label
+  /// When the label which shows the centered date is tapped, navigate to the monthly screen.
   MonthlyScreen navigateToMonthlyScreen();
 
   // tickets
+  /// When the monitor ticket is tapped, open the monitor scheme edit window.
   MonitorSchemeEditWindow openMonitorSchemeEditWindow(int targetTicketId);
+
+  /// When the plan ticket is tapped, open the plan edit window.
   PlanEditWindow openPlanEditWindow(int targetTicketId);
+
+  /// When the estimation ticket is tapped, open the estimation scheme edit window.
   EstimationSchemeEditWindow openEstimationSchemeEditWindow(int targetTicketId);
+
+  /// When the receipt log ticket is tapped, open the receipt log edit window.
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId);
 
   // button
+  /// When the ticket create button is tapped, open the ticket create window.
   TicketCreateWindow openTicketCreateWindow();
   // </navigators>
 
@@ -60,6 +73,7 @@ abstract interface class DailyScreen {
   /// This should be updated properly to show proper date on `Label`, `ticketCreateWindow`, and `ticketEditWindow`.
   Future<void> setOffset(int offset);
   // </actions>
+  void dispose();
 }
 
 // </interface>
@@ -72,12 +86,12 @@ class MockDailyScreen implements DailyScreen {
   @override
   int offset = 0;
 
-  final StreamController<Date> _labelStream = StreamController();
+  final StreamController<Date> labelStream = StreamController();
   late final List<Ticket> tickets;
-  final StreamController<List<Ticket>> ticketStreams = StreamController();
+  final StreamController<List<Ticket>> ticketStream = StreamController();
   MockDailyScreen(int year, int month, int day) {
     initiallyCenteredDate = Date(year, month, day);
-    _labelStream.add(initiallyCenteredDate);
+    labelStream.add(initiallyCenteredDate);
 
     // <make mock tickets>
 
@@ -239,17 +253,17 @@ class MockDailyScreen implements DailyScreen {
 
     // </make mock tickets>
 
-    ticketStreams.add(tickets);
+    ticketStream.add(tickets);
   }
 
   @override
   Stream<List<Ticket>> getTicketsOn(int index) {
-    return ticketStreams.stream;
+    return ticketStream.stream;
   }
 
   @override
   Stream<Date> getLabel() {
-    return _labelStream.stream;
+    return labelStream.stream;
   }
 
   @override
@@ -263,30 +277,29 @@ class MockDailyScreen implements DailyScreen {
   @override
   MonitorSchemeEditWindow openMonitorSchemeEditWindow(int targetTicketId) {
     return MockMonitorSchemeEditWindow(
-        targetTicketId, ticketStreams.sink, tickets);
+        targetTicketId, ticketStream.sink, tickets);
   }
 
   @override
   PlanEditWindow openPlanEditWindow(int targetTicketId) {
-    return MockPlanEditWindow(targetTicketId, ticketStreams.sink, tickets);
+    return MockPlanEditWindow(targetTicketId, ticketStream.sink, tickets);
   }
 
   @override
   EstimationSchemeEditWindow openEstimationSchemeEditWindow(
       int targetTicketId) {
     return MockEstimationSchemeEditWindow(
-        targetTicketId, ticketStreams.sink, tickets);
+        targetTicketId, ticketStream.sink, tickets);
   }
 
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId) {
-    return MockReceiptLogEditWindow(
-        targetTicketId, ticketStreams.sink, tickets);
+    return MockReceiptLogEditWindow(targetTicketId, ticketStream.sink, tickets);
   }
 
   @override
   TicketCreateWindow openTicketCreateWindow() {
-    return MockTicketCreateWindow(tickets, ticketStreams.sink);
+    return MockTicketCreateWindow(tickets, ticketStream.sink);
   }
 
   @override
@@ -294,8 +307,14 @@ class MockDailyScreen implements DailyScreen {
     this.offset = offset;
     var centeredDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
-    _labelStream
+    labelStream
         .add(Date(centeredDate.year, centeredDate.month, centeredDate.day));
+  }
+
+  @override
+  void dispose() {
+    labelStream.close();
+    ticketStream.close();
   }
 }
 // </mock>

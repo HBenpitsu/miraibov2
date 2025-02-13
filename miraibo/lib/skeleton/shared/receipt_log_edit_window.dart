@@ -13,6 +13,8 @@ import 'package:miraibo/dto/dto.dart';
 ///
 abstract interface class ReceiptLogEditWindow {
   // <state>
+  /// The ID of the receipt log to be edited.
+  /// This is not changed during the lifecycle of the window.
   int get targetLogId;
   // </state>
 
@@ -32,11 +34,16 @@ abstract interface class ReceiptLogEditWindow {
   // </presenters>
 
   // <controllers>
+  /// update the receipt log with the specified parameters.
+  /// [targetLogId] is used to identify the receipt log to be updated.
   Future<void> updateReceiptLog(int categoryId, String description, Price price,
       Date date, bool confirmed);
 
+  /// delete the receipt log.
+  /// [targetLogId] is used to identify the receipt log to be deleted.
   Future<void> deleteReceiptLog();
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -116,6 +123,9 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
         (element) => element is ReceiptLogTicket && element.id == targetLogId);
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>
 

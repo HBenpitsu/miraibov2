@@ -2,7 +2,8 @@ import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-/// AccumulationChartSection consists of:
+/// AccumulationChartSection is a section to configure an accumulation chart.
+/// An accumulation chart consists of the following information:
 ///
 /// - multiple category selector
 /// - currency selector
@@ -13,13 +14,11 @@ import 'package:miraibo/dto/dto.dart';
 /// There is a button to apply the scheme.
 abstract interface class AccumulationChartSection {
   // <states>
-  /// The initial chart scheme.
-  /// 'Initial' means the scheme when the section is initialized.
+  /// The chart scheme when the section is created.
   /// This will not be changed while the section is alive.
   ChartScheme get initialScheme;
 
-  /// The current chart scheme.
-  /// This will be changed on the end of the section-lifecycle.
+  /// This may be changed on the end of the section-lifecycle.
   set currentScheme(ChartScheme value);
   // </states>
 
@@ -43,6 +42,7 @@ abstract interface class AccumulationChartSection {
   Future<void> applyScheme(int currencyId, OpenPeriod analysisRange,
       ClosedPeriod viewportRange, List<int> categoryIds, int intervalInDays);
   // </actions>
+  void dispose();
 }
 // </interface>
 
@@ -112,5 +112,8 @@ class MockAccumulationChartSection implements AccumulationChartSection {
         categories: categoryIds.map((id) => categoryList[id]).toList(),
         intervalInDays: intervalInDays);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

@@ -14,7 +14,7 @@ import 'package:miraibo/dto/dto.dart';
 abstract interface class MonitorSchemeSection {
   // <states>
   /// The initial temporary ticket scheme.
-  /// The initial configuration should be supplied when users are creating a new scheme.
+  /// This will not be changed while the section is alive.
   TemporaryTicketScheme get initialScheme;
 
   /// The current temporary ticket scheme.
@@ -33,7 +33,7 @@ abstract interface class MonitorSchemeSection {
 
   /// Get the initial configuration of the temporary monitor scheme.
   /// If [initialScheme] is not [TemporaryMonitorScheme], this method provides a default scheme.
-  Future<TemporaryMonitorScheme> getInitialConfig();
+  Future<TemporaryMonitorScheme> getInitialScheme();
   // </presenters>
 
   // <actions>
@@ -41,6 +41,7 @@ abstract interface class MonitorSchemeSection {
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId);
   // </actions>
+  void dispose();
 }
 // </interface>
 
@@ -75,7 +76,7 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
   }
 
   @override
-  Future<TemporaryMonitorScheme> getInitialConfig() async {
+  Future<TemporaryMonitorScheme> getInitialScheme() async {
     if (initialScheme is TemporaryMonitorScheme) {
       return initialScheme as TemporaryMonitorScheme;
     }
@@ -96,5 +97,8 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
         displayConfig: displayConfig,
         currency: currencyList[currencyId]);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

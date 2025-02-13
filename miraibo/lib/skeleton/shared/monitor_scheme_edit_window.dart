@@ -12,6 +12,8 @@ import 'package:miraibo/dto/dto.dart';
 ///   - which currency does the ticket use
 abstract interface class MonitorSchemeEditWindow {
   // <state>
+  /// The ID of the monitor scheme to be edited.
+  /// This is not changed during the lifecycle of the window.
   int get targetTicketId;
   // </state>
 
@@ -24,18 +26,21 @@ abstract interface class MonitorSchemeEditWindow {
   /// all of currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  // here, we do not need default currency, because original monitor scheme already has currency.
-
   /// get original monitor scheme. original configuration should be supplied when users editing it.
   Future<MonitorScheme> getOriginalMonitorScheme();
   // </presenters>
 
   // <controllers>
+  /// update the monitor scheme with the specified parameters.
+  /// [targetTicketId] is used to identify the monitor scheme to be updated.
   Future<void> updateMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId);
 
+  /// delete the monitor scheme.
+  /// [targetTicketId] is used to identify the monitor scheme to be deleted.
   Future<void> deleteMonitorScheme();
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -80,7 +85,7 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
       ),
-      currency: CurrencyConfig(id: 0, symbol: currencyList[0].symbol, ratio: 1),
+      currency: currencyList[0],
       displayConfig: MonitorDisplayConfig.meanInDays,
       categories: categoryList.sublist(0, 5),
     ));
@@ -121,5 +126,8 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
         (element) => element is MonitorTicket && element.id == targetTicketId);
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

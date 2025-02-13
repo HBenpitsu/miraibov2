@@ -27,9 +27,11 @@ abstract interface class MonitorSchemeSection {
   // </presenters>
 
   // <controllers>
+  /// create the monitor scheme with the specified scheme.
   Future<void> createMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -79,5 +81,8 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
             categoryIds.map((id) => categoryList[id].name).toList()));
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

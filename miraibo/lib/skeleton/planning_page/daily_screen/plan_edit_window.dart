@@ -11,8 +11,8 @@ import 'package:miraibo/dto/dto.dart';
 ///
 abstract interface class PlanEditWindow {
   // <states>
-  /// The ID of the target plan.
   /// This is used to identify the plan to be edited.
+  /// This is not changed during the lifecycle of the window.
   int get targetPlanId;
   // </states>
 
@@ -40,6 +40,7 @@ abstract interface class PlanEditWindow {
   /// [targetPlanId] is used to identify the plan to be deleted.
   Future<void> deletePlan();
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -119,5 +120,8 @@ class MockPlanEditWindow implements PlanEditWindow {
         (element) => element is PlanTicket && element.id == targetPlanId);
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

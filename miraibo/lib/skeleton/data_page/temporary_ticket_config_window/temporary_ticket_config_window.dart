@@ -9,14 +9,24 @@ import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/monito
 
 abstract interface class TemporaryTicketConfigWindow {
   // <states>
+  /// The initial temporary ticket scheme.
+  /// 'initial' means the time when the window is opened.
+  /// This will not be changed while the window is alive.
   TemporaryTicketScheme get initialScheme;
+
+  /// The current temporary ticket scheme.
+  /// This will be changed on the end of the window-lifecycle.
   set currentScheme(TemporaryTicketScheme value);
   // </states>
 
   // <navigators>
+  /// A tab of the window.
   EstimationSchemeSection get estimationSchemeSection;
+
+  /// A tab of the window.
   MonitorSchemeSection get monitorSchemeSection;
   // </navigators>
+  void dispose();
 }
 
 // </interface>
@@ -39,6 +49,12 @@ class MockTemporaryTicketConfigWindow implements TemporaryTicketConfigWindow {
         MockEstimationSchemeSection(initialScheme, schemeSetter);
     monitorSchemeSection =
         MockMonitorSchemeSection(initialScheme, schemeSetter);
+  }
+
+  @override
+  void dispose() {
+    estimationSchemeSection.dispose();
+    monitorSchemeSection.dispose();
   }
 }
 // </mock>

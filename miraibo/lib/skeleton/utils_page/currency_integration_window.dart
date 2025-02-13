@@ -11,6 +11,8 @@ import 'package:miraibo/dto/general.dart';
 /// And then, users dispatch the integration process by tapping the integrate button.
 abstract interface class CurrencyIntegrationWindow {
   // <states>
+  /// The ID of the currency to be replaced.
+  /// This is not changed during the lifecycle of the window.
   int get replaceeId;
   // </states>
 
@@ -23,6 +25,7 @@ abstract interface class CurrencyIntegrationWindow {
   /// integrates a currency whose currency is [replacerId] with the currency of [replaceeId].
   Future<void> integrateCurrency(int replacerId);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -50,4 +53,7 @@ class MockCurrencyIntegrationWindow implements CurrencyIntegrationWindow {
     _currencies.remove(replaceeId);
     _currencyStream.add(_currencies);
   }
+
+  @override
+  void dispose() {}
 }

@@ -7,6 +7,7 @@ abstract interface class ExportationWindow {
   // <controllers>
   Future<void> exportDataTo(String path);
   // </controllers>
+  void dispose();
 }
 
 /// overwrite window takes a path and there are two buttons to cancel and to proceed.
@@ -16,6 +17,7 @@ abstract interface class OverwriteWindow {
   // <controllers>
   Future<void> overwriteDataWith(String path);
   // </controllers>
+  void dispose();
 }
 
 /// import window takes a path and there are two buttons to cancel and to proceed.
@@ -24,6 +26,7 @@ abstract interface class ImportationWindow {
   // <controllers>
   Future<void> importDataFrom(String path);
   // </controllers>
+  void dispose();
 }
 
 /// backup window takes a path and there are two buttons to cancel and to proceed.
@@ -43,6 +46,7 @@ abstract interface class BackupWindow {
   // <controllers>
   Future<void> backupDataTo(String path);
   // </controllers>
+  void dispose();
 }
 
 /// restore window takes a path and there are two buttons to cancel and to proceed.
@@ -52,42 +56,43 @@ abstract interface class RestoreWindow {
   // <controllers>
   Future<void> restoreDataFrom(String path);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
 // <mock>
 class MockExportationWindow implements ExportationWindow {
   @override
-  Future<void> exportDataTo(String path) async {
-    return;
-  }
+  Future<void> exportDataTo(String path) async {}
+  @override
+  void dispose() {}
 }
 
 class MockOverwriteWindow implements OverwriteWindow {
   @override
-  Future<void> overwriteDataWith(String path) async {
-    return;
-  }
+  Future<void> overwriteDataWith(String path) async {}
+  @override
+  void dispose() {}
 }
 
 class MockImportationWindow implements ImportationWindow {
   @override
-  Future<void> importDataFrom(String path) async {
-    return;
-  }
+  Future<void> importDataFrom(String path) async {}
+  @override
+  void dispose() {}
 }
 
 class MockBackupWindow implements BackupWindow {
   @override
-  Future<void> backupDataTo(String path) async {
-    return;
-  }
+  Future<void> backupDataTo(String path) async {}
+  @override
+  void dispose() {}
 }
 
 class MockRestoreWindow implements RestoreWindow {
   @override
-  Future<void> restoreDataFrom(String path) async {
-    return;
-  }
+  Future<void> restoreDataFrom(String path) async {}
+  @override
+  void dispose() {}
 }
 // </mock>

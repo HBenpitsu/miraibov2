@@ -14,7 +14,12 @@ import 'package:miraibo/dto/dto.dart';
 
 abstract interface class EstimationSchemeSection {
   // <states>
+  /// The initial temporary ticket scheme.
+  /// This will not be changed while the section is alive.
   TemporaryTicketScheme get initialScheme;
+
+  /// The current temporary ticket scheme.
+  /// This will be changed on the end of the section-lifecycle.
   set currentScheme(TemporaryTicketScheme value);
   // </states>
 
@@ -27,13 +32,16 @@ abstract interface class EstimationSchemeSection {
   /// all of currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  Future<TemporaryEstimationScheme> getInitialConfig();
+  /// Get the initial configuration of the temporary estimation scheme.
+  /// If [initialScheme] is not [TemporaryEstimationScheme], this method provides a default scheme.
+  Future<TemporaryEstimationScheme> getInitialScheme();
   // </presenters>
 
   // <actions>
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       EstimationDisplayConfig displayConfig, int currencyId);
   // </actions>
+  void dispose();
 }
 // </interface>
 
@@ -68,7 +76,7 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
   }
 
   @override
-  Future<TemporaryEstimationScheme> getInitialConfig() async {
+  Future<TemporaryEstimationScheme> getInitialScheme() async {
     if (initialScheme is TemporaryEstimationScheme) {
       return initialScheme as TemporaryEstimationScheme;
     }
@@ -90,5 +98,8 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
         displayConfig: displayConfig,
         period: period);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

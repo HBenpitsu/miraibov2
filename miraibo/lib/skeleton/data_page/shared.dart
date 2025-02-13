@@ -1,9 +1,13 @@
 import 'package:miraibo/dto/dto.dart';
 
-// following complex states are shared within the data page.
+// class below is view-model for scheme edit window.
+// it also used as types for the states.
+// Because they are shared between the page and windows on the page,
+// They are exploited into this `shared.dart` file.
 
 // <ticket schemes>
 
+/// ticket scheme is a set of configurations for ticket display.
 sealed class TemporaryTicketScheme {
   const TemporaryTicketScheme();
 }
@@ -41,6 +45,7 @@ class TemporaryTicketSchemeUnspecified extends TemporaryTicketScheme {
 // </ticket schemes>
 
 // <chart schemes>
+/// chart scheme is a set of configurations for chart display.
 sealed class ChartScheme {
   const ChartScheme();
 }

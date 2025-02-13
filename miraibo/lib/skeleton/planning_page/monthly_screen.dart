@@ -24,8 +24,10 @@ abstract interface class MonthlyScreen {
   // </presenters>
 
   // <navigators>
+  /// when the date of the calender is tapped, navigate to the daily screen.
   DailyScreen navigateToDailyScreen(int year, int month, int day);
   // </navigators>
+  void dispose();
 }
 // </interface>
 
@@ -37,6 +39,11 @@ class Calender {
   /// the offset is a weekday of the first day of the month
   /// 0: Sunday, 1: Monday, ..., 6: Saturday
   final int firstWeekday;
+
+  /// the length of the list is the number of days in the month
+  /// Each element represents the existence of an event on the day.
+  /// Watch out for the index of the list. It starts from 0.
+  /// Do not forget to add 1 to the index to get the day.
   final List<EventExistence> events;
 
   const Calender(this.year, this.month, this.firstWeekday, this.events);
@@ -76,7 +83,10 @@ class MockMonthlyScreen implements MonthlyScreen {
 
   @override
   DailyScreen navigateToDailyScreen(int year, int month, int day) {
-    throw UnimplementedError();
+    return MockDailyScreen(year, month, day);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

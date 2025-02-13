@@ -37,7 +37,7 @@ class PlanScheme {
 class EstimationScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
-  final CurrencyConfig currency;
+  final Currency currency;
   final EstimationDisplayConfig displayConfig;
   final List<Category> categories;
 
@@ -52,7 +52,7 @@ class EstimationScheme {
 class MonitorScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
-  final CurrencyConfig currency;
+  final Currency currency;
   final MonitorDisplayConfig displayConfig;
   final List<Category> categories;
 
@@ -68,9 +68,13 @@ class CurrencyConfig {
   final int id;
   final String symbol;
   final double ratio;
+  final bool isDefault;
 
   const CurrencyConfig(
-      {required this.id, required this.symbol, required this.ratio});
+      {required this.id,
+      required this.symbol,
+      required this.ratio,
+      required this.isDefault});
 }
 
 class PriceConfig {

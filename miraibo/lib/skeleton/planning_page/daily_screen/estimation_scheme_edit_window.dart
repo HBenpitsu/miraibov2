@@ -41,6 +41,7 @@ abstract interface class EstimationSchemeEditWindow {
   /// [targetSchemeId] is used to identify the estimation scheme to be deleted.
   Future<void> deleteEstimationScheme();
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -85,7 +86,7 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
       ),
-      currency: CurrencyConfig(id: 0, symbol: currencyList[0].symbol, ratio: 1),
+      currency: currencyList[0],
       displayConfig: EstimationDisplayConfig.perWeek,
       categories: categoryList.sublist(0, 5),
     ));
@@ -126,5 +127,8 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
         element is EstimationTicket && element.id == targetSchemeId);
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

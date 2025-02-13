@@ -8,16 +8,13 @@ import 'package:miraibo/skeleton/utils_page/category_integration_window.dart';
 /// Utils page have two sections: category section and currency section.
 /// Each section is exists to edit categories and currencies.
 abstract interface class UtilsPage {
-  // <navigators>
-  CurrencyIntegrationWindow openCurrencyIntegrationWindow(int replaceeId);
-  CategoryIntegrationWindow openCategoryIntegrationWindow(int replaceeId);
-  // </navigators>
-
   // <presenters>
-  /// categorySection is updated upon category change. So, it is a stream.
-  Stream<CategorySection> categorySection();
+  /// It returns a stream of categories.
+  /// categorySection is updated upon category change. So, they come from a stream.
+  CategorySection categorySection();
 
-  /// currencySection is updated upon currency change. So, it is a stream.
+  /// It returns a stream of currencies.
+  /// currencySection is updated upon currency change. So, they come from a stream.
   CurrencySection currencySection();
   // </presenters>
 
@@ -38,19 +35,23 @@ abstract interface class UtilsPage {
   /// In currency section, default currency can be set
   Future<void> setDefaultCurrency(int currencyId);
   // </controllers>
+
+  // <navigators>
+  /// to integrate a currency with another currency, open currency integration window.
+  CurrencyIntegrationWindow openCurrencyIntegrationWindow(int replaceeId);
+
+  /// to integrate a category with another category, open category integration window.
+  CategoryIntegrationWindow openCategoryIntegrationWindow(int replaceeId);
+  // </navigators>
+
+  void dispose();
 }
 
 // </interface>
 
 // <view model>
-typedef CategorySection = List<Category>;
-
-class CurrencySection {
-  /// List of currency id, currency name, and currency ratio
-  final Stream<List<CurrencyConfig>> currencies;
-  final Stream<int> defaultId;
-  const CurrencySection({required this.currencies, required this.defaultId});
-}
+typedef CategorySection = Stream<List<Category>>;
+typedef CurrencySection = Stream<List<CurrencyConfig>>;
 // </view model>
 
 // <mock>
@@ -62,7 +63,6 @@ class MockUtilsPage implements UtilsPage {
   late MockCategoryMap _categories;
   final StreamController<MockCurrencyMap> _currencyStream = StreamController();
   late MockCurrencyMap _currencies;
-  final StreamController<int> _defaultCurrencyStream = StreamController();
   late int _defaultCurrency;
 
   MockUtilsPage() {
@@ -75,11 +75,10 @@ class MockUtilsPage implements UtilsPage {
     _currencyStream.add(_currencies);
 
     _defaultCurrency = 0;
-    _defaultCurrencyStream.add(_defaultCurrency);
   }
 
   @override
-  Stream<CategorySection> categorySection() {
+  CategorySection categorySection() {
     return _categoryStream.stream.map((data) => data.entries
         .map((entry) => Category(id: entry.key, name: entry.value))
         .toList());
@@ -87,12 +86,13 @@ class MockUtilsPage implements UtilsPage {
 
   @override
   CurrencySection currencySection() {
-    return CurrencySection(
-        currencies: _currencyStream.stream.map((data) => data.entries
-            .map((entry) => CurrencyConfig(
-                id: entry.key, symbol: entry.value.$1, ratio: entry.value.$2))
-            .toList()),
-        defaultId: _defaultCurrencyStream.stream);
+    return _currencyStream.stream.map((data) => data.entries
+        .map((entry) => CurrencyConfig(
+            id: entry.key,
+            symbol: entry.value.$1,
+            ratio: entry.value.$2,
+            isDefault: _defaultCurrency == entry.key))
+        .toList());
   }
 
   @override
@@ -123,7 +123,6 @@ class MockUtilsPage implements UtilsPage {
   @override
   Future<void> setDefaultCurrency(int currencyId) async {
     _defaultCurrency = currencyId;
-    _defaultCurrencyStream.add(currencyId);
   }
 
   @override
@@ -136,6 +135,12 @@ class MockUtilsPage implements UtilsPage {
   CategoryIntegrationWindow openCategoryIntegrationWindow(int replaceeId) {
     return MockCategoryIntegrationWindow(
         replaceeId, _categoryStream.sink, _categories);
+  }
+
+  @override
+  void dispose() {
+    _categoryStream.close();
+    _currencyStream.close();
   }
 }
 // </mock>

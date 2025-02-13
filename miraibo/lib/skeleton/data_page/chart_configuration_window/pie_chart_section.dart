@@ -2,16 +2,22 @@ import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-/// pie chart section consists of:
+
+/// PieChartSection is a section to configure a pie chart.
+/// A pie chart consists of the following information:
 ///
 /// - multiple category selector
 /// - currency selector
 /// - range selector
 ///
-/// there is a button to apply the scheme.
+/// There is a button to apply the scheme.
 abstract interface class PieChartSection {
   // <states>
+  /// The chart scheme when the section is created.
+  /// This will not be changed while the section is alive.
   ChartScheme get initialScheme;
+
+  /// This may be changed on the end of the section-lifecycle.
   set currentScheme(ChartScheme value);
   // </states>
 
@@ -25,6 +31,7 @@ abstract interface class PieChartSection {
   Future<void> applyScheme(
       int currencyId, OpenPeriod analysisRange, List<int> categoryIds);
   // </actions>
+  void dispose();
 }
 // </interface>
 
@@ -83,5 +90,8 @@ class MockPieChartSection implements PieChartSection {
         analysisRange: period,
         categories: categoryIds.map((id) => categoryList[id]).toList());
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

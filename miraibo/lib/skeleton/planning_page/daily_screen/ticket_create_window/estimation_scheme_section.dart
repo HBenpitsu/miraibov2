@@ -27,9 +27,11 @@ abstract interface class EstimationSchemeSection {
   // </presenters>
 
   // <controllers>
+  /// create the estimation scheme with the specified scheme.
   Future<void> createEstimationScheme(List<int> categoryIds, OpenPeriod period,
       EstimationDisplayConfig displayConfig, int currencyId);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -79,5 +81,8 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
             categoryIds.map((id) => categoryList[id].name).toList()));
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

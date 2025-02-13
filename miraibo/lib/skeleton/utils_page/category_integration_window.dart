@@ -12,6 +12,8 @@ import 'package:miraibo/dto/general.dart';
 
 abstract interface class CategoryIntegrationWindow {
   // <states>
+  /// The ID of the currency to be replaced.
+  /// This is not changed during the lifecycle of the window.
   int get replaceeId;
   // </states>
 
@@ -24,6 +26,7 @@ abstract interface class CategoryIntegrationWindow {
   /// integrates a category whose category is [replacerId] with the category of [replaceeId].
   Future<void> integrateCategory(int replacerId);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -51,5 +54,8 @@ class MockCategoryIntegrationWindow implements CategoryIntegrationWindow {
     _categories.remove(replaceeId);
     _categoryStream.add(_categories);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>

@@ -11,6 +11,9 @@ import 'package:miraibo/dto/dto.dart';
 /// - when the receipt log was created
 /// - whether the receipt log is confirmed
 ///
+/// Although this window is virtually the same as [ReceiptLogCreateWindow],
+/// the difference is that they are window and section(not window).
+/// This difference keep [ReceiptLogSection] and [ReceiptLogCreateWindow] separate.
 abstract interface class ReceiptLogSection {
   // <presenters>
   /// category to which the receipt log belongs should be specified.
@@ -26,9 +29,11 @@ abstract interface class ReceiptLogSection {
   // </presenters>
 
   // <controllers>
+  /// create the receipt log with the specified scheme.
   Future<void> createReceiptLog(int categoryId, String description, Price price,
       Date date, bool confirmed);
   // </controllers>
+  void dispose();
 }
 // </interface>
 
@@ -78,5 +83,8 @@ class MockReceiptLogSection implements ReceiptLogSection {
         confirmed: confirmed));
     ticketsStream.add(tickets);
   }
+
+  @override
+  void dispose() {}
 }
 // </mock>
