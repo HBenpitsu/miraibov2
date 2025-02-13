@@ -1173,6 +1173,30 @@ year, month, day, name_of_category, description, amount, name_of_currency, ratio
 Importing the csv, if given name of category or currency is not find in the app, the app automatically makes category or currency.
 URL of image can not be attached when importing ReceiptLogs from csv.
 
+## 8.2. format of backup-file
+
+The all of app-data is contained in backup-file. The backup file follows the format below:
+
+```xml
+<metadata>
+<version>x.x</version>
+<!--this information is necessary to handle version gap. Migration may be required based on the version-->
+</metadata>
+<table name="xxx">
+<!--only information of records are contained here. information of fields are held by app-->
+<!--fields are separated by commas. records are separated by lines-->
+aaa,bbb,ccc,000,111
+aaa,bbb,ccc,000,111
+</table>
+<table name="yyy">
+<!--each table is separated by table tag-->
+</table>
+<json name="zzz">
+<!--key value data and so on is stored and enclosed with json tag-->
+{"key":"value"}
+</json>
+```
+
 # 9. Error Handling
 
 All of unexpected errors are caught by `main` and handled by `ErrorHandlingService`.

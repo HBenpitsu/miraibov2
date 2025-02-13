@@ -2,6 +2,10 @@
 # to do
 
 - complete usecase
+- complete mock-skeleton for main-page
+- complete mock-skeleton for data-page
+- bind skeleton and usecase through isolate-glue
+- think how to broadcast refetch-event
 - complete skeleton
 - complete view
 
