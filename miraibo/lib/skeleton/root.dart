@@ -4,9 +4,8 @@ import 'package:miraibo/skeleton/planning_page/planning_page.dart';
 import 'package:miraibo/skeleton/utils_page/utils_page.dart';
 
 // <interface>
+/// root consists of four pages: planning page, main page, data page, and utils page.
 abstract interface class Root {
-  /// root consists of four pages: planning page, main page, data page, and utils page.
-
   //<navigators>
   PlanningPage get planningPage;
   MainPage get mainPage;
@@ -19,13 +18,13 @@ abstract interface class Root {
 // <mock>
 class MockRoot implements Root {
   @override
-  PlanningPage get planningPage => throw UnimplementedError();
+  PlanningPage get planningPage => MockPlanningPage();
 
   @override
-  MainPage get mainPage => throw UnimplementedError();
+  MainPage get mainPage => MockMainPage();
 
   @override
-  DataPage get dataPage => throw UnimplementedError();
+  DataPage get dataPage => MockDataPage();
 
   @override
   UtilsPage get utilsPage => MockUtilsPage();

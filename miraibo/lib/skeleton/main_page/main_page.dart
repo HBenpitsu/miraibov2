@@ -7,13 +7,12 @@ import 'package:miraibo/skeleton/main_page/receipt_log_create_window.dart';
 import 'package:miraibo/skeleton/main_page/receipt_log_edit_window.dart';
 
 // <interface>
+/// main page consists of a row of tickets and a button to create a new receipt-log.
+/// The tickets in main page are Log Tickets and Monitor Tickets.
+/// Each ticket navigates to the ticket edit window.
+/// But, the unconfirmed receipt-log navigates to the receipt-log confirmation window.
+/// The button to create a new receipt-log navigates to the receipt-log create window.
 abstract interface class MainPage {
-  /// main page consists of a row of tickets and a button to create a new receipt-log.
-  /// The tickets in main page are Log Tickets and Monitor Tickets.
-  /// Each ticket navigates to the ticket edit window.
-  /// But, the unconfirmed receipt-log navigates to the receipt-log confirmation window.
-  /// The button to create a new receipt-log navigates to the receipt-log create window.
-
   // <states>
   Date get today;
   // </states>
@@ -67,13 +66,13 @@ class MockMainPage implements MainPage {
           id: 0,
           period: startlessPeriod,
           price: price,
-          displayConfig: MonitorDisplayConfig.mean,
+          displayConfig: MonitorDisplayConfig.meanInDays,
           categoryNames: ['list of categories']),
       MonitorTicket(
           id: 1,
           period: endlessPeriod,
           price: price,
-          displayConfig: MonitorDisplayConfig.quartileMean,
+          displayConfig: MonitorDisplayConfig.quartileMeanInDays,
           categoryNames: ['category1', 'category2']),
       MonitorTicket(
           id: 2,

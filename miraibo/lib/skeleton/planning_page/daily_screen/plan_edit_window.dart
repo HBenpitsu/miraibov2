@@ -1,16 +1,16 @@
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-abstract interface class PlanEditWindow {
-  /// PlanEditWindow is a window to edit a plan.
-  /// A plan consists of following information:
-  ///
-  /// - which category the plan belongs to
-  /// - what the plan is
-  /// - how much the plan will cost
-  /// - when the plan will be executed
-  ///
+/// PlanEditWindow is a window to edit a plan.
+/// A plan consists of following information:
+///
+/// - which category the plan belongs to
+/// - what the plan is
+/// - how much the plan will cost
+/// - when the plan will be executed
+///
 
+abstract interface class PlanEditWindow {
   // <states>
   int get targetPlanId;
   // </states>
@@ -27,7 +27,7 @@ abstract interface class PlanEditWindow {
   // here, we do not need default currency, because original plan already has currency.
 
   /// get original plan. original configuration should be supplied when users editing it.
-  Future<RawPlan> getOriginalPlan();
+  Future<PlanScheme> getOriginalPlan();
   // </presenters>
 
   // <controllers>
@@ -44,7 +44,7 @@ abstract interface class PlanEditWindow {
 class MockPlanEditWindow implements PlanEditWindow {
   @override
   final int targetPlanId;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final List<Ticket> tickets;
 
   static const List<Currency> currencyList = [
@@ -70,14 +70,14 @@ class MockPlanEditWindow implements PlanEditWindow {
   }
 
   @override
-  Future<RawPlan> getOriginalPlan() {
+  Future<PlanScheme> getOriginalPlan() {
     var today = DateTime.now();
-    return Future.value(RawPlan(
+    return Future.value(PlanScheme(
         id: targetPlanId,
         category: categoryList[0],
         schedule:
             OneshotSchedule(date: Date(today.year, today.month, today.day)),
-        price: PriceInfo(
+        price: PriceConfig(
             amount: 1000,
             currencyId: 0,
             currencySymbol: currencyList[0].symbol),

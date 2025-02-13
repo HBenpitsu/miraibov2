@@ -6,20 +6,19 @@ import 'package:miraibo/dto/general.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/daily_screen.dart';
 
 // <interface>
+/// Monthly screen consists of infinite set of monthly calenders.
+/// Each date of the calender navigates to the daily screen.
+/// Also, each date has an attribute of event existence.
 abstract interface class MonthlyScreen {
-  /// Monthly screen consists of infinite set of monthly calenders.
-  /// Each date of the calender navigates to the daily screen.
-  /// Also, each date has an attribute of event existence.
-
   // <states>
-  /// The [centeredDate] serves as a reference point for the monthly screen, determining what index-0 represents.
-  Date get centeredDate;
+  /// The [initiallyCenteredDate] serves as a reference point for the monthly screen, determining what index-0 represents.
+  Date get initiallyCenteredDate;
   // </states>
 
   // <presenters>
-  /// the origin of the [index] is the month which contains the [centeredDate].
-  /// That means the [index] of the month which contains the [centeredDate] is `0`.
-  /// When [centeredDate] is 2022-02-01, the [index] of 2022-02 is `0`.
+  /// the origin of the [index] is the month which contains the [initiallyCenteredDate].
+  /// That means the [index] of the month which contains the [initiallyCenteredDate] is `0`.
+  /// When [initiallyCenteredDate] is 2022-02-01, the [index] of 2022-02 is `0`.
   /// the [index] of 2022-03 is `1`. the [index] of 2022-01 is `-1`.
   Future<Calender> getCalender(int index);
   // </presenters>
@@ -47,16 +46,17 @@ class Calender {
 // <mock>
 class MockMonthlyScreen implements MonthlyScreen {
   @override
-  final Date centeredDate;
+  final Date initiallyCenteredDate;
   final Random _random = Random();
 
-  MockMonthlyScreen(this.centeredDate);
+  MockMonthlyScreen(this.initiallyCenteredDate);
 
   @override
   Future<Calender> getCalender(int index) {
-    var firstDay = DateTime(centeredDate.year, centeredDate.month + index, 1);
-    var lastDay =
-        DateTime(centeredDate.year, centeredDate.month + index + 1, 0);
+    var firstDay = DateTime(
+        initiallyCenteredDate.year, initiallyCenteredDate.month + index, 1);
+    var lastDay = DateTime(
+        initiallyCenteredDate.year, initiallyCenteredDate.month + index + 1, 0);
     var firstWeekday = firstDay.weekday % 7; // make Sunday(7) to 0
     var events = List.generate(lastDay.day, (index) {
       switch (_random.nextInt(3)) {

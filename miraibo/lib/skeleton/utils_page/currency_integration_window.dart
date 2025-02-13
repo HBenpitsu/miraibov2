@@ -4,13 +4,12 @@ import 'package:miraibo/dto/general.dart';
 
 // <interface>
 
+/// CurrencyIntegrationWindow opens when the user wants to integrate a currency with another currency.
+/// When opening the window, the user should specify the currency to be replaced.
+/// The specified currency is stored in [replaceeId].
+/// Users can select a currency to replace the specified currency from the options.
+/// And then, users dispatch the integration process by tapping the integrate button.
 abstract interface class CurrencyIntegrationWindow {
-  /// CurrencyIntegrationWindow opens when the user wants to integrate a currency with another currency.
-  /// When opening the window, the user should specify the currency to be replaced.
-  /// The specified currency is stored in [replaceeId].
-  /// Users can select a currency to replace the specified currency from the options.
-  /// And then, users dispatch the integration process by tapping the integrate button.
-
   // <states>
   int get replaceeId;
   // </states>

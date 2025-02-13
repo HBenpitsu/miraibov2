@@ -4,13 +4,13 @@ import 'package:miraibo/dto/general.dart';
 
 // <interface>
 
-abstract interface class CategoryIntegrationWindow {
-  /// CategoryIntegrationWindow opens when the user wants to integrate a category with another category.
-  /// When opening the window, the user should specify the category to be replaced.
-  /// The specified category is stored in [replaceeId].
-  /// Users can select a category to replace the specified category from the options.
-  /// And then, users dispatch the integration process by tapping the integrate button.
+/// CategoryIntegrationWindow opens when the user wants to integrate a category with another category.
+/// When opening the window, the user should specify the category to be replaced.
+/// The specified category is stored in [replaceeId].
+/// Users can select a category to replace the specified category from the options.
+/// And then, users dispatch the integration process by tapping the integrate button.
 
+abstract interface class CategoryIntegrationWindow {
   // <states>
   int get replaceeId;
   // </states>

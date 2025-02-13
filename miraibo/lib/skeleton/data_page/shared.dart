@@ -3,29 +3,41 @@ import 'package:miraibo/dto/dto.dart';
 // following complex states are shared within the data page.
 
 // <ticket schemes>
-sealed class TicketScheme {
-  const TicketScheme();
+
+sealed class TemporaryTicketScheme {
+  const TemporaryTicketScheme();
 }
 
-class EstimationScheme extends TicketScheme {
-  final List<int> categoryIds;
-  final EstimationDisplayConfig displayConfig;
-  final int currencyId;
-  const EstimationScheme(this.categoryIds, this.displayConfig, this.currencyId);
-}
-
-class MonitorScheme extends TicketScheme {
+class TemporaryEstimationScheme extends TemporaryTicketScheme {
   final OpenPeriod period;
-  final List<int> categoryIds;
-  final MonitorDisplayConfig displayConfig;
-  final int currencyId;
-  const MonitorScheme(
-      this.categoryIds, this.period, this.displayConfig, this.currencyId);
+  final Currency currency;
+  final EstimationDisplayConfig displayConfig;
+  final List<Category> categories;
+
+  const TemporaryEstimationScheme(
+      {required this.period,
+      required this.currency,
+      required this.displayConfig,
+      required this.categories});
 }
 
-class TicketSchemeUnspecified extends TicketScheme {
-  const TicketSchemeUnspecified();
+class TemporaryMonitorScheme extends TemporaryTicketScheme {
+  final OpenPeriod period;
+  final Currency currency;
+  final MonitorDisplayConfig displayConfig;
+  final List<Category> categories;
+
+  const TemporaryMonitorScheme(
+      {required this.period,
+      required this.currency,
+      required this.displayConfig,
+      required this.categories});
 }
+
+class TemporaryTicketSchemeUnspecified extends TemporaryTicketScheme {
+  const TemporaryTicketSchemeUnspecified();
+}
+
 // </ticket schemes>
 
 // <chart schemes>
@@ -34,32 +46,42 @@ sealed class ChartScheme {
 }
 
 class PieChartScheme extends ChartScheme {
-  final int currencyId;
+  final Currency currency;
   final OpenPeriod analysisRange;
-  final List<int> categoryIds;
+  final List<Category> categories;
 
-  const PieChartScheme(this.currencyId, this.analysisRange, this.categoryIds);
+  const PieChartScheme(
+      {required this.currency,
+      required this.analysisRange,
+      required this.categories});
 }
 
 class SubtotalChartScheme extends ChartScheme {
-  final int currencyId;
+  final Currency currency;
   final ClosedPeriod viewportRange;
-  final List<int> categoryIds;
+  final List<Category> categories;
   final int intervalInDays;
 
-  const SubtotalChartScheme(this.currencyId, this.viewportRange,
-      this.categoryIds, this.intervalInDays);
+  const SubtotalChartScheme(
+      {required this.currency,
+      required this.viewportRange,
+      required this.categories,
+      required this.intervalInDays});
 }
 
 class AccumulationChartScheme extends ChartScheme {
-  final int currencyId;
+  final Currency currency;
   final OpenPeriod analysisRange;
   final ClosedPeriod viewportRange;
-  final List<int> categoryIds;
+  final List<Category> categories;
   final int intervalInDays;
 
-  const AccumulationChartScheme(this.currencyId, this.analysisRange,
-      this.viewportRange, this.categoryIds, this.intervalInDays);
+  const AccumulationChartScheme(
+      {required this.currency,
+      required this.analysisRange,
+      required this.viewportRange,
+      required this.categories,
+      required this.intervalInDays});
 }
 
 class ChartSchemeUnspecified extends ChartScheme {

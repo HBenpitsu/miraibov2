@@ -1,18 +1,17 @@
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
+/// receipt log edit window is shown when user wants to edit receipt log.
+///
+/// receipt log consists of following information:
+///
+/// - which category the receipt log belongs to
+/// - what the receipt log is
+/// - how much the receipt log costs
+/// - when the receipt log was created
+/// - whether the receipt log is confirmed
+///
 abstract interface class ReceiptLogEditWindow {
-  /// receipt log edit window is shown when user wants to edit receipt log.
-  ///
-  /// receipt log consists of following information:
-  ///
-  /// - which category the receipt log belongs to
-  /// - what the receipt log is
-  /// - how much the receipt log costs
-  /// - when the receipt log was created
-  /// - whether the receipt log is confirmed
-  ///
-
   // <state>
   int get targetLogId;
   // </state>
@@ -29,7 +28,7 @@ abstract interface class ReceiptLogEditWindow {
   // here, we do not need default currency, because original receipt log already has currency.
 
   /// get original receipt log. original configuration should be supplied when users editing it.
-  Future<RawReceiptLog> getOriginalReceiptLog();
+  Future<ReceiptLogScheme> getOriginalReceiptLog();
   // </presenters>
 
   // <controllers>
@@ -45,7 +44,7 @@ abstract interface class ReceiptLogEditWindow {
 class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
   @override
   final int targetLogId;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final List<Ticket> tickets;
 
   static const List<Currency> currencyList = [
@@ -71,14 +70,14 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
   }
 
   @override
-  Future<RawReceiptLog> getOriginalReceiptLog() {
+  Future<ReceiptLogScheme> getOriginalReceiptLog() {
     var today = DateTime.now();
-    return Future.value(RawReceiptLog(
+    return Future.value(ReceiptLogScheme(
       id: targetLogId,
       category: categoryList[0],
       date: Date(today.year, today.month, today.day),
       price:
-          const PriceInfo(amount: 1000, currencyId: 0, currencySymbol: 'JPY'),
+          const PriceConfig(amount: 1000, currencyId: 0, currencySymbol: 'JPY'),
       description: 'original description of the receipt log',
       confirmed: false,
     ));

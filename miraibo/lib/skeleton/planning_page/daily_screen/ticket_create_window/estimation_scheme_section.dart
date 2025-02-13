@@ -3,17 +3,16 @@ import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
+/// EstimationSchemeSection is a section to create an estimation scheme.
+/// An estimation scheme consists of the following information:
+///
+/// - which categories should be counted
+/// - what period should be counted
+/// - how to display the estimation
+///    - which display config does the ticket follow
+///    - which currency does the ticket use
+///
 abstract interface class EstimationSchemeSection {
-  /// EstimationSchemeSection is a section to create an estimation scheme.
-  /// An estimation scheme consists of the following information:
-  ///
-  /// - which categories should be counted
-  /// - what period should be counted
-  /// - how to display the estimation
-  ///    - which display config does the ticket follow
-  ///    - which currency does the ticket use
-  ///
-
   // <presenters>
   /// categories counted should be specified.
   /// all of categories are shown as options.
@@ -37,7 +36,7 @@ abstract interface class EstimationSchemeSection {
 // <mock>
 class MockEstimationSchemeSection implements EstimationSchemeSection {
   final List<Ticket> tickets;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final Random random = Random();
 
   static const List<Currency> currencyList = [

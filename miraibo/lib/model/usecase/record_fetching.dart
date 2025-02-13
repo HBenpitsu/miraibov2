@@ -8,7 +8,7 @@ import 'package:miraibo/dto/dto.dart';
 /// For example, when you want to fetch 5 records from the 3rd record,
 /// you should call this function with limitOfRecords=5 and skipFirstRecords=2.
 /// {@endtemplate}
-Future<RawReceiptLog> fetchLoggedReceiptRecords(
+Future<ReceiptLogScheme> fetchLoggedReceiptRecords(
     int limitOfRecords, int skipFirstRecords) async {
   throw UnimplementedError();
 }

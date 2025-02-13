@@ -2,10 +2,9 @@ import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/main_page/receipt_log_edit_window.dart';
 
 // <interface>
+/// receipt log confirmation window is shown when a unconfirmed receipt log is tapped.
+/// The window shows the receipt log and the buttons to confirm/edit the receipt log.
 abstract interface class ReceiptLogConfirmationWindow {
-  /// receipt log confirmation window is shown when a unconfirmed receipt log is tapped.
-  /// The window shows the receipt log and the buttons to confirm/edit the receipt log.
-
   // <states>
   int get targetReceiptLogId;
   // </states>
@@ -31,7 +30,7 @@ class MockReceiptLogConfirmationWindow implements ReceiptLogConfirmationWindow {
   @override
   final int targetReceiptLogId;
   final List<Ticket> tickets;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   MockReceiptLogConfirmationWindow(
       this.targetReceiptLogId, this.tickets, this.ticketsStream);
 

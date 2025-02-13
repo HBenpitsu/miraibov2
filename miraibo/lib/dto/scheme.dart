@@ -2,15 +2,15 @@ import 'package:miraibo/dto/general.dart';
 import 'package:miraibo/dto/schedule.dart';
 import 'package:miraibo/dto/enumration.dart';
 
-class RawReceiptLog {
+class ReceiptLogScheme {
   final int id; // only id is the clue to identify the entity
   final Date date;
-  final PriceInfo price;
+  final PriceConfig price;
   final String description;
   final Category category;
   final bool confirmed;
 
-  const RawReceiptLog(
+  const ReceiptLogScheme(
       {required this.id,
       required this.date,
       required this.price,
@@ -19,14 +19,14 @@ class RawReceiptLog {
       required this.confirmed});
 }
 
-class RawPlan {
+class PlanScheme {
   final int id; // only id is the clue to identify the entity
   final Schedule schedule;
-  final PriceInfo price;
+  final PriceConfig price;
   final String description;
   final Category category;
 
-  const RawPlan(
+  const PlanScheme(
       {required this.id,
       required this.schedule,
       required this.price,
@@ -34,32 +34,52 @@ class RawPlan {
       required this.category});
 }
 
-class RawEstimationScheme {
+class EstimationScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
-  final PriceInfo price;
+  final CurrencyConfig currency;
   final EstimationDisplayConfig displayConfig;
   final List<Category> categories;
 
-  const RawEstimationScheme(
+  const EstimationScheme(
       {required this.id,
       required this.period,
-      required this.price,
+      required this.currency,
       required this.displayConfig,
       required this.categories});
 }
 
-class RawMonitorScheme {
+class MonitorScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
-  final Price price;
+  final CurrencyConfig currency;
   final MonitorDisplayConfig displayConfig;
   final List<Category> categories;
 
-  const RawMonitorScheme(
+  const MonitorScheme(
       {required this.id,
       required this.period,
-      required this.price,
+      required this.currency,
       required this.displayConfig,
       required this.categories});
+}
+
+class CurrencyConfig {
+  final int id;
+  final String symbol;
+  final double ratio;
+
+  const CurrencyConfig(
+      {required this.id, required this.symbol, required this.ratio});
+}
+
+class PriceConfig {
+  final int amount;
+  final int currencyId;
+  final String currencySymbol;
+
+  const PriceConfig(
+      {required this.amount,
+      required this.currencyId,
+      required this.currencySymbol});
 }

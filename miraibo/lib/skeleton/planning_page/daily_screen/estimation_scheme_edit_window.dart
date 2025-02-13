@@ -1,18 +1,17 @@
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
+/// estimation scheme edit window is shown when user wants to edit estimation scheme.
+///
+/// estimation scheme consists of following information:
+///
+/// - which categories should be counted
+/// - what period should be counted
+/// - how to display estimation
+///    - which display config does the ticket follow
+///    - which currency does the ticket use
+///
 abstract interface class EstimationSchemeEditWindow {
-  /// estimation scheme edit window is shown when user wants to edit estimation scheme.
-  ///
-  /// estimation scheme consists of following information:
-  ///
-  /// - which categories should be counted
-  /// - what period should be counted
-  /// - how to display estimation
-  ///    - which display config does the ticket follow
-  ///    - which currency does the ticket use
-  ///
-
   // <states>
   int get targetSchemeId;
   // </states>
@@ -29,7 +28,7 @@ abstract interface class EstimationSchemeEditWindow {
   // here, we do not need default currency, because original estimation scheme already has currency.
 
   /// get original estimation scheme. original configuration should be supplied when users editing it.
-  Future<RawEstimationScheme> getOriginalEstimationScheme();
+  Future<EstimationScheme> getOriginalEstimationScheme();
   // </presenters>
 
   // <controllers>
@@ -45,7 +44,7 @@ abstract interface class EstimationSchemeEditWindow {
 class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
   @override
   final int targetSchemeId;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final List<Ticket> tickets;
 
   static const List<Currency> currencyList = [
@@ -72,18 +71,17 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
   }
 
   @override
-  Future<RawEstimationScheme> getOriginalEstimationScheme() {
+  Future<EstimationScheme> getOriginalEstimationScheme() {
     var today = DateTime.now();
     var twoWeeksLater = today.add(const Duration(days: 14));
     var twoWeeksAgo = today.subtract(const Duration(days: 14));
-    return Future.value(RawEstimationScheme(
+    return Future.value(EstimationScheme(
       id: targetSchemeId,
       period: OpenPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
       ),
-      price:
-          const PriceInfo(amount: 1000, currencyId: 0, currencySymbol: 'JPY'),
+      currency: CurrencyConfig(id: 0, symbol: currencyList[0].symbol, ratio: 1),
       displayConfig: EstimationDisplayConfig.perWeek,
       categories: categoryList.sublist(0, 5),
     ));

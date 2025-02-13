@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:miraibo/dto/general.dart';
+import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/utils_page/currency_integration_window.dart';
 import 'package:miraibo/skeleton/utils_page/category_integration_window.dart';
 
 // <interface>
+/// Utils page have two sections: category section and currency section.
+/// Each section is exists to edit categories and currencies.
 abstract interface class UtilsPage {
-  /// Utils page have two sections: category section and currency section.
-  /// Each section is exists to edit categories and currencies.
-
   // <navigators>
   CurrencyIntegrationWindow openCurrencyIntegrationWindow(int replaceeId);
   CategoryIntegrationWindow openCategoryIntegrationWindow(int replaceeId);
@@ -48,7 +47,7 @@ typedef CategorySection = List<Category>;
 
 class CurrencySection {
   /// List of currency id, currency name, and currency ratio
-  final Stream<List<CurrencyInfo>> currencies;
+  final Stream<List<CurrencyConfig>> currencies;
   final Stream<int> defaultId;
   const CurrencySection({required this.currencies, required this.defaultId});
 }
@@ -90,7 +89,7 @@ class MockUtilsPage implements UtilsPage {
   CurrencySection currencySection() {
     return CurrencySection(
         currencies: _currencyStream.stream.map((data) => data.entries
-            .map((entry) => CurrencyInfo(
+            .map((entry) => CurrencyConfig(
                 id: entry.key, symbol: entry.value.$1, ratio: entry.value.$2))
             .toList()),
         defaultId: _defaultCurrencyStream.stream);

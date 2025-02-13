@@ -9,32 +9,32 @@ import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
 
 // <interface>
+/// Daily screen consists of infinite set of tickets.
+/// But, the tickets are grouped by the date.
+///
+/// Each ticket (Monitor Ticket, Estimation Ticket, Plan Ticket or Log Ticket)
+/// navigates to the ticket edit window.
+///
+/// Also, following components are also included:
+/// - A button to create a new ticket.
+/// - A label to show which date is centered and to navigate to Monthly Screen.
+///
+/// The daily screen is scrollable horizontally. So, the centered date can be changed.
+/// It should be notified to the [DailyScreen] through [setOffset] to update the state and the Label.
+
 abstract interface class DailyScreen {
-  /// Daily screen consists of infinite set of tickets.
-  /// But, the tickets are grouped by the date.
-  ///
-  /// Each ticket (Monitor Ticket, Estimation Ticket, Plan Ticket or Log Ticket)
-  /// navigates to the ticket edit window.
-  ///
-  /// Also, following components are also included:
-  /// - A button to create a new ticket.
-  /// - A label to show which date is centered and to navigate to Monthly Screen.
-  ///
-  /// The daily screen is scrollable horizontally. So, the centered date can be changed.
-  /// It should be notified to the [DailyScreen] through [setOffset] to update the state and the Label.
-
   // <states>
-  /// The [centeredDate] serves as a reference point for the daily screen, determining what index-0 represents.
+  /// The [initiallyCenteredDate] serves as a reference point for the daily screen, determining what index-0 represents.
   /// shownDate should not be mutated during the lifecycle of the daily screen.
-  Date get centeredDate;
+  Date get initiallyCenteredDate;
 
-  /// the offset is a offset of currently centered date from the [centeredDate].
+  /// the offset is a offset of currently centered date from the [initiallyCenteredDate].
   abstract int offset;
   // </states>
 
   // <presenters>
-  /// The origin of the [index] is [centeredDate].
-  /// When [centeredDate] is 2022-02-01, the [index] of 2022-02-01 is `0`,
+  /// The origin of the [index] is [initiallyCenteredDate].
+  /// When [initiallyCenteredDate] is 2022-02-01, the [index] of 2022-02-01 is `0`,
   /// the [index] of 2022-02-02 is `1`, the [index] of 2022-01-31 is `-1`.
   Stream<List<Ticket>> getTicketsOn(int index);
 
@@ -56,7 +56,7 @@ abstract interface class DailyScreen {
   // </navigators>
 
   // <actions>
-  /// the offset is a offset of currently centered date from the [centeredDate].
+  /// the offset is a offset of currently centered date from the [initiallyCenteredDate].
   /// This should be updated properly to show proper date on `Label`, `ticketCreateWindow`, and `ticketEditWindow`.
   Future<void> setOffset(int offset);
   // </actions>
@@ -67,7 +67,7 @@ abstract interface class DailyScreen {
 // <mock>
 class MockDailyScreen implements DailyScreen {
   @override
-  late final Date centeredDate;
+  late final Date initiallyCenteredDate;
 
   @override
   int offset = 0;
@@ -76,8 +76,8 @@ class MockDailyScreen implements DailyScreen {
   late final List<Ticket> tickets;
   final StreamController<List<Ticket>> ticketStreams = StreamController();
   MockDailyScreen(int year, int month, int day) {
-    centeredDate = Date(year, month, day);
-    _labelStream.add(centeredDate);
+    initiallyCenteredDate = Date(year, month, day);
+    _labelStream.add(initiallyCenteredDate);
 
     // <make mock tickets>
 
@@ -100,13 +100,13 @@ class MockDailyScreen implements DailyScreen {
           id: 0,
           period: startlessPeriod,
           price: price,
-          displayConfig: MonitorDisplayConfig.mean,
+          displayConfig: MonitorDisplayConfig.meanInDays,
           categoryNames: ['list of categories']),
       MonitorTicket(
           id: 1,
           period: endlessPeriod,
           price: price,
-          displayConfig: MonitorDisplayConfig.quartileMean,
+          displayConfig: MonitorDisplayConfig.quartileMeanInDays,
           categoryNames: ['category1', 'category2']),
       MonitorTicket(
           id: 2,
@@ -254,8 +254,8 @@ class MockDailyScreen implements DailyScreen {
 
   @override
   MonthlyScreen navigateToMonthlyScreen() {
-    var currentDate = DateTime(
-        centeredDate.year, centeredDate.month, centeredDate.day + offset);
+    var currentDate = DateTime(initiallyCenteredDate.year,
+        initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
     return MockMonthlyScreen(
         Date(currentDate.year, currentDate.month, currentDate.day));
   }
@@ -292,10 +292,10 @@ class MockDailyScreen implements DailyScreen {
   @override
   Future<void> setOffset(int offset) async {
     this.offset = offset;
-    var currentDate = DateTime(
-        centeredDate.year, centeredDate.month, centeredDate.day + offset);
+    var centeredDate = DateTime(initiallyCenteredDate.year,
+        initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
     _labelStream
-        .add(Date(currentDate.year, currentDate.month, currentDate.day));
+        .add(Date(centeredDate.year, centeredDate.month, centeredDate.day));
   }
 }
 // </mock>

@@ -2,16 +2,16 @@ import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-abstract interface class PlanSection {
-  /// PlanSection is a section to create a plan.
-  /// A plan consists of following information:
-  ///
-  /// - which category the plan belongs to
-  /// - what the plan is
-  /// - how much the plan will cost
-  /// - when the plan will be executed
-  ///
+/// PlanSection is a section to create a plan.
+/// A plan consists of following information:
+///
+/// - which category the plan belongs to
+/// - what the plan is
+/// - how much the plan will cost
+/// - when the plan will be executed
+///
 
+abstract interface class PlanSection {
   // <presenters>
   /// category to which the plan belongs should be specified.
   /// all of categories are shown as options.
@@ -35,7 +35,7 @@ abstract interface class PlanSection {
 // <mock>
 class MockPlanSection implements PlanSection {
   final List<Ticket> tickets;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final Random random = Random();
 
   static const List<Currency> currencyList = [

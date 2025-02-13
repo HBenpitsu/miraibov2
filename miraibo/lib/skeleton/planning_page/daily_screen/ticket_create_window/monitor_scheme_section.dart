@@ -2,17 +2,17 @@ import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-abstract interface class MonitorSchemeSection {
-  /// MonitorSchemeSection is a section to create a monitor scheme.
-  /// A monitor scheme consists of the following information:
-  ///
-  /// - which categories should be counted
-  /// - what period should be counted
-  /// - how to display the monitor
-  ///    - which display config does the ticket follow
-  ///    - which currency does the ticket use
-  ///
+/// MonitorSchemeSection is a section to create a monitor scheme.
+/// A monitor scheme consists of the following information:
+///
+/// - which categories should be counted
+/// - what period should be counted
+/// - how to display the monitor
+///    - which display config does the ticket follow
+///    - which currency does the ticket use
+///
 
+abstract interface class MonitorSchemeSection {
   // <presenters>
   /// categories counted should be specified.
   /// all of categories are shown as options.
@@ -36,7 +36,7 @@ abstract interface class MonitorSchemeSection {
 // <mock>
 class MockMonitorSchemeSection implements MonitorSchemeSection {
   final List<Ticket> tickets;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final Random random = Random();
 
   static const List<Currency> currencyList = [

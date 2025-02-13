@@ -13,8 +13,6 @@ sealed class Ticket {
 
 mixin ReceiptLogAndMonitorTicket on Ticket {}
 
-mixin MonitorAndEstimationTicket on Ticket {}
-
 class ReceiptLogTicket extends Ticket with ReceiptLogAndMonitorTicket {
   final int id; // only id is the clue to identify the entity
   final Date date;
@@ -47,7 +45,7 @@ class PlanTicket extends Ticket {
       required this.categoryName});
 }
 
-class EstimationTicket extends Ticket with MonitorAndEstimationTicket {
+class EstimationTicket extends Ticket {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Price price;
@@ -62,8 +60,7 @@ class EstimationTicket extends Ticket with MonitorAndEstimationTicket {
       required this.categoryNames});
 }
 
-class MonitorTicket extends Ticket
-    with MonitorAndEstimationTicket, ReceiptLogAndMonitorTicket {
+class MonitorTicket extends Ticket with ReceiptLogAndMonitorTicket {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Price price;

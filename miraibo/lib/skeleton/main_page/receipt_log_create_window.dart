@@ -3,17 +3,17 @@ import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
-abstract interface class ReceiptLogCreateWindow {
-  /// ReceiptLogSection is a section to create a receipt log.
-  /// A receipt log consists of the following information:
-  ///
-  /// - which category the receipt log belongs to
-  /// - what the receipt log is
-  /// - how much the receipt log costs
-  /// - when the receipt log was created
-  /// - whether the receipt log is confirmed
-  ///
+/// ReceiptLogSection is a section to create a receipt log.
+/// A receipt log consists of the following information:
+///
+/// - which category the receipt log belongs to
+/// - what the receipt log is
+/// - how much the receipt log costs
+/// - when the receipt log was created
+/// - whether the receipt log is confirmed
+///
 
+abstract interface class ReceiptLogCreateWindow {
   // <presenters>
   /// category to which the receipt log belongs should be specified.
   /// all of categories are shown as options.
@@ -37,7 +37,7 @@ abstract interface class ReceiptLogCreateWindow {
 // <mock>
 class MockReceiptLogCreateWindow implements ReceiptLogCreateWindow {
   final List<Ticket> tickets;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final Random random = Random();
 
   static const List<Currency> currencyList = [

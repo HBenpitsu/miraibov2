@@ -1,17 +1,16 @@
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
+/// monitor scheme edit window is shown when user wants to edit monitor scheme.
+///
+/// monitor scheme consists of following information:
+///
+/// - which categories should be counted
+/// - what period should be counted
+/// - how to display monitor
+///   - which display config does the ticket follow
+///   - which currency does the ticket use
 abstract interface class MonitorSchemeEditWindow {
-  /// monitor scheme edit window is shown when user wants to edit monitor scheme.
-  ///
-  /// monitor scheme consists of following information:
-  ///
-  /// - which categories should be counted
-  /// - what period should be counted
-  /// - how to display monitor
-  ///   - which display config does the ticket follow
-  ///   - which currency does the ticket use
-
   // <state>
   int get targetTicketId;
   // </state>
@@ -28,7 +27,7 @@ abstract interface class MonitorSchemeEditWindow {
   // here, we do not need default currency, because original monitor scheme already has currency.
 
   /// get original monitor scheme. original configuration should be supplied when users editing it.
-  Future<RawMonitorScheme> getOriginalMonitorScheme();
+  Future<MonitorScheme> getOriginalMonitorScheme();
   // </presenters>
 
   // <controllers>
@@ -44,7 +43,7 @@ abstract interface class MonitorSchemeEditWindow {
 class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
   @override
   final int targetTicketId;
-  final Sink ticketsStream;
+  final Sink<List<Ticket>> ticketsStream;
   final List<Ticket> tickets;
 
   static const List<Currency> currencyList = [
@@ -71,18 +70,18 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
   }
 
   @override
-  Future<RawMonitorScheme> getOriginalMonitorScheme() {
+  Future<MonitorScheme> getOriginalMonitorScheme() {
     var today = DateTime.now();
     var twoWeeksLater = today.add(const Duration(days: 14));
     var twoWeeksAgo = today.subtract(const Duration(days: 14));
-    return Future.value(RawMonitorScheme(
+    return Future.value(MonitorScheme(
       id: targetTicketId,
       period: OpenPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
       ),
-      price: Price(amount: 1000, symbol: currencyList[0].symbol),
-      displayConfig: MonitorDisplayConfig.mean,
+      currency: CurrencyConfig(id: 0, symbol: currencyList[0].symbol, ratio: 1),
+      displayConfig: MonitorDisplayConfig.meanInDays,
       categories: categoryList.sublist(0, 5),
     ));
   }

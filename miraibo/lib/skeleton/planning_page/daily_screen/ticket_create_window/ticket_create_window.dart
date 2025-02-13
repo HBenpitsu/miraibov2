@@ -6,18 +6,17 @@ import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/plan_section.dart';
 
 // <interface>
+/// ticket create window is shown when user wants to create a new ticket.
+///
+/// The window consists of the following sections:
+///
+/// - Plan Section
+/// - Estimation Scheme Section
+/// - Monitor Scheme Section
+/// - Receipt Log Section
+///
+/// Each sections are shown as tabs.
 abstract interface class TicketCreateWindow {
-  /// ticket create window is shown when user wants to create a new ticket.
-  ///
-  /// The window consists of the following sections:
-  ///
-  /// - Plan Section
-  /// - Estimation Scheme Section
-  /// - Monitor Scheme Section
-  /// - Receipt Log Section
-  ///
-  /// Each sections are shown as tabs.
-
   // <naviagtors>
   PlanSection get planSection;
   EstimationSchemeSection get estimationSchemeSection;
@@ -39,7 +38,8 @@ class MockTicketCreateWindow implements TicketCreateWindow {
   @override
   late final ReceiptLogSection receiptLogSection;
 
-  MockTicketCreateWindow(List<Ticket> tickets, Sink ticketsStream) {
+  MockTicketCreateWindow(
+      List<Ticket> tickets, Sink<List<Ticket>> ticketsStream) {
     planSection = MockPlanSection(tickets, ticketsStream);
     estimationSchemeSection =
         MockEstimationSchemeSection(tickets, ticketsStream);
