@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:miraibo/dto/general.dart';
+import 'package:miraibo/dto/dto.dart';
 
 // <interface>
 
@@ -25,7 +25,12 @@ abstract interface class CurrencyIntegrationWindow {
   /// integrates a currency whose currency is [replacerId] with the currency of [replaceeId].
   Future<void> integrateCurrency(int replacerId);
   // </controllers>
+
+  // <navigators>
+
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 

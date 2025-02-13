@@ -1,4 +1,6 @@
 import 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
+export 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen/daily_screen.dart';
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
@@ -9,8 +11,10 @@ abstract interface class PlanningPage {
   /// show initial screen.
   /// the initial screen is the monthly screen centered on today's month.
   MonthlyScreen showInitialScreen();
-  // </navigators>
+
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 // </interface>
@@ -19,8 +23,8 @@ abstract interface class PlanningPage {
 class MockPlanningPage implements PlanningPage {
   @override
   MonthlyScreen showInitialScreen() {
-    var now = DateTime.now();
-    var today = Date(now.year, now.month, now.day);
+    final now = DateTime.now();
+    final today = Date(now.year, now.month, now.day);
     return MockMonthlyScreen(today);
   }
 

@@ -41,7 +41,11 @@ abstract interface class EstimationSchemeEditWindow {
   /// [targetSchemeId] is used to identify the estimation scheme to be deleted.
   Future<void> deleteEstimationScheme();
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -79,9 +83,9 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
 
   @override
   Future<EstimationScheme> getOriginalEstimationScheme() {
-    var today = DateTime.now();
-    var twoWeeksLater = today.add(const Duration(days: 14));
-    var twoWeeksAgo = today.subtract(const Duration(days: 14));
+    final today = DateTime.now();
+    final twoWeeksLater = today.add(const Duration(days: 14));
+    final twoWeeksAgo = today.subtract(const Duration(days: 14));
     return Future.value(EstimationScheme(
       id: targetSchemeId,
       period: OpenPeriod(
@@ -99,7 +103,7 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
       EstimationDisplayConfig displayConfig, int currencyId) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
-      var ticket = tickets.removeAt(0);
+      final ticket = tickets.removeAt(0);
       if (ticket is! EstimationTicket) {
         newTickets.add(ticket);
         continue;

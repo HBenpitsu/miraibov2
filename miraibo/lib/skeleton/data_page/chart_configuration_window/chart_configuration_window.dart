@@ -1,7 +1,10 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/accumulation_chart_section.dart';
+export 'package:miraibo/skeleton/data_page/chart_configuration_window/accumulation_chart_section.dart';
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/pie_chart_section.dart';
+export 'package:miraibo/skeleton/data_page/chart_configuration_window/pie_chart_section.dart';
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/subtotal_chart_section.dart';
+export 'package:miraibo/skeleton/data_page/chart_configuration_window/subtotal_chart_section.dart';
 
 // <interface>
 /// There are three types of charts: accumulation, pie, and subtotal.
@@ -27,8 +30,10 @@ abstract interface class ChartConfigurationWindow {
 
   /// A tab of the window.
   SubtotalChartSection get subtotalChartSection;
-  // </navigators>
+
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 

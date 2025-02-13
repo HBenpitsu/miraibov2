@@ -1,10 +1,15 @@
 import 'dart:async';
 
 import 'package:miraibo/skeleton/planning_page/daily_screen/estimation_scheme_edit_window.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen/estimation_scheme_edit_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/monitor_scheme_edit_window.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen/monitor_scheme_edit_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/receipt_log_edit_window.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen/receipt_log_edit_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/plan_edit_window.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen/plan_edit_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/ticket_create_window.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/ticket_create_window.dart';
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
 
@@ -66,6 +71,9 @@ abstract interface class DailyScreen {
   // button
   /// When the ticket create button is tapped, open the ticket create window.
   TicketCreateWindow openTicketCreateWindow();
+
+  /// should be called when this skeleton is no longer needed.
+  void dispose();
   // </navigators>
 
   // <actions>
@@ -73,7 +81,6 @@ abstract interface class DailyScreen {
   /// This should be updated properly to show proper date on `Label`, `ticketCreateWindow`, and `ticketEditWindow`.
   Future<void> setOffset(int offset);
   // </actions>
-  void dispose();
 }
 
 // </interface>
@@ -95,19 +102,19 @@ class MockDailyScreen implements DailyScreen {
     initiallyCenteredDate = Date(year, month, day);
 
     // <prepare parameters>
-    var today = DateTime(year, month, day);
-    var twoMonthAgo = today.subtract(const Duration(days: 2 * 31));
-    var twoMonthLater = today.add(const Duration(days: 2 * 31));
-    var startlessPeriod = OpenPeriod(
+    final today = DateTime(year, month, day);
+    final twoMonthAgo = today.subtract(const Duration(days: 2 * 31));
+    final twoMonthLater = today.add(const Duration(days: 2 * 31));
+    final startlessPeriod = OpenPeriod(
         begins: null,
         ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
-    var endlessPeriod = OpenPeriod(
+    final endlessPeriod = OpenPeriod(
         begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
         ends: null);
-    var closedPeriod = OpenPeriod(
+    final closedPeriod = OpenPeriod(
         begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
         ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
-    var price = const Price(amount: 1000, symbol: 'JPY');
+    const price = Price(amount: 1000, symbol: 'JPY');
     // </prepare parameters>
 
     // <make mock tickets>
@@ -255,19 +262,19 @@ class MockDailyScreen implements DailyScreen {
     // </make mock tickets>
 
     // <initialize streams>
-    var labelStreamController = StreamController<Date>();
+    final labelStreamController = StreamController<Date>();
     labelStream = labelStreamController.stream;
     labelSink = labelStreamController.sink;
     labelSink.add(initiallyCenteredDate);
-    var ticketStreamController = StreamController<List<Ticket>>();
+    final ticketStreamController = StreamController<List<Ticket>>.broadcast();
     ticketStream = ticketStreamController.stream;
     ticketSink = ticketStreamController.sink;
-    ticketSink.add(tickets);
     // </initialize streams>
   }
 
   @override
   Stream<List<Ticket>> getTicketsOn(int index) {
+    ticketSink.add(tickets);
     return ticketStream;
   }
 
@@ -278,7 +285,7 @@ class MockDailyScreen implements DailyScreen {
 
   @override
   MonthlyScreen navigateToMonthlyScreen() {
-    var currentDate = DateTime(initiallyCenteredDate.year,
+    final currentDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
     return MockMonthlyScreen(
         Date(currentDate.year, currentDate.month, currentDate.day));
@@ -313,7 +320,7 @@ class MockDailyScreen implements DailyScreen {
   @override
   Future<void> setOffset(int offset) async {
     this.offset = offset;
-    var centeredDate = DateTime(initiallyCenteredDate.year,
+    final centeredDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
     labelSink
         .add(Date(centeredDate.year, centeredDate.month, centeredDate.day));

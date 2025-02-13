@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/utils_page/currency_integration_window.dart';
+export 'package:miraibo/skeleton/utils_page/currency_integration_window.dart';
 import 'package:miraibo/skeleton/utils_page/category_integration_window.dart';
+export 'package:miraibo/skeleton/utils_page/category_integration_window.dart';
 
 // <interface>
 /// Utils page have two sections: category section and currency section.
@@ -42,9 +44,10 @@ abstract interface class UtilsPage {
 
   /// to integrate a category with another category, open category integration window.
   CategoryIntegrationWindow openCategoryIntegrationWindow(int replaceeId);
-  // </navigators>
 
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 // </interface>
@@ -75,10 +78,10 @@ class MockUtilsPage implements UtilsPage {
     defaultCurrency = 0;
 
     // <initialize stream>
-    var categoryController = StreamController<MockCategoryMap>();
+    final categoryController = StreamController<MockCategoryMap>();
     categoryStream = categoryController.stream;
     categorySink = categoryController.sink;
-    var currencyController = StreamController<MockCurrencyMap>();
+    final currencyController = StreamController<MockCurrencyMap>();
     currencyStream = currencyController.stream;
     currencySink = currencyController.sink;
     // </initialize stream>

@@ -34,7 +34,11 @@ abstract interface class ReceiptLogCreateWindow {
   Future<void> createReceiptLog(int categoryId, String description, Price price,
       Date date, bool confirmed);
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -74,7 +78,7 @@ class MockReceiptLogCreateWindow implements ReceiptLogCreateWindow {
   @override
   Future<void> createReceiptLog(int categoryId, String description, Price price,
       Date date, bool confirmed) async {
-    var id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
+    final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(ReceiptLogTicket(
         id: id,
         date: date,

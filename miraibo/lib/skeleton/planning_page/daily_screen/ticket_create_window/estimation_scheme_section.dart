@@ -31,7 +31,11 @@ abstract interface class EstimationSchemeSection {
   Future<void> createEstimationScheme(List<int> categoryIds, OpenPeriod period,
       EstimationDisplayConfig displayConfig, int currencyId);
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -71,7 +75,7 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
   @override
   Future<void> createEstimationScheme(List<int> categoryIds, OpenPeriod period,
       EstimationDisplayConfig displayConfig, int currencyId) async {
-    var id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
+    final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(EstimationTicket(
         id: id,
         period: period,

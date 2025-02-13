@@ -43,7 +43,11 @@ abstract interface class ReceiptLogEditWindow {
   /// [targetLogId] is used to identify the receipt log to be deleted.
   Future<void> deleteReceiptLog();
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -78,7 +82,7 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
 
   @override
   Future<ReceiptLogScheme> getOriginalReceiptLog() {
-    var today = DateTime.now();
+    final today = DateTime.now();
     return Future.value(ReceiptLogScheme(
       id: targetLogId,
       category: categoryList[0],
@@ -95,7 +99,7 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
       Date date, bool confirmed) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
-      var ticket = tickets.removeAt(0);
+      final ticket = tickets.removeAt(0);
       if (ticket is! ReceiptLogTicket) {
         newTickets.add(ticket);
         continue;

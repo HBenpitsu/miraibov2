@@ -40,7 +40,11 @@ abstract interface class MonitorSchemeEditWindow {
   /// [targetTicketId] is used to identify the monitor scheme to be deleted.
   Future<void> deleteMonitorScheme();
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -76,9 +80,9 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
 
   @override
   Future<MonitorScheme> getOriginalMonitorScheme() {
-    var today = DateTime.now();
-    var twoWeeksLater = today.add(const Duration(days: 14));
-    var twoWeeksAgo = today.subtract(const Duration(days: 14));
+    final today = DateTime.now();
+    final twoWeeksLater = today.add(const Duration(days: 14));
+    final twoWeeksAgo = today.subtract(const Duration(days: 14));
     return Future.value(MonitorScheme(
       id: targetTicketId,
       period: OpenPeriod(
@@ -96,7 +100,7 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
       MonitorDisplayConfig displayConfig, int currencyId) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
-      var ticket = tickets.removeAt(0);
+      final ticket = tickets.removeAt(0);
       if (ticket is! MonitorTicket) {
         newTickets.add(ticket);
         continue;

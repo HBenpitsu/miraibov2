@@ -40,7 +40,11 @@ abstract interface class PlanEditWindow {
   /// [targetPlanId] is used to identify the plan to be deleted.
   Future<void> deletePlan();
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -75,7 +79,7 @@ class MockPlanEditWindow implements PlanEditWindow {
 
   @override
   Future<PlanScheme> getOriginalPlan() {
-    var today = DateTime.now();
+    final today = DateTime.now();
     return Future.value(PlanScheme(
         id: targetPlanId,
         category: categoryList[0],
@@ -93,7 +97,7 @@ class MockPlanEditWindow implements PlanEditWindow {
       Schedule schedule) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
-      var ticket = tickets.removeAt(0);
+      final ticket = tickets.removeAt(0);
       if (ticket is! PlanTicket) {
         newTickets.add(ticket);
         continue;

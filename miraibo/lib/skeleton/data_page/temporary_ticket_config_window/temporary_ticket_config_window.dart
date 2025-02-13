@@ -1,6 +1,8 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
-import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/estimation_scheme_section.dart';
-import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/monitor_scheme_section.dart';
+import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_estimation_scheme_section.dart';
+export 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_estimation_scheme_section.dart';
+import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_monitor_scheme_section.dart';
+export 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_monitor_scheme_section.dart';
 
 // <interface>
 /// There are two types of instances of temporary tickets: estimation and monitor.
@@ -21,12 +23,14 @@ abstract interface class TemporaryTicketConfigWindow {
 
   // <navigators>
   /// A tab of the window.
-  EstimationSchemeSection get estimationSchemeSection;
+  TemporaryEstimationSchemeSection get estimationSchemeSection;
 
   /// A tab of the window.
-  MonitorSchemeSection get monitorSchemeSection;
-  // </navigators>
+  TemporaryMonitorSchemeSection get monitorSchemeSection;
+
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 // </interface>
@@ -40,15 +44,15 @@ class MockTemporaryTicketConfigWindow implements TemporaryTicketConfigWindow {
   set currentScheme(TemporaryTicketScheme value) => schemeSetter(value);
 
   @override
-  late final EstimationSchemeSection estimationSchemeSection;
+  late final TemporaryEstimationSchemeSection estimationSchemeSection;
   @override
-  late final MonitorSchemeSection monitorSchemeSection;
+  late final TemporaryMonitorSchemeSection monitorSchemeSection;
 
   MockTemporaryTicketConfigWindow(this.initialScheme, this.schemeSetter) {
     estimationSchemeSection =
-        MockEstimationSchemeSection(initialScheme, schemeSetter);
+        MockTemporaryEstimationSchemeSection(initialScheme, schemeSetter);
     monitorSchemeSection =
-        MockMonitorSchemeSection(initialScheme, schemeSetter);
+        MockTemporaryMonitorSchemeSection(initialScheme, schemeSetter);
   }
 
   @override

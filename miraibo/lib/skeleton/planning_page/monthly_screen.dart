@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:math' show Random;
 
-import 'package:miraibo/dto/enumration.dart';
-import 'package:miraibo/dto/general.dart';
+import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/daily_screen.dart';
 
 // <interface>
@@ -20,14 +19,16 @@ abstract interface class MonthlyScreen {
   /// That means the [index] of the month which contains the [initiallyCenteredDate] is `0`.
   /// When [initiallyCenteredDate] is 2022-02-01, the [index] of 2022-02 is `0`.
   /// the [index] of 2022-03 is `1`. the [index] of 2022-01 is `-1`.
-  Future<Calender> getCalender(int index);
+  Calender getCalender(int index);
   // </presenters>
 
   // <navigators>
   /// when the date of the calender is tapped, navigate to the daily screen.
   DailyScreen navigateToDailyScreen(int year, int month, int day);
-  // </navigators>
+
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -35,18 +36,24 @@ abstract interface class MonthlyScreen {
 class Calender {
   final int year;
   final int month;
+  final int daysInMonth;
 
   /// the offset is a weekday of the first day of the month
   /// 0: Sunday, 1: Monday, ..., 6: Saturday
-  final int firstWeekday;
+  final int firstDayOfWeek;
 
   /// the length of the list is the number of days in the month
   /// Each element represents the existence of an event on the day.
   /// Watch out for the index of the list. It starts from 0.
   /// Do not forget to add 1 to the index to get the day.
-  final List<EventExistence> events;
+  final Future<List<EventExistence>> events;
 
-  const Calender(this.year, this.month, this.firstWeekday, this.events);
+  const Calender(this.year, this.month, this.daysInMonth, this.firstDayOfWeek,
+      this.events);
+
+  int get numberOfRow {
+    return ((firstDayOfWeek + daysInMonth) / 7).ceil();
+  }
 }
 // </view model>
 
@@ -59,13 +66,13 @@ class MockMonthlyScreen implements MonthlyScreen {
   MockMonthlyScreen(this.initiallyCenteredDate);
 
   @override
-  Future<Calender> getCalender(int index) {
-    var firstDay = DateTime(
+  Calender getCalender(int index) {
+    final firstDay = DateTime(
         initiallyCenteredDate.year, initiallyCenteredDate.month + index, 1);
-    var lastDay = DateTime(
+    final lastDay = DateTime(
         initiallyCenteredDate.year, initiallyCenteredDate.month + index + 1, 0);
-    var firstWeekday = firstDay.weekday % 7; // make Sunday(7) to 0
-    var events = List.generate(lastDay.day, (index) {
+    final firstWeekday = firstDay.weekday % 7; // make Sunday(7) to 0
+    final events = List.generate(lastDay.day, (index) {
       switch (_random.nextInt(3)) {
         case 0:
           return EventExistence.none;
@@ -77,8 +84,8 @@ class MockMonthlyScreen implements MonthlyScreen {
           throw Exception('Invalid random number occurred');
       }
     });
-    return Future.value(
-        Calender(firstDay.year, firstDay.month, firstWeekday, events));
+    return Calender(firstDay.year, firstDay.month, lastDay.day, firstWeekday,
+        Future.value(events));
   }
 
   @override

@@ -31,7 +31,11 @@ abstract interface class MonitorSchemeSection {
   Future<void> createMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId);
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -71,7 +75,7 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
   @override
   Future<void> createMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId) async {
-    var id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
+    final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(MonitorTicket(
         id: id,
         period: period,

@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/main_page/monitor_scheme_edit_window.dart';
+export 'package:miraibo/skeleton/main_page/monitor_scheme_edit_window.dart';
 import 'package:miraibo/skeleton/main_page/receipt_log_confirmation_window.dart';
+export 'package:miraibo/skeleton/main_page/receipt_log_confirmation_window.dart';
 import 'package:miraibo/skeleton/main_page/receipt_log_create_window.dart';
+export 'package:miraibo/skeleton/main_page/receipt_log_create_window.dart';
 import 'package:miraibo/skeleton/main_page/receipt_log_edit_window.dart';
 
 // <interface>
@@ -42,8 +45,10 @@ abstract interface class MainPage {
   // button
   /// receipt log create window is shown when the button to create a new receipt log is tapped.
   ReceiptLogCreateWindow openReceiptLogCreateWindow();
-  // </navigators>
+
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 // </inteface>
@@ -58,20 +63,20 @@ class MockMainPage implements MainPage {
 
   MockMainPage() {
     // <prepare parameters>
-    var now = DateTime.now();
+    final now = DateTime.now();
     today = Date(now.year, now.month, now.day);
-    var twoMonthAgo = now.subtract(const Duration(days: 2 * 31));
-    var twoMonthLater = now.add(const Duration(days: 2 * 31));
-    var startlessPeriod = OpenPeriod(
+    final twoMonthAgo = now.subtract(const Duration(days: 2 * 31));
+    final twoMonthLater = now.add(const Duration(days: 2 * 31));
+    final startlessPeriod = OpenPeriod(
         begins: null,
         ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
-    var endlessPeriod = OpenPeriod(
+    final endlessPeriod = OpenPeriod(
         begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
         ends: null);
-    var closedPeriod = OpenPeriod(
+    final closedPeriod = OpenPeriod(
         begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
         ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
-    var price = const Price(amount: 1000, symbol: 'JPY');
+    const price = Price(amount: 1000, symbol: 'JPY');
     // </prepare parameters>
 
     // <make mock tickets to show>
@@ -112,7 +117,7 @@ class MockMainPage implements MainPage {
     // </make mock tickets to show>
 
     // <initialize stream>
-    var ticketsStreamController =
+    final ticketsStreamController =
         StreamController<List<ReceiptLogAndMonitorTicket>>();
     ticketsStream = ticketsStreamController.stream;
     ticketsSink = ticketsStreamController.sink;

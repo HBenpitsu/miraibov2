@@ -30,7 +30,11 @@ abstract interface class PlanSection {
   Future<void> createPlan(
       int categoryId, String description, Price price, Schedule schedule);
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -70,7 +74,7 @@ class MockPlanSection implements PlanSection {
   @override
   Future<void> createPlan(int categoryId, String description, Price price,
       Schedule schedule) async {
-    var id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
+    final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(PlanTicket(
         id: id,
         price: price,

@@ -2,10 +2,15 @@ import 'dart:async';
 
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/data_page/shared.dart';
+export 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/skeleton/data_page/operation_windows.dart';
+export 'package:miraibo/skeleton/data_page/operation_windows.dart';
 import 'package:miraibo/skeleton/data_page/receipt_log_edit_window.dart';
+export 'package:miraibo/skeleton/data_page/receipt_log_edit_window.dart';
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/chart_configuration_window.dart';
+export 'package:miraibo/skeleton/data_page/chart_configuration_window/chart_configuration_window.dart';
 import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_ticket_config_window.dart';
+export 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_ticket_config_window.dart';
 
 // <interface>
 /// data page consists of 4 sections:
@@ -76,8 +81,10 @@ abstract interface class DataPage {
   /// on tapping a row of the table, open the receipt log edit window
   /// that edits the receipt log of the row.
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetReceiptLogId);
-  // </navigators>
+
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 // </interface>
@@ -112,7 +119,8 @@ class TableSegment {
     // - compare the number of null records with the number of records on each record update.
     // - emit null on the check if the condition is satisfied.
     // this can be achieved by using StreamController.
-    StreamController<List<TableRecord>?> recordsStream = StreamController();
+    StreamController<List<TableRecord>?> recordsStream =
+        StreamController.broadcast();
     numberOfRecords = records.length;
     for (var record in records) {
       // listen to every record update.
@@ -134,7 +142,7 @@ class TableSegment {
     recordsStream.add(records);
 
     // after initialization above, we can provide the stream of the records.
-    this.records = recordsStream.stream.asBroadcastStream();
+    this.records = recordsStream.stream;
   }
 }
 
@@ -272,10 +280,10 @@ class MockDataPage implements DataPage {
   MockDataPage() {
     currentChartScheme = const ChartSchemeUnspecified();
     currentTicketScheme = const TemporaryTicketSchemeUnspecified();
-    var chartStreamController = StreamController<ChartScheme>();
+    final chartStreamController = StreamController<ChartScheme>();
     chartStream = chartStreamController.stream;
     chartSink = chartStreamController.sink;
-    var temporaryTicketStreamController =
+    final temporaryTicketStreamController =
         StreamController<TemporaryTicketScheme>();
     temporaryTicketStream = temporaryTicketStreamController.stream;
     temporaryTicketSink = temporaryTicketStreamController.sink;
@@ -284,11 +292,11 @@ class MockDataPage implements DataPage {
   @override
   Stream<Chart> getChart() {
     // <prepare parameters>
-    var now = DateTime.now();
-    var twoWeeksAgo = now.subtract(const Duration(days: 14));
-    var twoWeeksLater = now.add(const Duration(days: 14));
-    var thisMonth = Date(now.year, now.month, 1);
-    var period = ClosedPeriod(
+    final now = DateTime.now();
+    final twoWeeksAgo = now.subtract(const Duration(days: 14));
+    final twoWeeksLater = now.add(const Duration(days: 14));
+    final thisMonth = Date(now.year, now.month, 1);
+    final period = ClosedPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
     // </prepare parameters>
@@ -342,20 +350,20 @@ class MockDataPage implements DataPage {
   @override
   Stream<TemporaryTicket> getTemporaryTicket() {
     // <prepare parameters>
-    var period = const OpenPeriod(begins: null, ends: null);
-    var price = const Price(amount: 1000, symbol: 'JPY');
+    const period = OpenPeriod(begins: null, ends: null);
+    const price = Price(amount: 1000, symbol: 'JPY');
     // </prepare parameters>
     return temporaryTicketStream.map((scheme) {
       switch (scheme) {
         // provide mock ticket based on the scheme.
         case TemporaryEstimationTicket _:
-          return TemporaryEstimationTicket(
+          return const TemporaryEstimationTicket(
               period: period,
               price: price,
               displayConfig: EstimationDisplayConfig.perDay,
               categoryNames: []);
         case TemporaryMonitorTicket _:
-          return TemporaryMonitorTicket(
+          return const TemporaryMonitorTicket(
               period: period,
               price: price,
               displayConfig: MonitorDisplayConfig.meanInDays,
@@ -417,7 +425,7 @@ class MockDataPage implements DataPage {
 
   @override
   Future<TableSegment> getTableSegment(int key, int limit) {
-    var (records, successkey) = mockVault.getReceiptLogs(key, limit);
+    final (records, successkey) = mockVault.getReceiptLogs(key, limit);
     return Future.value(TableSegment(records, successkey));
   }
 
@@ -456,13 +464,14 @@ class MockReceiptLogVault {
     ];
     // </mock receipt logs>
     // <initialize stream>
-    var receiptLogsStreamController =
-        StreamController<List<ReceiptLogScheme>>();
-    receiptLogsStream = receiptLogsStreamController.stream.asBroadcastStream();
+    final receiptLogsStreamController =
+        StreamController<List<ReceiptLogScheme>>.broadcast();
+    receiptLogsStream = receiptLogsStreamController.stream;
     receiptLogsSink = receiptLogsStreamController.sink;
     receiptLogsSink.add(receiptLogs);
-    var firstRecordStreamController = StreamController<ReceiptLogScheme?>();
-    firstRecordStream = firstRecordStreamController.stream.asBroadcastStream();
+    final firstRecordStreamController =
+        StreamController<ReceiptLogScheme?>.broadcast();
+    firstRecordStream = firstRecordStreamController.stream;
     firstRecordSink = firstRecordStreamController.sink;
     firstRecordSink.add(receiptLogs.firstOrNull);
     // </initialize stream>
@@ -471,13 +480,13 @@ class MockReceiptLogVault {
   /// provides a sink which can receive the data in ticket format.
   /// The format is not essential. Because this is mere mock, type-system is not so sophisticated.
   Sink<List<Ticket>> get ticketsSink {
-    var ticketSink = StreamController<List<Ticket>>();
+    final ticketSink = StreamController<List<Ticket>>();
     ticketSink.stream.listen((tickets) {
       // update the receipt logs with new tickets everytime.
-      var newLogs = <ReceiptLogScheme>[];
+      final newLogs = <ReceiptLogScheme>[];
       for (var ticket in tickets) {
         if (ticket is! ReceiptLogTicket) continue;
-        var log = ReceiptLogScheme(
+        final log = ReceiptLogScheme(
             id: ticket.id,
             price: PriceConfig(
                 amount: ticket.price.amount,
@@ -518,10 +527,10 @@ class MockReceiptLogVault {
   (List<Stream<ReceiptLogScheme?>>, Stream<int?>) getReceiptLogs(
       int key, int limit) {
     // records to be returned
-    var records = receiptLogs.where((log) => log.id >= key).take(limit);
+    final records = receiptLogs.where((log) => log.id >= key).take(limit);
     // wrap the records with stream
-    var recordsBox = records.map((record) {
-      var stream = StreamController<ReceiptLogScheme?>();
+    final recordsBox = records.map((record) {
+      final stream = StreamController<ReceiptLogScheme?>();
       stream.add(record); // the stream is fed with the record at this point.
 
       // the stream tracks the updates of the receipt logs.
@@ -534,14 +543,14 @@ class MockReceiptLogVault {
       return stream.stream;
     });
     // success key can be changed when new record is added/deleted
-    var successKeyBox = StreamController<int?>();
+    final successKeyBox = StreamController<int?>();
     // listen to the updates of the receipt logs and find the new key on each update.
     receiptLogsStream.listen((logs) {
       if (logs.isEmpty) {
         successKeyBox.add(null);
         return;
       }
-      var newKey =
+      final newKey =
           logs.where((log) => log.id > records.last.id).firstOrNull?.id;
       successKeyBox.add(newKey);
     });

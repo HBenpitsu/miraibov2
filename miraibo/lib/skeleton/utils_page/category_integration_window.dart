@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:miraibo/dto/general.dart';
+import 'package:miraibo/dto/dto.dart';
 
 // <interface>
 
@@ -26,7 +26,11 @@ abstract interface class CategoryIntegrationWindow {
   /// integrates a category whose category is [replacerId] with the category of [replaceeId].
   Future<void> integrateCategory(int replacerId);
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 

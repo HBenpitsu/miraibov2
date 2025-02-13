@@ -27,7 +27,11 @@ abstract interface class ReceiptLogConfirmationWindow {
   /// regardless user confirms or edits the receipt log, the receipt log is marked as confirmed.
   Future<void> confirmReceiptLog();
   // </controllers>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -58,7 +62,7 @@ class MockReceiptLogConfirmationWindow implements ReceiptLogConfirmationWindow {
   Future<void> confirmReceiptLog() async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
-      var ticket = tickets.removeAt(0);
+      final ticket = tickets.removeAt(0);
       if (ticket is! ReceiptLogTicket) {
         newTickets.add(ticket);
         continue;

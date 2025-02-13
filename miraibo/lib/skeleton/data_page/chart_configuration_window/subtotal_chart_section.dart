@@ -31,7 +31,11 @@ abstract interface class SubtotalChartSection {
   Future<void> applyScheme(List<int> categoryIds, int currencyId,
       ClosedPeriod viewportRange, int intervalInDays);
   // </actions>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
@@ -76,10 +80,10 @@ class MockSubtotalChartSection implements SubtotalChartSection {
     }
     // make mock-default scheme
     // <prepare parameters>
-    var now = DateTime.now();
-    var twoWeeksAgo = now.subtract(const Duration(days: 14));
-    var twoWeeksLater = now.add(const Duration(days: 14));
-    var closedPeriod = ClosedPeriod(
+    final now = DateTime.now();
+    final twoWeeksAgo = now.subtract(const Duration(days: 14));
+    final twoWeeksLater = now.add(const Duration(days: 14));
+    final closedPeriod = ClosedPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
     // </prepare parameters>

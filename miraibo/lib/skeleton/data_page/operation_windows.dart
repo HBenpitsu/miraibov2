@@ -7,7 +7,10 @@ abstract interface class ExportationWindow {
   // <controllers>
   Future<void> exportDataTo(String path);
   // </controllers>
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 /// overwrite window takes a path and there are two buttons to cancel and to proceed.
@@ -17,7 +20,10 @@ abstract interface class OverwriteWindow {
   // <controllers>
   Future<void> overwriteDataWith(String path);
   // </controllers>
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 /// import window takes a path and there are two buttons to cancel and to proceed.
@@ -26,7 +32,10 @@ abstract interface class ImportationWindow {
   // <controllers>
   Future<void> importDataFrom(String path);
   // </controllers>
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 /// backup window takes a path and there are two buttons to cancel and to proceed.
@@ -46,7 +55,10 @@ abstract interface class BackupWindow {
   // <controllers>
   Future<void> backupDataTo(String path);
   // </controllers>
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 
 /// restore window takes a path and there are two buttons to cancel and to proceed.
@@ -56,7 +68,10 @@ abstract interface class RestoreWindow {
   // <controllers>
   Future<void> restoreDataFrom(String path);
   // </controllers>
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 

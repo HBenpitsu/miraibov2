@@ -11,7 +11,7 @@ import 'package:miraibo/dto/dto.dart';
 ///    - which display config the ticket follows
 ///    - which currency the ticket uses
 ///
-abstract interface class MonitorSchemeSection {
+abstract interface class TemporaryMonitorSchemeSection {
   // <states>
   /// The initial temporary ticket scheme.
   /// This will not be changed while the section is alive.
@@ -41,12 +41,17 @@ abstract interface class MonitorSchemeSection {
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId);
   // </actions>
+
+  // <navigators>
+  /// should be called when this skeleton is no longer needed.
   void dispose();
+  // </navigators>
 }
 // </interface>
 
 // <mock>
-class MockMonitorSchemeSection implements MonitorSchemeSection {
+class MockTemporaryMonitorSchemeSection
+    implements TemporaryMonitorSchemeSection {
   @override
   final TemporaryTicketScheme initialScheme;
   final Function(TemporaryTicketScheme) schemeSetter;
@@ -65,7 +70,7 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
     for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
   ];
 
-  MockMonitorSchemeSection(this.initialScheme, this.schemeSetter);
+  MockTemporaryMonitorSchemeSection(this.initialScheme, this.schemeSetter);
 
   @override
   Future<List<Category>> getCategoryOptions() async {
