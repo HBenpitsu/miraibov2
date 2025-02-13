@@ -53,13 +53,13 @@ class MockMainPage implements MainPage {
   @override
   late final Date today;
   late final List<ReceiptLogAndMonitorTicket> tickets;
-  final StreamController<List<ReceiptLogAndMonitorTicket>> ticketsStream =
-      StreamController();
+  late final Stream<List<ReceiptLogAndMonitorTicket>> ticketsStream;
+  late final Sink<List<ReceiptLogAndMonitorTicket>> ticketsSink;
 
   MockMainPage() {
+    // <prepare parameters>
     var now = DateTime.now();
     today = Date(now.year, now.month, now.day);
-
     var twoMonthAgo = now.subtract(const Duration(days: 2 * 31));
     var twoMonthLater = now.add(const Duration(days: 2 * 31));
     var startlessPeriod = OpenPeriod(
@@ -72,7 +72,9 @@ class MockMainPage implements MainPage {
         begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
         ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
     var price = const Price(amount: 1000, symbol: 'JPY');
+    // </prepare parameters>
 
+    // <make mock tickets to show>
     tickets = [
       MonitorTicket(
           id: 0,
@@ -107,39 +109,48 @@ class MockMainPage implements MainPage {
           categoryName: 'category0',
           confirmed: false)
     ];
-    ticketsStream.add(tickets);
+    // </make mock tickets to show>
+
+    // <initialize stream>
+    var ticketsStreamController =
+        StreamController<List<ReceiptLogAndMonitorTicket>>();
+    ticketsStream = ticketsStreamController.stream;
+    ticketsSink = ticketsStreamController.sink;
+
+    ticketsSink.add(tickets);
+    // </initialize stream>
   }
 
   @override
   Stream<List<ReceiptLogAndMonitorTicket>> getTickets() {
-    return ticketsStream.stream;
+    return ticketsStream;
   }
 
   @override
   MonitorSchemeEditWindow openMonitorSchemeEditWindow(int targetTicketId) {
-    return MockMonitorSchemeEditWindow(targetTicketId, ticketsStream, tickets);
+    return MockMonitorSchemeEditWindow(targetTicketId, ticketsSink, tickets);
   }
 
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId) {
-    return MockReceiptLogEditWindow(targetTicketId, ticketsStream, tickets);
+    return MockReceiptLogEditWindow(targetTicketId, ticketsSink, tickets);
   }
 
   @override
   ReceiptLogConfirmationWindow openReceiptLogConfirmationWindow(
       int targetTicketId) {
     return MockReceiptLogConfirmationWindow(
-        targetTicketId, tickets, ticketsStream);
+        targetTicketId, tickets, ticketsSink);
   }
 
   @override
   ReceiptLogCreateWindow openReceiptLogCreateWindow() {
-    return MockReceiptLogCreateWindow(tickets, ticketsStream);
+    return MockReceiptLogCreateWindow(tickets, ticketsSink);
   }
 
   @override
   void dispose() {
-    ticketsStream.close();
+    ticketsSink.close();
   }
 }
 // </mock>

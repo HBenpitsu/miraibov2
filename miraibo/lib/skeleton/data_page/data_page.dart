@@ -116,7 +116,7 @@ class TableSegment {
     numberOfRecords = records.length;
     for (var record in records) {
       // listen to every record update.
-      record.asBroadcastStream().listen((record) {
+      record.listen((record) {
         if (record != null) return;
         // count up the number of null records.
         nullCount++;
@@ -134,7 +134,7 @@ class TableSegment {
     recordsStream.add(records);
 
     // after initialization above, we can provide the stream of the records.
-    this.records = recordsStream.stream;
+    this.records = recordsStream.stream.asBroadcastStream();
   }
 }
 
@@ -229,46 +229,61 @@ class TemporaryTicketUnspecified extends TemporaryTicket {}
 
 // <mock>
 class MockDataPage implements DataPage {
-  StreamController<ChartScheme> chartStream = StreamController();
+  late final Stream<ChartScheme> chartStream;
+  late final Sink<ChartScheme> chartSink;
 
+  /// the inner field to implement currentChartScheme
   late ChartScheme _currentChartScheme;
   @override
   ChartScheme get currentChartScheme => _currentChartScheme;
   @override
   set currentChartScheme(ChartScheme scheme) {
     _currentChartScheme = scheme;
-    chartStream.add(scheme);
+    chartSink.add(scheme);
   }
 
+  /// this method is defined to be passed to the chart configuration window.
   void setChartScheme(ChartScheme scheme) {
     currentChartScheme = scheme;
   }
 
-  StreamController<TemporaryTicketScheme> temporaryTicketStream =
-      StreamController();
+  late final Stream<TemporaryTicketScheme> temporaryTicketStream;
+  late final Sink<TemporaryTicketScheme> temporaryTicketSink;
 
+  /// the inner field to implement currentTicketScheme
   late TemporaryTicketScheme _currentTicketScheme;
   @override
   TemporaryTicketScheme get currentTicketScheme => _currentTicketScheme;
   @override
   set currentTicketScheme(TemporaryTicketScheme scheme) {
     _currentTicketScheme = scheme;
-    temporaryTicketStream.add(scheme);
+    temporaryTicketSink.add(scheme);
   }
 
+  /// this method is defined to be passed to the temporary ticket configuration window.
   void setTicketScheme(TemporaryTicketScheme scheme) {
     currentTicketScheme = scheme;
   }
 
+  /// the mock vault to store the receipt logs.
+  /// it is separated from the data page mock to make the data page mock simple.
   final MockReceiptLogVault mockVault = MockReceiptLogVault();
 
   MockDataPage() {
     currentChartScheme = const ChartSchemeUnspecified();
     currentTicketScheme = const TemporaryTicketSchemeUnspecified();
+    var chartStreamController = StreamController<ChartScheme>();
+    chartStream = chartStreamController.stream;
+    chartSink = chartStreamController.sink;
+    var temporaryTicketStreamController =
+        StreamController<TemporaryTicketScheme>();
+    temporaryTicketStream = temporaryTicketStreamController.stream;
+    temporaryTicketSink = temporaryTicketStreamController.sink;
   }
 
   @override
   Stream<Chart> getChart() {
+    // <prepare parameters>
     var now = DateTime.now();
     var twoWeeksAgo = now.subtract(const Duration(days: 14));
     var twoWeeksLater = now.add(const Duration(days: 14));
@@ -276,8 +291,10 @@ class MockDataPage implements DataPage {
     var period = ClosedPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
-    return chartStream.stream.map((scheme) {
+    // </prepare parameters>
+    return chartStream.map((scheme) {
       switch (scheme) {
+        // provide mock chart based on the scheme.
         case PieChartScheme _:
           return const PieChart(
               currencyName: 'JPY',
@@ -324,10 +341,13 @@ class MockDataPage implements DataPage {
 
   @override
   Stream<TemporaryTicket> getTemporaryTicket() {
+    // <prepare parameters>
     var period = const OpenPeriod(begins: null, ends: null);
     var price = const Price(amount: 1000, symbol: 'JPY');
-    return temporaryTicketStream.stream.map((scheme) {
+    // </prepare parameters>
+    return temporaryTicketStream.map((scheme) {
       switch (scheme) {
+        // provide mock ticket based on the scheme.
         case TemporaryEstimationTicket _:
           return TemporaryEstimationTicket(
               period: period,
@@ -403,21 +423,26 @@ class MockDataPage implements DataPage {
 
   @override
   void dispose() {
-    chartStream.close();
-    temporaryTicketStream.close();
+    chartSink.close();
+    temporaryTicketSink.close();
     mockVault.dispose();
   }
 }
 
 class MockReceiptLogVault {
+  // <valut fields>
+  /// the mock vault to store the receipt logs.
   late final List<ReceiptLogScheme> receiptLogs;
-  final StreamController<List<ReceiptLogScheme>> receiptLogsStream =
-      StreamController();
-  final StreamController<ReceiptLogScheme?> firstRecordStream =
-      StreamController();
-  Stream<int?> get firstKey =>
-      firstRecordStream.stream.map((record) => record?.id);
+  // it listens to updates of the receipt logs.
+  late final Stream<List<ReceiptLogScheme>> receiptLogsStream;
+  late final Sink<List<ReceiptLogScheme>> receiptLogsSink;
+  // it provides the first record of the receipt logs.
+  late final Stream<ReceiptLogScheme?> firstRecordStream;
+  late final Sink<ReceiptLogScheme?> firstRecordSink;
+  Stream<int?> get firstKey => firstRecordStream.map((record) => record?.id);
+  // </valut fields>
   MockReceiptLogVault() {
+    // <mock receipt logs>
     receiptLogs = [
       for (var i = 0; i < 20; i++)
         ReceiptLogScheme(
@@ -429,12 +454,26 @@ class MockReceiptLogVault {
             description: 'this is a receipt log',
             confirmed: false)
     ];
-    receiptLogsStream.add(receiptLogs);
-    firstRecordStream.add(receiptLogs.firstOrNull);
+    // </mock receipt logs>
+    // <initialize stream>
+    var receiptLogsStreamController =
+        StreamController<List<ReceiptLogScheme>>();
+    receiptLogsStream = receiptLogsStreamController.stream.asBroadcastStream();
+    receiptLogsSink = receiptLogsStreamController.sink;
+    receiptLogsSink.add(receiptLogs);
+    var firstRecordStreamController = StreamController<ReceiptLogScheme?>();
+    firstRecordStream = firstRecordStreamController.stream.asBroadcastStream();
+    firstRecordSink = firstRecordStreamController.sink;
+    firstRecordSink.add(receiptLogs.firstOrNull);
+    // </initialize stream>
   }
+
+  /// provides a sink which can receive the data in ticket format.
+  /// The format is not essential. Because this is mere mock, type-system is not so sophisticated.
   Sink<List<Ticket>> get ticketsSink {
     var ticketSink = StreamController<List<Ticket>>();
     ticketSink.stream.listen((tickets) {
+      // update the receipt logs with new tickets everytime.
       var newLogs = <ReceiptLogScheme>[];
       for (var ticket in tickets) {
         if (ticket is! ReceiptLogTicket) continue;
@@ -450,14 +489,17 @@ class MockReceiptLogVault {
             confirmed: ticket.confirmed);
         newLogs.add(log);
       }
+      // vault fields are updated on every ticket update.
       receiptLogs.clear();
       receiptLogs.addAll(newLogs);
-      receiptLogsStream.add(receiptLogs);
-      firstRecordStream.add(receiptLogs.firstOrNull);
+      receiptLogsSink.add(receiptLogs);
+      firstRecordSink.add(receiptLogs.firstOrNull);
     });
     return ticketSink.sink;
   }
 
+  /// provides a list of receipt logs in ticket format.
+  /// The format is not essential. Because this is mere mock, type-system is not so sophisticated.
   List<Ticket> get tickets {
     return receiptLogs
         .map((logContent) => ReceiptLogTicket(
@@ -475,29 +517,32 @@ class MockReceiptLogVault {
   /// returns a list of streams of receipt logs and a stream of the key for the next record.
   (List<Stream<ReceiptLogScheme?>>, Stream<int?>) getReceiptLogs(
       int key, int limit) {
+    // records to be returned
     var records = receiptLogs.where((log) => log.id >= key).take(limit);
-    var recordsBox = records.map((log) {
+    // wrap the records with stream
+    var recordsBox = records.map((record) {
       var stream = StreamController<ReceiptLogScheme?>();
-      stream.add(log);
+      stream.add(record); // the stream is fed with the record at this point.
 
-      receiptLogsStream.stream.asBroadcastStream().listen((logs) {
-        ReceiptLogScheme? newLog =
-            logs.where((log) => log.id == log.id).firstOrNull;
-        stream.add(newLog);
+      // the stream tracks the updates of the receipt logs.
+      receiptLogsStream.listen((logs) {
+        ReceiptLogScheme? newRecord =
+            logs.where((log) => record.id == log.id).firstOrNull;
+        stream.add(newRecord);
       });
 
       return stream.stream;
     });
+    // success key can be changed when new record is added/deleted
     var successKeyBox = StreamController<int?>();
-    receiptLogsStream.stream.asBroadcastStream().listen((logs) {
+    // listen to the updates of the receipt logs and find the new key on each update.
+    receiptLogsStream.listen((logs) {
       if (logs.isEmpty) {
         successKeyBox.add(null);
         return;
       }
-      var newKey = logs
-          .where((log) => log.id > records.last.id)
-          .map((log) => log.id)
-          .firstOrNull;
+      var newKey =
+          logs.where((log) => log.id > records.last.id).firstOrNull?.id;
       successKeyBox.add(newKey);
     });
 
@@ -505,8 +550,8 @@ class MockReceiptLogVault {
   }
 
   void dispose() {
-    receiptLogsStream.close();
-    firstRecordStream.close();
+    receiptLogsSink.close();
+    firstRecordSink.close();
   }
 }
 // </mock>

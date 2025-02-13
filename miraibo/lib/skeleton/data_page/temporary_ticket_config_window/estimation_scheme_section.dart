@@ -49,16 +49,20 @@ abstract interface class EstimationSchemeSection {
 class MockEstimationSchemeSection implements EstimationSchemeSection {
   @override
   final TemporaryTicketScheme initialScheme;
+
+  /// setter to implement set [currentScheme]
   final Function(TemporaryTicketScheme) schemeSetter;
   @override
   set currentScheme(TemporaryTicketScheme value) => schemeSetter(value);
 
+  /// list of predefined currencies
   static const List<Currency> currencyList = [
     Currency(id: 0, symbol: 'JPY'),
     Currency(id: 1, symbol: 'USD'),
     Currency(id: 2, symbol: 'EUR')
   ];
 
+  /// list of predefined categories
   static List<Category> categoryList = [
     for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
   ];
@@ -80,6 +84,7 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
     if (initialScheme is TemporaryEstimationScheme) {
       return initialScheme as TemporaryEstimationScheme;
     }
+    // provide a mock-default scheme
     return TemporaryEstimationScheme(
         categories: categoryList,
         currency: currencyList[0],
@@ -90,6 +95,7 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
   @override
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       EstimationDisplayConfig displayConfig, int currencyId) async {
+    // cast bunch of parameters to the temporary estimation scheme
     currentScheme = TemporaryEstimationScheme(
         categories: categoryList
             .where((element) => categoryIds.contains(element.id))

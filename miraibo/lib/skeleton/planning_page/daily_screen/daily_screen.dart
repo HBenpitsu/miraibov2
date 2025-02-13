@@ -86,15 +86,15 @@ class MockDailyScreen implements DailyScreen {
   @override
   int offset = 0;
 
-  final StreamController<Date> labelStream = StreamController();
+  late final Stream<Date> labelStream;
+  late final Sink<Date> labelSink;
   late final List<Ticket> tickets;
-  final StreamController<List<Ticket>> ticketStream = StreamController();
+  late final Stream<List<Ticket>> ticketStream;
+  late final Sink<List<Ticket>> ticketSink;
   MockDailyScreen(int year, int month, int day) {
     initiallyCenteredDate = Date(year, month, day);
-    labelStream.add(initiallyCenteredDate);
 
-    // <make mock tickets>
-
+    // <prepare parameters>
     var today = DateTime(year, month, day);
     var twoMonthAgo = today.subtract(const Duration(days: 2 * 31));
     var twoMonthLater = today.add(const Duration(days: 2 * 31));
@@ -108,7 +108,9 @@ class MockDailyScreen implements DailyScreen {
         begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
         ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
     var price = const Price(amount: 1000, symbol: 'JPY');
+    // </prepare parameters>
 
+    // <make mock tickets>
     tickets = [
       MonitorTicket(
           id: 0,
@@ -250,20 +252,28 @@ class MockDailyScreen implements DailyScreen {
           categoryName: 'category0',
           confirmed: false)
     ];
-
     // </make mock tickets>
 
-    ticketStream.add(tickets);
+    // <initialize streams>
+    var labelStreamController = StreamController<Date>();
+    labelStream = labelStreamController.stream;
+    labelSink = labelStreamController.sink;
+    labelSink.add(initiallyCenteredDate);
+    var ticketStreamController = StreamController<List<Ticket>>();
+    ticketStream = ticketStreamController.stream;
+    ticketSink = ticketStreamController.sink;
+    ticketSink.add(tickets);
+    // </initialize streams>
   }
 
   @override
   Stream<List<Ticket>> getTicketsOn(int index) {
-    return ticketStream.stream;
+    return ticketStream;
   }
 
   @override
   Stream<Date> getLabel() {
-    return labelStream.stream;
+    return labelStream;
   }
 
   @override
@@ -276,30 +286,28 @@ class MockDailyScreen implements DailyScreen {
 
   @override
   MonitorSchemeEditWindow openMonitorSchemeEditWindow(int targetTicketId) {
-    return MockMonitorSchemeEditWindow(
-        targetTicketId, ticketStream.sink, tickets);
+    return MockMonitorSchemeEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   PlanEditWindow openPlanEditWindow(int targetTicketId) {
-    return MockPlanEditWindow(targetTicketId, ticketStream.sink, tickets);
+    return MockPlanEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   EstimationSchemeEditWindow openEstimationSchemeEditWindow(
       int targetTicketId) {
-    return MockEstimationSchemeEditWindow(
-        targetTicketId, ticketStream.sink, tickets);
+    return MockEstimationSchemeEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId) {
-    return MockReceiptLogEditWindow(targetTicketId, ticketStream.sink, tickets);
+    return MockReceiptLogEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   TicketCreateWindow openTicketCreateWindow() {
-    return MockTicketCreateWindow(tickets, ticketStream.sink);
+    return MockTicketCreateWindow(tickets, ticketSink);
   }
 
   @override
@@ -307,14 +315,14 @@ class MockDailyScreen implements DailyScreen {
     this.offset = offset;
     var centeredDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
-    labelStream
+    labelSink
         .add(Date(centeredDate.year, centeredDate.month, centeredDate.day));
   }
 
   @override
   void dispose() {
-    labelStream.close();
-    ticketStream.close();
+    labelSink.close();
+    ticketSink.close();
   }
 }
 // </mock>

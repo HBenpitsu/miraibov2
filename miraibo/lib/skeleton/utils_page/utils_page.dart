@@ -59,88 +59,94 @@ typedef MockCategoryMap = Map<int, String>;
 typedef MockCurrencyMap = Map<int, (String, double)>;
 
 class MockUtilsPage implements UtilsPage {
-  final StreamController<MockCategoryMap> _categoryStream = StreamController();
-  late MockCategoryMap _categories;
-  final StreamController<MockCurrencyMap> _currencyStream = StreamController();
-  late MockCurrencyMap _currencies;
-  late int _defaultCurrency;
+  late final Stream<MockCategoryMap> categoryStream;
+  late final Sink<MockCategoryMap> categorySink;
+  late MockCategoryMap categories;
+  late final Stream<MockCurrencyMap> currencyStream;
+  late final Sink<MockCurrencyMap> currencySink;
+  late MockCurrencyMap currencies;
+  late int defaultCurrency;
 
   MockUtilsPage() {
-    _categories = {for (int i = 0; i < 20; i++) i: 'category $i'};
-    _categoryStream.add(_categories);
+    categories = {for (int i = 0; i < 20; i++) i: 'category $i'};
 
-    _currencies = {
-      for (int i = 0; i < 5; i++) i: ('currency $i', i.toDouble())
-    };
-    _currencyStream.add(_currencies);
+    currencies = {for (int i = 0; i < 5; i++) i: ('currency $i', i.toDouble())};
 
-    _defaultCurrency = 0;
+    defaultCurrency = 0;
+
+    // <initialize stream>
+    var categoryController = StreamController<MockCategoryMap>();
+    categoryStream = categoryController.stream;
+    categorySink = categoryController.sink;
+    var currencyController = StreamController<MockCurrencyMap>();
+    currencyStream = currencyController.stream;
+    currencySink = currencyController.sink;
+    // </initialize stream>
   }
 
   @override
   CategorySection categorySection() {
-    return _categoryStream.stream.map((data) => data.entries
+    return categoryStream.map((data) => data.entries
         .map((entry) => Category(id: entry.key, name: entry.value))
         .toList());
   }
 
   @override
   CurrencySection currencySection() {
-    return _currencyStream.stream.map((data) => data.entries
+    return currencyStream.map((data) => data.entries
         .map((entry) => CurrencyConfig(
             id: entry.key,
             symbol: entry.value.$1,
             ratio: entry.value.$2,
-            isDefault: _defaultCurrency == entry.key))
+            isDefault: defaultCurrency == entry.key))
         .toList());
   }
 
   @override
   Future<void> editCategory(int categoryId, String categoryName) async {
-    _categories[categoryId] = categoryName;
-    _categoryStream.add(_categories);
+    categories[categoryId] = categoryName;
+    categorySink.add(categories);
   }
 
   @override
   Future<void> newCategory(String categoryName) async {
-    _categories[_categories.length] = categoryName;
-    _categoryStream.add(_categories);
+    categories[categories.length] = categoryName;
+    categorySink.add(categories);
   }
 
   @override
   Future<void> editCurrency(
       int currencyId, String currencyName, double currencyRatio) async {
-    _currencies[currencyId] = (currencyName, currencyRatio);
-    _currencyStream.add(_currencies);
+    currencies[currencyId] = (currencyName, currencyRatio);
+    currencySink.add(currencies);
   }
 
   @override
   Future<void> newCurrency(String currencyName, double currencyRatio) async {
-    _currencies[_currencies.length] = (currencyName, currencyRatio);
-    _currencyStream.add(_currencies);
+    currencies[currencies.length] = (currencyName, currencyRatio);
+    currencySink.add(currencies);
   }
 
   @override
   Future<void> setDefaultCurrency(int currencyId) async {
-    _defaultCurrency = currencyId;
+    defaultCurrency = currencyId;
+    currencySink.add(currencies);
   }
 
   @override
   CurrencyIntegrationWindow openCurrencyIntegrationWindow(int replaceeId) {
-    return MockCurrencyIntegrationWindow(
-        replaceeId, _currencyStream.sink, _currencies);
+    return MockCurrencyIntegrationWindow(replaceeId, currencySink, currencies);
   }
 
   @override
   CategoryIntegrationWindow openCategoryIntegrationWindow(int replaceeId) {
-    return MockCategoryIntegrationWindow(
-        replaceeId, _categoryStream.sink, _categories);
+    return MockCategoryIntegrationWindow(replaceeId, categorySink, categories);
   }
 
   @override
   void dispose() {
-    _categoryStream.close();
-    _currencyStream.close();
+    categorySink.close();
+    currencySink.close();
   }
 }
 // </mock>

@@ -52,12 +52,14 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
   final Sink<List<Ticket>> ticketsStream;
   final List<Ticket> tickets;
 
+  // List of predefined currencies
   static const List<Currency> currencyList = [
     Currency(id: 0, symbol: 'JPY'),
     Currency(id: 1, symbol: 'USD'),
     Currency(id: 2, symbol: 'EUR'),
   ];
 
+  // List of predefined categories
   static List<Category> categoryList = [
     for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
   ];

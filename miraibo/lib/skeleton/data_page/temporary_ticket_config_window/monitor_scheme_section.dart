@@ -53,12 +53,14 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
   @override
   set currentScheme(TemporaryTicketScheme value) => schemeSetter(value);
 
+  // List of predefined currencies
   static const List<Currency> currencyList = [
     Currency(id: 0, symbol: 'JPY'),
     Currency(id: 1, symbol: 'USD'),
     Currency(id: 2, symbol: 'EUR')
   ];
 
+  // List of predefined categories
   static List<Category> categoryList = [
     for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
   ];
@@ -80,7 +82,7 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
     if (initialScheme is TemporaryMonitorScheme) {
       return initialScheme as TemporaryMonitorScheme;
     }
-
+    // provide a default scheme
     return TemporaryMonitorScheme(
         categories: categoryList,
         period: const OpenPeriod(begins: null, ends: null),
@@ -91,6 +93,7 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
   @override
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayConfig displayConfig, int currencyId) async {
+    // cast bunch of parameters to the temporary monitor scheme
     currentScheme = TemporaryMonitorScheme(
         categories: categoryIds.map((id) => categoryList[id]).toList(),
         period: period,

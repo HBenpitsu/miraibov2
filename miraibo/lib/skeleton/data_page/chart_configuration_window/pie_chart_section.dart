@@ -39,16 +39,20 @@ abstract interface class PieChartSection {
 class MockPieChartSection implements PieChartSection {
   @override
   final ChartScheme initialScheme;
+
+  /// setter to implement set [currentScheme]
   final Function(ChartScheme) schemeSetter;
   @override
   set currentScheme(ChartScheme value) => schemeSetter(value);
 
+  /// list of predefined currencies
   static const List<Currency> currencyList = [
     Currency(id: 0, symbol: 'JPY'),
     Currency(id: 1, symbol: 'USD'),
     Currency(id: 2, symbol: 'EUR')
   ];
 
+  /// list of predefined categories
   static List<Category> categoryList = [
     for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
   ];
@@ -70,12 +74,15 @@ class MockPieChartSection implements PieChartSection {
     if (initialScheme is PieChartScheme) {
       return initialScheme as PieChartScheme;
     }
+    // make mock-default scheme
+    // <prepare parameters>
     var now = DateTime.now();
     var twoWeeksAgo = now.subtract(const Duration(days: 14));
     var twoWeeksLater = now.add(const Duration(days: 14));
     var period = OpenPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
+    // </prepare parameters>
     return PieChartScheme(
         currency: currencyList[0],
         analysisRange: period,
@@ -85,6 +92,7 @@ class MockPieChartSection implements PieChartSection {
   @override
   Future<void> applyScheme(
       int currencyId, OpenPeriod period, List<int> categoryIds) async {
+    // cast bunch of parameters to PieChartScheme and set it to currentScheme
     currentScheme = PieChartScheme(
         currency: currencyList[currencyId],
         analysisRange: period,
