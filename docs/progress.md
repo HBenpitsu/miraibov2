@@ -4,7 +4,7 @@
 - complete usecase
 - bind skeleton and usecase through isolate-glue
 - think how to broadcast refetch-event
-- complete skeleton
+  - revierpod?
 - complete view
 
 # done
@@ -23,5 +23,6 @@
 - complete mock-skeleton for planning-page
 - complete mock-skeleton for main-page
 - complete mock-skeleton for data-page
+- complete mock for skeleton
 
 # backlog
