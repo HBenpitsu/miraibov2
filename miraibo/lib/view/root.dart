@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/skeleton/root.dart' as skt;
 import 'package:miraibo/view/motion.dart';
-import 'package:miraibo/view/pages/pages.dart';
+import 'package:miraibo/view/data_page/data_page.dart';
+import 'package:miraibo/view/main_page/main_page.dart';
+import 'package:miraibo/view/planning_page/planning_page.dart';
+import 'package:miraibo/view/utils_page/utils_page.dart';
 
 /* 
 This widget is the root of the application.
