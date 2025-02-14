@@ -29,7 +29,7 @@ abstract interface class EstimationSchemeSection {
   // <controllers>
   /// create the estimation scheme with the specified scheme.
   Future<void> createEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationDisplayConfig displayConfig, int currencyId);
+      EstimationdisplayOption displayOption, int currencyId);
   // </controllers>
 
   // <navigators>
@@ -74,13 +74,13 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
 
   @override
   Future<void> createEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationDisplayConfig displayConfig, int currencyId) async {
+      EstimationdisplayOption displayOption, int currencyId) async {
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(EstimationTicket(
         id: id,
         period: period,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
-        displayConfig: displayConfig,
+        displayOption: displayOption,
         categoryNames:
             categoryIds.map((id) => categoryList[id].name).toList()));
     ticketsStream.add(tickets);

@@ -39,7 +39,7 @@ abstract interface class TemporaryMonitorSchemeSection {
   // <actions>
   /// Apply the specified monitor scheme to [currentScheme].
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayConfig displayConfig, int currencyId);
+      MonitordisplayOption displayOption, int currencyId);
   // </actions>
 
   // <navigators>
@@ -91,18 +91,18 @@ class MockTemporaryMonitorSchemeSection
     return TemporaryMonitorScheme(
         categories: categoryList,
         period: const OpenPeriod(begins: null, ends: null),
-        displayConfig: MonitorDisplayConfig.meanInDays,
+        displayOption: MonitordisplayOption.meanInDays,
         currency: currencyList[0]);
   }
 
   @override
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayConfig displayConfig, int currencyId) async {
+      MonitordisplayOption displayOption, int currencyId) async {
     // cast bunch of parameters to the temporary monitor scheme
     currentScheme = TemporaryMonitorScheme(
         categories: categoryIds.map((id) => categoryList[id]).toList(),
         period: period,
-        displayConfig: displayConfig,
+        displayOption: displayOption,
         currency: currencyList[currencyId]);
   }
 

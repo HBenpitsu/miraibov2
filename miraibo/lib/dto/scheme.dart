@@ -38,14 +38,14 @@ class EstimationScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Currency currency;
-  final EstimationDisplayConfig displayConfig;
+  final EstimationdisplayOption displayOption;
   final List<Category> categories;
 
   const EstimationScheme(
       {required this.id,
       required this.period,
       required this.currency,
-      required this.displayConfig,
+      required this.displayOption,
       required this.categories});
 }
 
@@ -53,14 +53,14 @@ class MonitorScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Currency currency;
-  final MonitorDisplayConfig displayConfig;
+  final MonitordisplayOption displayOption;
   final List<Category> categories;
 
   const MonitorScheme(
       {required this.id,
       required this.period,
       required this.currency,
-      required this.displayConfig,
+      required this.displayOption,
       required this.categories});
 }
 

@@ -15,26 +15,26 @@ sealed class TemporaryTicketScheme {
 class TemporaryEstimationScheme extends TemporaryTicketScheme {
   final OpenPeriod period;
   final Currency currency;
-  final EstimationDisplayConfig displayConfig;
+  final EstimationdisplayOption displayOption;
   final List<Category> categories;
 
   const TemporaryEstimationScheme(
       {required this.period,
       required this.currency,
-      required this.displayConfig,
+      required this.displayOption,
       required this.categories});
 }
 
 class TemporaryMonitorScheme extends TemporaryTicketScheme {
   final OpenPeriod period;
   final Currency currency;
-  final MonitorDisplayConfig displayConfig;
+  final MonitordisplayOption displayOption;
   final List<Category> categories;
 
   const TemporaryMonitorScheme(
       {required this.period,
       required this.currency,
-      required this.displayConfig,
+      required this.displayOption,
       required this.categories});
 }
 

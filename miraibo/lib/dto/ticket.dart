@@ -51,14 +51,14 @@ class EstimationTicket extends Ticket {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Price price;
-  final EstimationDisplayConfig displayConfig;
+  final EstimationdisplayOption displayOption;
   final List<String> categoryNames;
 
   const EstimationTicket(
       {required this.id,
       required this.period,
       required this.price,
-      required this.displayConfig,
+      required this.displayOption,
       required this.categoryNames});
 }
 
@@ -66,13 +66,13 @@ class MonitorTicket extends ReceiptLogAndMonitorTicket {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Price price;
-  final MonitorDisplayConfig displayConfig;
+  final MonitordisplayOption displayOption;
   final List<String> categoryNames;
 
   const MonitorTicket(
       {required this.id,
       required this.period,
       required this.price,
-      required this.displayConfig,
+      required this.displayOption,
       required this.categoryNames});
 }

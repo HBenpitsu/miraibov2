@@ -29,9 +29,9 @@
 				- [3.2.2.4.3. WeeklySchedule](#32243-weeklyschedule)
 				- [3.2.2.4.4. MonthlySchedule](#32244-monthlyschedule)
 				- [3.2.2.4.5. AnnualSchedule](#32245-annualschedule)
-			- [3.2.2.5. DisplayConfig](#3225-displayconfig)
-				- [3.2.2.5.1. MonitorDisplayConfig](#32251-monitordisplayconfig)
-				- [3.2.2.5.2. EstimationDisplayConfig](#32252-estimationdisplayconfig)
+			- [3.2.2.5. displayOption](#3225-displayOption)
+				- [3.2.2.5.1. MonitordisplayOption](#32251-monitordisplayOption)
+				- [3.2.2.5.2. EstimationdisplayOption](#32252-estimationdisplayOption)
 			- [3.2.2.6. ReceiptRecord](#3226-receiptrecord)
 			- [3.2.2.7. EventExistence](#3227-eventexistence)
 			- [3.2.2.8. Collection](#3228-collection)
@@ -370,15 +370,15 @@ namespace entity {
 		-id: string
 		+period: Period
 		+category: Category
-		+displayConfig: EstimationDisplayConfig
+		+displayOption: EstimationdisplayOption
 
 		+setPeriod(period: Period) void
 		+setCategory(category: Category) void
-		+setDisplayConfig(displayConfig: EstimationDisplayConfig) void
+		+setdisplayOption(displayOption: EstimationdisplayOption) void
 		+delete() void
 
-		+new(period, category, displayConfig) EstimationScheme$
-		+as(id, period, category, displayConfig) EstimationScheme$
+		+new(period, category, displayOption) EstimationScheme$
+		+as(id, period, category, displayOption) EstimationScheme$
 	}
 	class ReceiptLog {
 		-id: string
@@ -401,16 +401,16 @@ namespace entity {
 	class MonitorScheme {
 		-id: string
 		+period: Period
-		+displayConfig: MonitorDisplayConfig
+		+displayOption: MonitordisplayOption
 		+categories: CategoryCollection
 
 		+setPeriod(period: Period) void
-		+setDisplayConfig(displayCondig: MonitorDisplayConfig) void
+		+setdisplayOption(displayCondig: MonitordisplayOption) void
 		+setCategories(categories: CategoryCollection) void
 		+delete() void
 
-		+new(period, displayConfig, categories) MonitorScheme$
-		+as(id, period, displayConfig, categories) MonitorScheme$
+		+new(period, displayOption, categories) MonitorScheme$
+		+as(id, period, displayOption, categories) MonitorScheme$
 	}
 	class Plan {
 		-id: string
@@ -513,13 +513,13 @@ namespace valueObject {
 		+new(origin, period) AnnualSchedule$
 	}
 
-	class MonitorDisplayConfig {
+	class MonitordisplayOption {
 		<<enumeration>>
 		Sum
 		Mean
 		QartileMean
 	}
-	class EstimationDisplayConfig {
+	class EstimationdisplayOption {
 		<<enumeration>>
 		PerDay
 		PerWeek
@@ -594,9 +594,9 @@ ReceiptLog *-- Price
 ReceiptRecord *-- Date
 ReceiptRecord *-- Price
 MonitorScheme *-- Period
-MonitorScheme *-- MonitorDisplayConfig
+MonitorScheme *-- MonitordisplayOption
 EstimationScheme *-- Period
-EstimationScheme *-- EstimationDisplayConfig
+EstimationScheme *-- EstimationdisplayOption
 Plan *-- Price
 Plan *-- Schedule
 
@@ -670,7 +670,7 @@ The date of the created `ReceiptLog` is based on the schedule. Other attributes 
 
 - `id`
 - `period`
-- `displayConfig`: an `EstimationDisplayConfig`. It affects the price of the ticket.
+- `displayOption`: an `EstimationdisplayOption`. It affects the price of the ticket.
 - `categories`
 
 #### 3.2.1.6. MonitorScheme
@@ -680,7 +680,7 @@ The date of the created `ReceiptLog` is based on the schedule. Other attributes 
 
 - `id`
 - `period`
-- `displayConfig`: a `MonitorDisplayConfig`. It affects the price of the ticket.
+- `displayOption`: a `MonitordisplayOption`. It affects the price of the ticket.
 - `categories`
 
 #### 3.2.1.7. Ticket
@@ -758,19 +758,19 @@ A `AnnualSchedule` consists of
 - `origin`
 - `period`
 
-#### 3.2.2.5. DisplayConfig
+#### 3.2.2.5. displayOption
 
-##### 3.2.2.5.1. MonitorDisplayConfig
+##### 3.2.2.5.1. MonitordisplayOption
 
-`MonitorDisplayConfig` is a enumeration of:
+`MonitordisplayOption` is a enumeration of:
 
 - `summation`
 - `mean`
 - `quartileMean`
 
-##### 3.2.2.5.2. EstimationDisplayConfig
+##### 3.2.2.5.2. EstimationdisplayOption
 
-`EstimationDisplayConfig` is a enumeration of:
+`EstimationdisplayOption` is a enumeration of:
 
 - `perDay`
 - `perWeek`

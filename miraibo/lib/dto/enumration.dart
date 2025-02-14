@@ -4,7 +4,7 @@ enum EventExistence {
   important,
 }
 
-enum MonitorDisplayConfig {
+enum MonitordisplayOption {
   summation,
   meanInDays,
   meanInWeeks,
@@ -14,4 +14,4 @@ enum MonitorDisplayConfig {
   quartileMeanInMonths,
 }
 
-enum EstimationDisplayConfig { perDay, perWeek, perMonth, perYear }
+enum EstimationdisplayOption { perDay, perWeek, perMonth, perYear }

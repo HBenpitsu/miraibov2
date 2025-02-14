@@ -90,7 +90,7 @@ Future<void> deletePlan(String id) {
 /// {@macro createEstimationScheme}
 Future<int> createEstimationScheme(
   OpenPeriod period,
-  EstimationDisplayConfig displayConfig,
+  EstimationdisplayOption displayOption,
   List<int> categoryIds,
 ) async {
   throw UnimplementedError();
@@ -99,7 +99,7 @@ Future<int> createEstimationScheme(
 Future<void> editEstimationScheme(
   int id,
   OpenPeriod period,
-  EstimationDisplayConfig displayConfig,
+  EstimationdisplayOption displayOption,
   List<int> categoryIds,
 ) async {
   throw UnimplementedError();
@@ -115,7 +115,7 @@ Future<void> deleteEstimationScheme(int id) async {
 /// {@macro createMonitorScheme}
 Future<int> createMonitorScheme(
   OpenPeriod period,
-  MonitorDisplayConfig displayConfig,
+  MonitordisplayOption displayOption,
   List<int> categoryIds,
 ) async {
   throw UnimplementedError();
@@ -124,7 +124,7 @@ Future<int> createMonitorScheme(
 Future<void> editMonitorScheme(
   int id,
   OpenPeriod period,
-  MonitorDisplayConfig displayConfig,
+  MonitordisplayOption displayOption,
   List<int> categoryIds,
 ) async {
   throw UnimplementedError();

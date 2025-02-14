@@ -29,7 +29,7 @@ abstract interface class MonitorSchemeSection {
   // <controllers>
   /// create the monitor scheme with the specified scheme.
   Future<void> createMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayConfig displayConfig, int currencyId);
+      MonitordisplayOption displayOption, int currencyId);
   // </controllers>
 
   // <navigators>
@@ -74,13 +74,13 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
 
   @override
   Future<void> createMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayConfig displayConfig, int currencyId) async {
+      MonitordisplayOption displayOption, int currencyId) async {
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(MonitorTicket(
         id: id,
         period: period,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
-        displayConfig: displayConfig,
+        displayOption: displayOption,
         categoryNames:
             categoryIds.map((id) => categoryList[id].name).toList()));
     ticketsStream.add(tickets);
