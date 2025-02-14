@@ -4,7 +4,7 @@ import 'package:miraibo/dto/dto.dart';
 /// estimates the price of the given schedule with the given estimation scheme.
 /// {@endtemplate}
 Future<EstimationTicket> estimateWithScheme(List<int> categoryIds,
-    int currencyId, EstimationdisplayOption displayOption) {
+    int currencyId, EstimationDisplayOption displayOption) {
   throw UnimplementedError();
 }
 
@@ -12,6 +12,6 @@ Future<EstimationTicket> estimateWithScheme(List<int> categoryIds,
 /// return the price of the given monitor scheme.
 /// {@endtemplate}
 Future<MonitorTicket> monitorWithScheme(OpenPeriod period,
-    List<int> categoryIds, MonitordisplayOption displayOption, int currencyId) {
+    List<int> categoryIds, MonitorDisplayOption displayOption, int currencyId) {
   throw UnimplementedError();
 }

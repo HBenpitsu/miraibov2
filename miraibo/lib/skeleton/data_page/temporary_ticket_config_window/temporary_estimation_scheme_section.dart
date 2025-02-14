@@ -39,7 +39,7 @@ abstract interface class TemporaryEstimationSchemeSection {
 
   // <actions>
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationdisplayOption displayOption, int currencyId);
+      EstimationDisplayOption displayOption, int currencyId);
   // </actions>
 
   // <navigators>
@@ -93,13 +93,13 @@ class MockTemporaryEstimationSchemeSection
     return TemporaryEstimationScheme(
         categories: categoryList,
         currency: currencyList[0],
-        displayOption: EstimationdisplayOption.perMonth,
+        displayOption: EstimationDisplayOption.perMonth,
         period: const OpenPeriod(begins: null, ends: null));
   }
 
   @override
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationdisplayOption displayOption, int currencyId) async {
+      EstimationDisplayOption displayOption, int currencyId) async {
     // cast bunch of parameters to the temporary estimation scheme
     currentScheme = TemporaryEstimationScheme(
         categories: categoryList

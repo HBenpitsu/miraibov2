@@ -106,7 +106,7 @@ class EstimateTicketContent extends StatelessWidget {
   final List<String> categories;
   final int amount;
   final String currencySymbol;
-  final dto.EstimationdisplayOption displayOption;
+  final dto.EstimationDisplayOption displayOption;
   final dto.OpenPeriod period;
   const EstimateTicketContent(
       {required this.categories,
@@ -119,13 +119,13 @@ class EstimateTicketContent extends StatelessWidget {
   Widget build(BuildContext context) {
     var currencySymbol = this.currencySymbol;
     switch (displayOption) {
-      case dto.EstimationdisplayOption.perDay:
+      case dto.EstimationDisplayOption.perDay:
         currencySymbol += '/day';
-      case dto.EstimationdisplayOption.perWeek:
+      case dto.EstimationDisplayOption.perWeek:
         currencySymbol += '/week';
-      case dto.EstimationdisplayOption.perMonth:
+      case dto.EstimationDisplayOption.perMonth:
         currencySymbol += '/month';
-      case dto.EstimationdisplayOption.perYear:
+      case dto.EstimationDisplayOption.perYear:
         currencySymbol += '/year';
     }
     return TicketContentTemplate(
@@ -144,7 +144,7 @@ class MonitorTicketContent extends StatelessWidget {
   final List<String> categories;
   final int amount;
   final String currencySymbol;
-  final dto.MonitordisplayOption displayOption;
+  final dto.MonitorDisplayOption displayOption;
   final dto.OpenPeriod period;
   const MonitorTicketContent(
       {required this.categories,
@@ -156,15 +156,15 @@ class MonitorTicketContent extends StatelessWidget {
 
   String makeDescription() {
     switch (displayOption) {
-      case dto.MonitordisplayOption.meanInDays:
-      case dto.MonitordisplayOption.meanInWeeks:
-      case dto.MonitordisplayOption.meanInMonths:
+      case dto.MonitorDisplayOption.meanInDays:
+      case dto.MonitorDisplayOption.meanInWeeks:
+      case dto.MonitorDisplayOption.meanInMonths:
         return 'is spent for the categories in average';
-      case dto.MonitordisplayOption.quartileMeanInDays:
-      case dto.MonitordisplayOption.quartileMeanInWeeks:
-      case dto.MonitordisplayOption.quartileMeanInMonths:
+      case dto.MonitorDisplayOption.quartileMeanInDays:
+      case dto.MonitorDisplayOption.quartileMeanInWeeks:
+      case dto.MonitorDisplayOption.quartileMeanInMonths:
         return 'is spent for the categories in average excluding outliers';
-      case dto.MonitordisplayOption.summation:
+      case dto.MonitorDisplayOption.summation:
         return 'is spent for the categories in total';
     }
   }
@@ -173,14 +173,14 @@ class MonitorTicketContent extends StatelessWidget {
   Widget build(BuildContext context) {
     var currencySymbol = this.currencySymbol;
     switch (displayOption) {
-      case dto.MonitordisplayOption.meanInDays:
-      case dto.MonitordisplayOption.quartileMeanInDays:
+      case dto.MonitorDisplayOption.meanInDays:
+      case dto.MonitorDisplayOption.quartileMeanInDays:
         currencySymbol += '/day';
-      case dto.MonitordisplayOption.meanInWeeks:
-      case dto.MonitordisplayOption.quartileMeanInWeeks:
+      case dto.MonitorDisplayOption.meanInWeeks:
+      case dto.MonitorDisplayOption.quartileMeanInWeeks:
         currencySymbol += '/week';
-      case dto.MonitordisplayOption.meanInMonths:
-      case dto.MonitordisplayOption.quartileMeanInMonths:
+      case dto.MonitorDisplayOption.meanInMonths:
+      case dto.MonitorDisplayOption.quartileMeanInMonths:
         currencySymbol += '/month';
       default:
     }

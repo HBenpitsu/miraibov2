@@ -85,19 +85,19 @@ class MockMainPage implements MainPage {
           id: 0,
           period: startlessPeriod,
           price: price,
-          displayOption: MonitordisplayOption.meanInDays,
+          displayOption: MonitorDisplayOption.meanInDays,
           categoryNames: ['list of categories']),
       MonitorTicket(
           id: 1,
           period: endlessPeriod,
           price: price,
-          displayOption: MonitordisplayOption.quartileMeanInDays,
+          displayOption: MonitorDisplayOption.quartileMeanInDays,
           categoryNames: ['category1', 'category2']),
       MonitorTicket(
           id: 2,
           period: closedPeriod,
           price: price,
-          displayOption: MonitordisplayOption.summation,
+          displayOption: MonitorDisplayOption.summation,
           categoryNames: []),
       ReceiptLogTicket(
           id: 16,

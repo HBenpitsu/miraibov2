@@ -15,7 +15,7 @@ sealed class TemporaryTicketScheme {
 class TemporaryEstimationScheme extends TemporaryTicketScheme {
   final OpenPeriod period;
   final Currency currency;
-  final EstimationdisplayOption displayOption;
+  final EstimationDisplayOption displayOption;
   final List<Category> categories;
 
   const TemporaryEstimationScheme(
@@ -28,7 +28,7 @@ class TemporaryEstimationScheme extends TemporaryTicketScheme {
 class TemporaryMonitorScheme extends TemporaryTicketScheme {
   final OpenPeriod period;
   final Currency currency;
-  final MonitordisplayOption displayOption;
+  final MonitorDisplayOption displayOption;
   final List<Category> categories;
 
   const TemporaryMonitorScheme(

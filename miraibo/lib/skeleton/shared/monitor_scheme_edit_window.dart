@@ -34,7 +34,7 @@ abstract interface class MonitorSchemeEditWindow {
   /// update the monitor scheme with the specified parameters.
   /// [targetTicketId] is used to identify the monitor scheme to be updated.
   Future<void> updateMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitordisplayOption displayOption, int currencyId);
+      MonitorDisplayOption displayOption, int currencyId);
 
   /// delete the monitor scheme.
   /// [targetTicketId] is used to identify the monitor scheme to be deleted.
@@ -90,14 +90,14 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
       ),
       currency: currencyList[0],
-      displayOption: MonitordisplayOption.meanInDays,
+      displayOption: MonitorDisplayOption.meanInDays,
       categories: categoryList.sublist(0, 5),
     ));
   }
 
   @override
   Future<void> updateMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitordisplayOption displayOption, int currencyId) async {
+      MonitorDisplayOption displayOption, int currencyId) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);

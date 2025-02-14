@@ -204,7 +204,7 @@ sealed class TemporaryTicket {
 class TemporaryEstimationTicket extends TemporaryTicket {
   final OpenPeriod period;
   final Price price;
-  final EstimationdisplayOption displayOption;
+  final EstimationDisplayOption displayOption;
 
   /// empty when all categories are counted.
   final List<String> categoryNames;
@@ -219,7 +219,7 @@ class TemporaryEstimationTicket extends TemporaryTicket {
 class TemporaryMonitorTicket extends TemporaryTicket {
   final OpenPeriod period;
   final Price price;
-  final MonitordisplayOption displayOption;
+  final MonitorDisplayOption displayOption;
 
   /// empty when all categories are counted.
   final List<String> categoryNames;
@@ -358,13 +358,13 @@ class MockDataPage implements DataPage {
           return const TemporaryEstimationTicket(
               period: period,
               price: price,
-              displayOption: EstimationdisplayOption.perDay,
+              displayOption: EstimationDisplayOption.perDay,
               categoryNames: []);
         case TemporaryMonitorScheme _:
           return const TemporaryMonitorTicket(
               period: period,
               price: price,
-              displayOption: MonitordisplayOption.meanInDays,
+              displayOption: MonitorDisplayOption.meanInDays,
               categoryNames: []);
         case TemporaryTicketSchemeUnspecified _:
           return TemporaryTicketUnspecified();

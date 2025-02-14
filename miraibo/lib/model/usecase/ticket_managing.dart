@@ -64,7 +64,7 @@ Future<void> deletePlan(String id) async {
 Future<int> createEstimationScheme(
   OpenPeriod period,
   List<int> categoryIds,
-  EstimationdisplayOption displayOption,
+  EstimationDisplayOption displayOption,
   int currencyId, // displayOption
 ) async {
   throw UnimplementedError();
@@ -74,7 +74,7 @@ Future<void> editEstimationScheme(
   int id,
   OpenPeriod period,
   List<int> categoryIds,
-  EstimationdisplayOption displayOption,
+  EstimationDisplayOption displayOption,
   int currencyId, // displayOption
 ) async {
   throw UnimplementedError();
@@ -93,7 +93,7 @@ Future<void> deleteEstimationScheme(int id) async {
 Future<int> createMonitorScheme(
   OpenPeriod period,
   List<int> categoryIds,
-  MonitordisplayOption displayOption,
+  MonitorDisplayOption displayOption,
   int currencyId,
 ) async {
   throw UnimplementedError();
@@ -103,7 +103,7 @@ Future<void> editMonitorScheme(
   int id,
   OpenPeriod period,
   List<int> categoryIds,
-  MonitordisplayOption displayOption,
+  MonitorDisplayOption displayOption,
   int currencyId,
 ) async {
   throw UnimplementedError();

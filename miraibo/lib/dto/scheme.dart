@@ -38,7 +38,7 @@ class EstimationScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Currency currency;
-  final EstimationdisplayOption displayOption;
+  final EstimationDisplayOption displayOption;
   final List<Category> categories;
 
   const EstimationScheme(
@@ -53,7 +53,7 @@ class MonitorScheme {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Currency currency;
-  final MonitordisplayOption displayOption;
+  final MonitorDisplayOption displayOption;
   final List<Category> categories;
 
   const MonitorScheme(

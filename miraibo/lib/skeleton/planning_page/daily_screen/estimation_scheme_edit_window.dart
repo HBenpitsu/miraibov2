@@ -35,7 +35,7 @@ abstract interface class EstimationSchemeEditWindow {
   /// Update the estimation scheme with the specified parameters.
   /// [targetSchemeId] is used to identify the estimation scheme to be updated.
   Future<void> updateEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationdisplayOption displayOption, int currencyId);
+      EstimationDisplayOption displayOption, int currencyId);
 
   /// Delete the estimation scheme.
   /// [targetSchemeId] is used to identify the estimation scheme to be deleted.
@@ -93,14 +93,14 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
         ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
       ),
       currency: currencyList[0],
-      displayOption: EstimationdisplayOption.perWeek,
+      displayOption: EstimationDisplayOption.perWeek,
       categories: categoryList.sublist(0, 5),
     ));
   }
 
   @override
   Future<void> updateEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationdisplayOption displayOption, int currencyId) async {
+      EstimationDisplayOption displayOption, int currencyId) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
