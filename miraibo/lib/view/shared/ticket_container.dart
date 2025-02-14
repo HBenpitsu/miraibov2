@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/components/tickets.dart';
+import 'package:miraibo/view/shared/tickets.dart';
 
 class TicketContainer extends StatelessWidget {
   final Stream<List<dto.Ticket>> ticketsStream;

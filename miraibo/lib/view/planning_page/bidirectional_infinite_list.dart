@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/view/components/motion.dart';
+import 'package:miraibo/view/planning_page/motion.dart';
 
 class BiInifiniteList extends StatelessWidget {
   final Widget Function(int index) itemBuilder;

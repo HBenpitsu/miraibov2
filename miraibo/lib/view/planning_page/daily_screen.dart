@@ -3,8 +3,8 @@ import 'dart:math' show min;
 import 'package:flutter/material.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/components/bidirectional_infinite_list.dart';
-import 'package:miraibo/view/components/ticket_container.dart';
+import 'package:miraibo/view/planning_page/bidirectional_infinite_list.dart';
+import 'package:miraibo/view/shared/ticket_container.dart';
 
 /// DailyScreen has an infinite horizontal list of TicketContainer widgets, container label and ticket creation button.
 /// DailyScreen implement list-function. It updates label content. It instanciate the button as a floating button.

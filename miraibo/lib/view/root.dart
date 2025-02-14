@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/skeleton/root.dart' as skt;
-import 'package:miraibo/view/components/motion.dart';
+import 'package:miraibo/view/motion.dart';
 import 'package:miraibo/view/pages/pages.dart';
 
 /* 
@@ -17,7 +17,7 @@ class AppRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      scrollBehavior: const MyCustomScrollBehavior(),
+      scrollBehavior: const MouseScrollBehavior(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 255, 203, 91)),

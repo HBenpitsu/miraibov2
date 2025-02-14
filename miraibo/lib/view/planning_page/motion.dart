@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
-// <CustomScroll>
-/* 
-This page scroll physics make it possible to scroll page by page even though the page is not full of device-screen.
-*/
+/// This page scroll physics make it possible to scroll page by page even though the page is not full of device-screen.
 class FixiedWidthPageScrollPhysics extends ScrollPhysics {
   final double pageSizeInPixel;
   const FixiedWidthPageScrollPhysics(
@@ -56,15 +52,3 @@ class FixiedWidthPageScrollPhysics extends ScrollPhysics {
   @override
   bool get allowImplicitScrolling => false;
 }
-
-/* This custom scroll behavior enables mouse wheel */
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
-  const MyCustomScrollBehavior();
-
-  @override
-  Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-      };
-}
-// </CustomScroll>

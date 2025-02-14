@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
-import 'package:miraibo/view/pages/planning_page/daily_screen.dart';
-import 'package:miraibo/view/pages/planning_page/monthly_screen.dart';
+import 'package:miraibo/view/planning_page/daily_screen.dart';
+import 'package:miraibo/view/planning_page/monthly_screen.dart';
 
 /// SchedulingPage has two screens: MonthlyScreen and DailyScreen
 /// The main function of PlanningPage is to switch between these two screens

@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
-import 'package:miraibo/view/components/bidirectional_infinite_list.dart';
+import 'package:miraibo/view/planning_page/bidirectional_infinite_list.dart';
 
 /// MonthlyScreen has infinite list of MonthlyCalendar widgets
 /// Main function of MonthlyScreen is to show a list of MonthlyCalendar widgets
