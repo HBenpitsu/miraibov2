@@ -70,4 +70,10 @@ class _AppViewRootState extends State<AppViewRoot> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.skeleton.dispose();
+  }
 }

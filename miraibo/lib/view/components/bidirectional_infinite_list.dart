@@ -52,7 +52,7 @@ class BiInifiniteList extends StatelessWidget {
   }
 }
 
-class BiInfiniteFixedSizePageList extends StatelessWidget {
+class BiInfiniteFixedSizePageList extends StatefulWidget {
   final Widget Function(int index) pageBuilder;
 
   /// The size of the page in pixel in main (scroll) axis.
@@ -68,35 +68,51 @@ class BiInfiniteFixedSizePageList extends StatelessWidget {
       this.onPageChanged,
       super.key});
 
-  double widthFraction(BuildContext context) {
-    switch (direction) {
-      case AxisDirection.down:
-      case AxisDirection.up:
-        return pageSizeInPixel / MediaQuery.of(context).size.height;
-      case AxisDirection.left:
-      case AxisDirection.right:
-        return pageSizeInPixel / MediaQuery.of(context).size.width;
-    }
+  @override
+  State<BiInfiniteFixedSizePageList> createState() =>
+      _BiInfiniteFixedSizePageListState();
+}
+
+class _BiInfiniteFixedSizePageListState
+    extends State<BiInfiniteFixedSizePageList> {
+  late final ScrollController controller =
+      widget.controller ?? ScrollController();
+  int currentPage = 0;
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(() {
+      if (widget.onPageChanged == null) return;
+      final page = (controller.offset / widget.pageSizeInPixel).round();
+      if (currentPage == page) return;
+      currentPage = page;
+      widget.onPageChanged!(page);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // bind onPageChanged event to the controller
-    final controller = this.controller ?? ScrollController();
-    controller.addListener(() {
-      if (onPageChanged != null) {
-        onPageChanged!((controller.offset / pageSizeInPixel).round());
-      }
-    });
     // infinite list
     return BiInifiniteList(
       itemBuilder: (index) {
-        return pageBuilder(index);
+        return widget.pageBuilder(index);
       },
-      physics: FixiedWidthPageScrollPhysics(pageSizeInPixel: pageSizeInPixel),
-      anchor: (1 - widthFraction(context)) / 2,
-      axisDirection: direction,
+      physics:
+          FixiedWidthPageScrollPhysics(pageSizeInPixel: widget.pageSizeInPixel),
+      anchor: (1 - widthFraction()) / 2,
+      axisDirection: widget.direction,
       controller: controller,
     );
+  }
+
+  double widthFraction() {
+    switch (widget.direction) {
+      case AxisDirection.down:
+      case AxisDirection.up:
+        return widget.pageSizeInPixel / MediaQuery.of(context).size.height;
+      case AxisDirection.left:
+      case AxisDirection.right:
+        return widget.pageSizeInPixel / MediaQuery.of(context).size.width;
+    }
   }
 }

@@ -341,8 +341,6 @@ class MockDataPage implements DataPage {
               ]);
         case ChartSchemeUnspecified _:
           return ChartUnspecified();
-        default:
-          throw Exception('Illegal chart scheme');
       }
     });
   }
@@ -356,22 +354,20 @@ class MockDataPage implements DataPage {
     return temporaryTicketStream.map((scheme) {
       switch (scheme) {
         // provide mock ticket based on the scheme.
-        case TemporaryEstimationTicket _:
+        case TemporaryEstimationScheme _:
           return const TemporaryEstimationTicket(
               period: period,
               price: price,
               displayConfig: EstimationDisplayConfig.perDay,
               categoryNames: []);
-        case TemporaryMonitorTicket _:
+        case TemporaryMonitorScheme _:
           return const TemporaryMonitorTicket(
               period: period,
               price: price,
               displayConfig: MonitorDisplayConfig.meanInDays,
               categoryNames: []);
-        case TemporaryTicketUnspecified _:
+        case TemporaryTicketSchemeUnspecified _:
           return TemporaryTicketUnspecified();
-        default:
-          throw Exception('Illegal ticket scheme');
       }
     });
   }

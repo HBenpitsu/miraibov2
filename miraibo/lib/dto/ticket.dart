@@ -11,9 +11,11 @@ sealed class Ticket {
   const Ticket();
 }
 
-mixin ReceiptLogAndMonitorTicket on Ticket {}
+sealed class ReceiptLogAndMonitorTicket extends Ticket {
+  const ReceiptLogAndMonitorTicket();
+}
 
-class ReceiptLogTicket extends Ticket with ReceiptLogAndMonitorTicket {
+class ReceiptLogTicket extends ReceiptLogAndMonitorTicket {
   final int id; // only id is the clue to identify the entity
   final Date date;
   final Price price;
@@ -60,7 +62,7 @@ class EstimationTicket extends Ticket {
       required this.categoryNames});
 }
 
-class MonitorTicket extends Ticket with ReceiptLogAndMonitorTicket {
+class MonitorTicket extends ReceiptLogAndMonitorTicket {
   final int id; // only id is the clue to identify the entity
   final OpenPeriod period;
   final Price price;

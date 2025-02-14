@@ -8,22 +8,32 @@ import 'package:miraibo/view/components/bidirectional_infinite_list.dart';
 
 /// MonthlyScreen has infinite list of MonthlyCalendar widgets
 /// Main function of MonthlyScreen is to show a list of MonthlyCalendar widgets
-class MonthlyScreen extends StatelessWidget {
+class MonthlyScreen extends StatefulWidget {
   final skt.MonthlyScreen skeleton;
   final void Function(skt.DailyScreen) navigateToDailyScreen;
   const MonthlyScreen(this.skeleton,
       {required this.navigateToDailyScreen, super.key});
 
   @override
+  State<MonthlyScreen> createState() => _MonthlyScreenState();
+}
+
+class _MonthlyScreenState extends State<MonthlyScreen> {
+  @override
   Widget build(BuildContext context) {
     return BiInifiniteList(itemBuilder: (index) {
-      final calenderData = skeleton.getCalender(index);
+      final calenderData = widget.skeleton.getCalender(index);
       return Calender(calenderData, onTap: (date) {
-        navigateToDailyScreen(
-            skeleton.navigateToDailyScreen(date.year, date.month, date.day));
-        skeleton.dispose();
+        widget.navigateToDailyScreen(widget.skeleton
+            .navigateToDailyScreen(date.year, date.month, date.day));
       }, key: ValueKey(index));
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.skeleton.dispose();
   }
 }
 
@@ -168,8 +178,6 @@ class CalenderPainter extends CustomPainter {
           ..color = colorScheme.primaryContainer
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2;
-      default:
-        throw Exception('Illegal EventExistence value');
     }
   }
 
@@ -186,8 +194,6 @@ class CalenderPainter extends CustomPainter {
         builder.pushStyle(ui.TextStyle(color: colorScheme.onSurface));
       case EventExistence.important:
         builder.pushStyle(ui.TextStyle(color: colorScheme.primary));
-      default:
-        throw Exception('Illegal EventExistence value');
     }
     builder.addText(day.toString());
     final paragraph = builder.build();

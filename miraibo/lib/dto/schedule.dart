@@ -19,6 +19,8 @@ class IntervalSchedule extends Schedule {
       {required this.originDate, required this.period, required this.interval});
 }
 
+/// watch out: at least one of the weekdays should be true.
+/// Otherwise, it can not be shown anywhere.
 class WeeklySchedule extends Schedule {
   final OpenPeriod period;
   final bool sunday; // weekdays

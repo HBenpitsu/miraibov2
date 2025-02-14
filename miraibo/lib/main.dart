@@ -4,6 +4,5 @@ import 'package:miraibo/view/root.dart' as view;
 
 void main() {
   final mockSkeleton = skeleton.MockRoot();
-  final app = view.AppRoot(mockSkeleton);
-  runApp(app);
+  runApp(view.AppRoot(mockSkeleton));
 }
