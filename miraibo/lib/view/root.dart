@@ -51,6 +51,7 @@ class _AppViewRootState extends State<AppViewRoot> {
       length: 4,
       initialIndex: 1,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text('Miraibo'),
           bottom: const TabBar(

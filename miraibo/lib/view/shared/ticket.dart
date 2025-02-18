@@ -24,6 +24,7 @@ class Ticket extends StatelessWidget {
             description: data.description,
             amount: data.price.amount,
             currencySymbol: data.price.symbol,
+            confirmed: data.confirmed,
             timestamp: data.date);
       case dto.PlanTicket data:
         return PlanTicketContent(
@@ -55,12 +56,14 @@ class LogTicketContent extends StatelessWidget {
   final String description;
   final int amount;
   final String currencySymbol;
+  final bool confirmed;
   final dto.Date timestamp;
   const LogTicketContent(
       {required this.categories,
       required this.description,
       required this.amount,
       required this.currencySymbol,
+      required this.confirmed,
       required this.timestamp,
       super.key});
   @override
@@ -70,7 +73,7 @@ class LogTicketContent extends StatelessWidget {
       ticketType: 'Log',
       categories: categories,
       amount: amount,
-      currencySymbol: currencySymbol,
+      currencySymbol: currencySymbol + (confirmed ? '' : ' (unconfirmed)'),
       description: description,
       timeInfo: '${timestamp.year}-${timestamp.month}-${timestamp.day}',
       priceBackgroundColor: colorScheme.surfaceContainerHighest,

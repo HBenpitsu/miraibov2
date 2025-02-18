@@ -27,7 +27,7 @@ abstract interface class MonitorSchemeEditWindow {
   Future<List<Currency>> getCurrencyOptions();
 
   /// get original monitor scheme. original configuration should be supplied when users editing it.
-  Future<MonitorScheme> getOriginalMonitorScheme();
+  Future<MonitorSchemeInstance> getOriginalMonitorScheme();
   // </presenters>
 
   // <controllers>
@@ -79,11 +79,11 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
   }
 
   @override
-  Future<MonitorScheme> getOriginalMonitorScheme() {
+  Future<MonitorSchemeInstance> getOriginalMonitorScheme() {
     final today = DateTime.now();
     final twoWeeksLater = today.add(const Duration(days: 14));
     final twoWeeksAgo = today.subtract(const Duration(days: 14));
-    return Future.value(MonitorScheme(
+    return Future.value(MonitorSchemeInstance(
       id: targetTicketId,
       period: OpenPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),

@@ -30,7 +30,7 @@ abstract interface class ReceiptLogEditWindow {
   // here, we do not need default currency, because original receipt log already has currency.
 
   /// get original receipt log. original configuration should be supplied when users editing it.
-  Future<ReceiptLogScheme> getOriginalReceiptLog();
+  Future<ReceiptLogSchemeInstance> getOriginalReceiptLog();
   // </presenters>
 
   // <controllers>
@@ -81,9 +81,9 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
   }
 
   @override
-  Future<ReceiptLogScheme> getOriginalReceiptLog() {
+  Future<ReceiptLogSchemeInstance> getOriginalReceiptLog() {
     final today = DateTime.now();
-    return Future.value(ReceiptLogScheme(
+    return Future.value(ReceiptLogSchemeInstance(
       id: targetLogId,
       category: categoryList[0],
       date: Date(today.year, today.month, today.day),

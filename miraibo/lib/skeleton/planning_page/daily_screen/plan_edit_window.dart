@@ -27,7 +27,7 @@ abstract interface class PlanEditWindow {
 
   /// Get the original plan.
   /// The original scheme of the plan should be supplied when users are editing it.
-  Future<PlanScheme> getOriginalPlan();
+  Future<PlanSchemeInstance> getOriginalPlan();
   // </presenters>
 
   // <controllers>
@@ -78,9 +78,9 @@ class MockPlanEditWindow implements PlanEditWindow {
   }
 
   @override
-  Future<PlanScheme> getOriginalPlan() {
+  Future<PlanSchemeInstance> getOriginalPlan() {
     final today = DateTime.now();
-    return Future.value(PlanScheme(
+    return Future.value(PlanSchemeInstance(
         id: targetPlanId,
         category: categoryList[0],
         schedule:

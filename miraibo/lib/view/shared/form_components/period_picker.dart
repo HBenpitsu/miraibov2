@@ -1,7 +1,7 @@
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/form_components/shared_constants.dart';
 
 // <OpenPeriodPicker>
 /// A OpenPeriodSelector which combines some widgets to select a period
@@ -10,7 +10,7 @@ class OpenPeriodPicker extends StatefulWidget {
   final dto.OpenPeriod initial;
   final void Function(dto.OpenPeriod) onChanged;
   static const edgeButtonRatio = 0.15;
-  static const borderRadius = Radius.circular(30);
+  static const borderRadius = Radius.circular(formChipHeight / 2);
   const OpenPeriodPicker(
       {required this.initial, required this.onChanged, super.key});
 
@@ -271,7 +271,14 @@ class _ClosedPeriodPickerState extends State<ClosedPeriodPicker> {
     final lastDate =
         DateTime(current.ends.year + 200, current.ends.month, current.ends.day);
     showDateRangePicker(
-            context: context, firstDate: firstDate, lastDate: lastDate)
+            context: context,
+            initialDateRange: DateTimeRange(
+                start: DateTime(current.begins.year, current.begins.month,
+                    current.begins.day),
+                end: DateTime(
+                    current.ends.year, current.ends.month, current.ends.day)),
+            firstDate: firstDate,
+            lastDate: lastDate)
         .then((value) {
       if (value == null) return;
       setState(() {

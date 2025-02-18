@@ -28,7 +28,7 @@ abstract interface class EstimationSchemeEditWindow {
 
   /// Get the original estimation scheme.
   /// The original configuration should be supplied when users are editing it.
-  Future<EstimationScheme> getOriginalEstimationScheme();
+  Future<EstimationSchemeInstance> getOriginalEstimationScheme();
   // </presenters>
 
   // <controllers>
@@ -82,11 +82,11 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
   }
 
   @override
-  Future<EstimationScheme> getOriginalEstimationScheme() {
+  Future<EstimationSchemeInstance> getOriginalEstimationScheme() {
     final today = DateTime.now();
     final twoWeeksLater = today.add(const Duration(days: 14));
     final twoWeeksAgo = today.subtract(const Duration(days: 14));
-    return Future.value(EstimationScheme(
+    return Future.value(EstimationSchemeInstance(
       id: targetSchemeId,
       period: OpenPeriod(
         begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),

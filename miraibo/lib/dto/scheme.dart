@@ -2,16 +2,24 @@ import 'package:miraibo/dto/general.dart';
 import 'package:miraibo/dto/schedule.dart';
 import 'package:miraibo/dto/enumration.dart';
 
-class ReceiptLogScheme {
+sealed class TicketSchemeInstance {
   final int id; // only id is the clue to identify the entity
+  const TicketSchemeInstance({required this.id});
+}
+
+sealed class TicketScheme {
+  const TicketScheme();
+}
+
+class ReceiptLogSchemeInstance extends TicketSchemeInstance {
   final Date date;
   final PriceConfig price;
   final String description;
   final Category category;
   final bool confirmed;
 
-  const ReceiptLogScheme(
-      {required this.id,
+  const ReceiptLogSchemeInstance(
+      {required super.id,
       required this.date,
       required this.price,
       required this.description,
@@ -19,46 +27,97 @@ class ReceiptLogScheme {
       required this.confirmed});
 }
 
-class PlanScheme {
-  final int id; // only id is the clue to identify the entity
+class ReceiptLogScheme extends TicketScheme {
+  final Date date;
+  final PriceConfig price;
+  final String description;
+  final Category category;
+  final bool confirmed;
+
+  const ReceiptLogScheme(
+      {required this.date,
+      required this.price,
+      required this.description,
+      required this.category,
+      required this.confirmed});
+}
+
+class PlanSchemeInstance extends TicketSchemeInstance {
   final Schedule schedule;
   final PriceConfig price;
   final String description;
   final Category category;
 
-  const PlanScheme(
-      {required this.id,
+  const PlanSchemeInstance(
+      {required super.id,
       required this.schedule,
       required this.price,
       required this.description,
       required this.category});
 }
 
-class EstimationScheme {
-  final int id; // only id is the clue to identify the entity
+class PlanScheme extends TicketScheme {
+  final Schedule schedule;
+  final PriceConfig price;
+  final String description;
+  final Category category;
+
+  const PlanScheme(
+      {required this.schedule,
+      required this.price,
+      required this.description,
+      required this.category});
+}
+
+class EstimationSchemeInstance extends TicketSchemeInstance {
   final OpenPeriod period;
   final Currency currency;
   final EstimationDisplayOption displayOption;
   final List<Category> categories;
 
-  const EstimationScheme(
-      {required this.id,
+  const EstimationSchemeInstance(
+      {required super.id,
       required this.period,
       required this.currency,
       required this.displayOption,
       required this.categories});
 }
 
-class MonitorScheme {
-  final int id; // only id is the clue to identify the entity
+class EstimationScheme extends TicketScheme {
+  final OpenPeriod period;
+  final Currency currency;
+  final EstimationDisplayOption displayOption;
+  final List<Category> categories;
+
+  const EstimationScheme(
+      {required this.period,
+      required this.currency,
+      required this.displayOption,
+      required this.categories});
+}
+
+class MonitorSchemeInstance extends TicketSchemeInstance {
+  final OpenPeriod period;
+  final Currency currency;
+  final MonitorDisplayOption displayOption;
+  final List<Category> categories;
+
+  const MonitorSchemeInstance(
+      {required super.id,
+      required this.period,
+      required this.currency,
+      required this.displayOption,
+      required this.categories});
+}
+
+class MonitorScheme extends TicketScheme {
   final OpenPeriod period;
   final Currency currency;
   final MonitorDisplayOption displayOption;
   final List<Category> categories;
 
   const MonitorScheme(
-      {required this.id,
-      required this.period,
+      {required this.period,
       required this.currency,
       required this.displayOption,
       required this.categories});

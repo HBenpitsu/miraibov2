@@ -90,7 +90,7 @@ abstract interface class DataPage {
 // </interface>
 
 // <view model>
-typedef TableRecord = Stream<ReceiptLogScheme?>;
+typedef TableRecord = Stream<ReceiptLogSchemeInstance?>;
 
 /// Table segment is a set of table rows.
 /// It provides some features to show the table efficiently.
@@ -436,20 +436,20 @@ class MockDataPage implements DataPage {
 class MockReceiptLogVault {
   // <valut fields>
   /// the mock vault to store the receipt logs.
-  late final List<ReceiptLogScheme> receiptLogs;
+  late final List<ReceiptLogSchemeInstance> receiptLogs;
   // it listens to updates of the receipt logs.
-  late final Stream<List<ReceiptLogScheme>> receiptLogsStream;
-  late final Sink<List<ReceiptLogScheme>> receiptLogsSink;
+  late final Stream<List<ReceiptLogSchemeInstance>> receiptLogsStream;
+  late final Sink<List<ReceiptLogSchemeInstance>> receiptLogsSink;
   // it provides the first record of the receipt logs.
-  late final Stream<ReceiptLogScheme?> firstRecordStream;
-  late final Sink<ReceiptLogScheme?> firstRecordSink;
+  late final Stream<ReceiptLogSchemeInstance?> firstRecordStream;
+  late final Sink<ReceiptLogSchemeInstance?> firstRecordSink;
   Stream<int?> get firstKey => firstRecordStream.map((record) => record?.id);
   // </valut fields>
   MockReceiptLogVault() {
     // <mock receipt logs>
     receiptLogs = [
       for (var i = 0; i < 20; i++)
-        ReceiptLogScheme(
+        ReceiptLogSchemeInstance(
             id: i,
             price: const PriceConfig(
                 amount: 1000, currencySymbol: 'JPY', currencyId: 0),
@@ -461,12 +461,12 @@ class MockReceiptLogVault {
     // </mock receipt logs>
     // <initialize stream>
     final receiptLogsStreamController =
-        StreamController<List<ReceiptLogScheme>>.broadcast();
+        StreamController<List<ReceiptLogSchemeInstance>>.broadcast();
     receiptLogsStream = receiptLogsStreamController.stream;
     receiptLogsSink = receiptLogsStreamController.sink;
     receiptLogsSink.add(receiptLogs);
     final firstRecordStreamController =
-        StreamController<ReceiptLogScheme?>.broadcast();
+        StreamController<ReceiptLogSchemeInstance?>.broadcast();
     firstRecordStream = firstRecordStreamController.stream;
     firstRecordSink = firstRecordStreamController.sink;
     firstRecordSink.add(receiptLogs.firstOrNull);
@@ -479,10 +479,10 @@ class MockReceiptLogVault {
     final ticketSink = StreamController<List<Ticket>>();
     ticketSink.stream.listen((tickets) {
       // update the receipt logs with new tickets everytime.
-      final newLogs = <ReceiptLogScheme>[];
+      final newLogs = <ReceiptLogSchemeInstance>[];
       for (var ticket in tickets) {
         if (ticket is! ReceiptLogTicket) continue;
-        final log = ReceiptLogScheme(
+        final log = ReceiptLogSchemeInstance(
             id: ticket.id,
             price: PriceConfig(
                 amount: ticket.price.amount,
@@ -520,18 +520,18 @@ class MockReceiptLogVault {
   }
 
   /// returns a list of streams of receipt logs and a stream of the key for the next record.
-  (List<Stream<ReceiptLogScheme?>>, Stream<int?>) getReceiptLogs(
+  (List<Stream<ReceiptLogSchemeInstance?>>, Stream<int?>) getReceiptLogs(
       int key, int limit) {
     // records to be returned
     final records = receiptLogs.where((log) => log.id >= key).take(limit);
     // wrap the records with stream
     final recordsBox = records.map((record) {
-      final stream = StreamController<ReceiptLogScheme?>();
+      final stream = StreamController<ReceiptLogSchemeInstance?>();
       stream.add(record); // the stream is fed with the record at this point.
 
       // the stream tracks the updates of the receipt logs.
       receiptLogsStream.listen((logs) {
-        ReceiptLogScheme? newRecord =
+        ReceiptLogSchemeInstance? newRecord =
             logs.where((log) => record.id == log.id).firstOrNull;
         stream.add(newRecord);
       });

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/form_components/form_components.dart';
-import 'package:miraibo/view/form_components/multi_selector.dart';
+import 'package:miraibo/view/shared/form_components/form_components.dart';
+import 'package:miraibo/view/shared/form_components/multi_selector.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -74,7 +74,7 @@ class _MainPageState extends State<MainPage> {
               print(value);
             }),
         MultiSelector.fromTuple(
-            items: [for (var i = 0; i < 20; i++) ('item $i', i, i.isEven)],
+            items: [for (var i = 0; i < 200; i++) ('item あ $i', i, i.isEven)],
             onChanged: (value) {
               print(value);
             })

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/form_components/shared_constants.dart';
 
 // <DatePicker>
 /// A button to call the date picker dialog

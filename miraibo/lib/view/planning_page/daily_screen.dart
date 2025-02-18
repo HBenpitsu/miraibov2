@@ -92,7 +92,11 @@ class _DailyScreenState extends State<DailyScreen> {
       case dto.PlanTicket ticket:
         widget.skeleton.openPlanEditWindow(ticket.id);
       case dto.ReceiptLogTicket ticket:
-        widget.skeleton.openReceiptLogEditWindow(ticket.id);
+        if (ticket.confirmed) {
+          widget.skeleton.openReceiptLogEditWindow(ticket.id);
+        } else {
+          widget.skeleton.openReceiptLogConfirmationWindow(ticket.id);
+        }
     }
   }
 
