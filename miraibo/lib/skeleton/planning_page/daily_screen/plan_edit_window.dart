@@ -27,14 +27,18 @@ abstract interface class PlanEditWindow {
 
   /// Get the original plan.
   /// The original scheme of the plan should be supplied when users are editing it.
-  Future<PlanSchemeInstance> getOriginalPlan();
+  Future<PlanScheme> getOriginalPlan();
   // </presenters>
 
   // <controllers>
   /// Update the plan with the specified parameters.
   /// [targetPlanId] is used to identify the plan to be updated.
   Future<void> updatePlan(
-      int categoryId, String description, Price price, Schedule schedule);
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Schedule schedule});
 
   /// Delete the plan.
   /// [targetPlanId] is used to identify the plan to be deleted.
@@ -78,14 +82,12 @@ class MockPlanEditWindow implements PlanEditWindow {
   }
 
   @override
-  Future<PlanSchemeInstance> getOriginalPlan() {
-    final today = DateTime.now();
-    return Future.value(PlanSchemeInstance(
-        id: targetPlanId,
+  Future<PlanScheme> getOriginalPlan() {
+    final today = DateTime.now().cutOffTime();
+    return Future.value(PlanScheme(
         category: categoryList[0],
-        schedule:
-            OneshotSchedule(date: Date(today.year, today.month, today.day)),
-        price: PriceConfig(
+        schedule: OneshotSchedule(date: today),
+        price: ConfigureblePrice(
             amount: 1000,
             currencyId: 0,
             currencySymbol: currencyList[0].symbol),
@@ -93,8 +95,12 @@ class MockPlanEditWindow implements PlanEditWindow {
   }
 
   @override
-  Future<void> updatePlan(int categoryId, String description, Price price,
-      Schedule schedule) async {
+  Future<void> updatePlan(
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Schedule schedule}) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -108,7 +114,7 @@ class MockPlanEditWindow implements PlanEditWindow {
       }
       newTickets.add(PlanTicket(
         id: targetPlanId,
-        price: price,
+        price: Price(amount: amount, symbol: currencyList[currencyId].symbol),
         schedule: schedule,
         description: description,
         categoryName: categoryList[categoryId].name,

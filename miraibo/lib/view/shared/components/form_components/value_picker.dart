@@ -1,7 +1,7 @@
 import 'package:flutter/scheduler.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:flutter/material.dart';
-import 'package:miraibo/view/shared/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 
 // <NumberPicker>
 /// A widget to select a number from min to max

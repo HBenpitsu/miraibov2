@@ -54,7 +54,7 @@ abstract interface class UtilsPage {
 
 // <view model>
 typedef CategorySection = Stream<List<Category>>;
-typedef CurrencySection = Stream<List<CurrencyConfig>>;
+typedef CurrencySection = Stream<List<CurrencyInstance>>;
 // </view model>
 
 // <mock>
@@ -97,7 +97,7 @@ class MockUtilsPage implements UtilsPage {
   @override
   CurrencySection currencySection() {
     return currencyStream.map((data) => data.entries
-        .map((entry) => CurrencyConfig(
+        .map((entry) => CurrencyInstance(
             id: entry.key,
             symbol: entry.value.$1,
             ratio: entry.value.$2,

@@ -95,11 +95,9 @@ class MockAccumulationChartSection implements AccumulationChartSection {
     final twoWeeksAgo = now.subtract(const Duration(days: 14));
     final twoWeeksLater = now.add(const Duration(days: 14));
     final period = OpenPeriod(
-        begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
-        ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
+        begins: twoWeeksAgo.cutOffTime(), ends: twoWeeksLater.cutOffTime());
     final closedPeriod = ClosedPeriod(
-        begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
-        ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
+        begins: twoWeeksAgo.cutOffTime(), ends: twoWeeksLater.cutOffTime());
     // </prepare parameters>
     return AccumulationChartScheme(
         currency: currencyList[0],

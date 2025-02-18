@@ -24,8 +24,7 @@ class MockPlanningPage implements PlanningPage {
   @override
   MonthlyScreen showInitialScreen() {
     final now = DateTime.now();
-    final today = Date(now.year, now.month, now.day);
-    return MockMonthlyScreen(today);
+    return MockMonthlyScreen(now.cutOffTime());
   }
 
   @override

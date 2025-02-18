@@ -15,8 +15,7 @@ class Ticket extends StatelessWidget {
     return min(maxTicketWidth, MediaQuery.of(context).size.width);
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget content(BuildContext context) {
     switch (data) {
       case dto.ReceiptLogTicket data:
         return LogTicketContent(
@@ -48,6 +47,14 @@ class Ticket extends StatelessWidget {
             displayOption: data.displayOption,
             period: data.period);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onTap(data),
+      child: content(context),
+    );
   }
 }
 

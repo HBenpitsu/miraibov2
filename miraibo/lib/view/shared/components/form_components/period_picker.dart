@@ -1,7 +1,6 @@
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/shared/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 
 // <OpenPeriodPicker>
 /// A OpenPeriodSelector which combines some widgets to select a period
@@ -20,19 +19,15 @@ class OpenPeriodPicker extends StatefulWidget {
 
 class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
   late dto.Date begins;
-  DateTime get beginsAsDateTime =>
-      DateTime(begins.year, begins.month, begins.day);
   late bool isBeginningOpen;
   late dto.Date ends;
-  DateTime get endsAsDateTime => DateTime(ends.year, ends.month, ends.day);
   late bool isEndingOpen;
-  final FToast fToast = FToast();
 
   @override
   void initState() {
     super.initState();
     final now = DateTime.now();
-    final today = dto.Date(now.year, now.month, now.day);
+    final today = now.cutOffTime();
     begins = widget.initial.begins ?? today;
     isBeginningOpen = widget.initial.begins == null;
     ends = widget.initial.ends ?? today;
@@ -123,7 +118,7 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
   void showSelector() {
     switch ((isBeginningOpen, isEndingOpen)) {
       case (true, true):
-        showChips();
+        showSnackBar();
       case (true, false):
         showDataPickerForEnding();
       case (false, true):
@@ -158,7 +153,7 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
       setState(() {
         begins = dto.Date(value.year, value.month, value.day);
         // keep the consistency of the period
-        if (value.isAfter(endsAsDateTime)) {
+        if (value.isAfter(ends.asDateTime())) {
           ends = begins;
         }
         apply();
@@ -178,7 +173,7 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
       setState(() {
         ends = dto.Date(value.year, value.month, value.day);
         // keep the consistency of the period
-        if (value.isBefore(beginsAsDateTime)) {
+        if (value.isBefore(begins.asDateTime())) {
           begins = ends;
         }
         apply();
@@ -194,32 +189,23 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
     final lastDate = DateTime(ends.year + 200, ends.month, ends.day);
     showDateRangePicker(
             context: context,
-            initialDateRange:
-                DateTimeRange(start: beginsAsDateTime, end: endsAsDateTime),
+            initialDateRange: DateTimeRange(
+                start: begins.asDateTime(), end: ends.asDateTime()),
             firstDate: firstDate,
             lastDate: lastDate)
         .then((value) {
       if (value == null) return;
       setState(() {
-        begins = dto.Date(value.start.year, value.start.month, value.start.day);
-        ends = dto.Date(value.end.year, value.end.month, value.end.day);
+        begins = value.start.cutOffTime();
+        ends = value.end.cutOffTime();
         apply();
       });
     });
   }
 
-  void showChips() {
-    try {
-      fToast.init(context);
-      const message = Column(children: [
-        Text("tap side buttons at first"),
-        Text("to specify the period"),
-      ]);
-      fToast.showToast(child: message);
-    } catch (e) {
-      // this is only used to show the toast message
-      // we do not care about any error for this
-    }
+  void showSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Wrap(children: [Text('Tap a side button first.')])));
   }
 }
 
@@ -272,20 +258,13 @@ class _ClosedPeriodPickerState extends State<ClosedPeriodPicker> {
         DateTime(current.ends.year + 200, current.ends.month, current.ends.day);
     showDateRangePicker(
             context: context,
-            initialDateRange: DateTimeRange(
-                start: DateTime(current.begins.year, current.begins.month,
-                    current.begins.day),
-                end: DateTime(
-                    current.ends.year, current.ends.month, current.ends.day)),
+            initialDateRange: current.asDateTimeRange(),
             firstDate: firstDate,
             lastDate: lastDate)
         .then((value) {
       if (value == null) return;
       setState(() {
-        current = dto.ClosedPeriod(
-            begins:
-                dto.Date(value.start.year, value.start.month, value.start.day),
-            ends: dto.Date(value.end.year, value.end.month, value.end.day));
+        current = value.cutOffTime();
         widget.onChanged(current);
       });
     });

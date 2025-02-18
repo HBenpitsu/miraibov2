@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:miraibo/view/shared/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/modal_window.dart';
 
 // <multi_selector>
 /// A widget that allows multiple selections from dropdowns
@@ -19,8 +20,6 @@ class MultiSelector<T> extends StatefulWidget {
   static const double heightOfItemDisplay = 200;
   static const double heightOfUpperVale = 10;
   static const double widthOfHorizontalPadding = 30;
-  static const double ratioOfPickUpWindowHeight = 0.5;
-  static const double ratioOfPickUpWindowWidth = 0.9;
 
   const MultiSelector(
       {required this.labels,
@@ -303,8 +302,9 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
                 borderRadius: BorderRadius.circular(formChipHeight))),
         onSubmitted: (value) {
           final search = value.toLowerCase();
-          currentlyVisible = List.generate(widget.labels.length,
-              (index) => widget.labels[index].toLowerCase().contains(search));
+          currentlyVisible = widget.labels
+              .map((elem) => elem.toLowerCase().contains(search))
+              .toList();
           visibilityNotifier.add(currentlyVisible);
         });
     final resetButton = IconButton(
@@ -396,32 +396,13 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final windowStyle = BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Theme.of(context).colorScheme.surface);
-    final mainContent = Column(children: [
+    return ModalWindowContainer(
+        child: Column(children: [
       Expanded(child: itemListHolder()),
       const SizedBox(height: 10),
       searchBar(),
       actionButtons(),
-    ]);
-    final window = Container(
-        height: screenSize.height * MultiSelector.ratioOfPickUpWindowHeight,
-        width: screenSize.width * MultiSelector.ratioOfPickUpWindowWidth,
-        decoration: windowStyle,
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-            child: mainContent));
-    return Scaffold(
-        // scaffold is needed to avoid screen keyboard overlapping
-        backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-        body: Center(
-            child: Column(children: [
-          const Spacer(flex: 2),
-          window,
-          const Spacer(),
-        ])));
+    ]));
   }
 }
 

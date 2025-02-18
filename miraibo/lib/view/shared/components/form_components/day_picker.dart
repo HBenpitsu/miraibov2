@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/view/shared/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 
 // <DayOfWeekSelector>
 /// DayOfWeekSelector is a widget to select some days of the week

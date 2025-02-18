@@ -28,14 +28,17 @@ abstract interface class EstimationSchemeEditWindow {
 
   /// Get the original estimation scheme.
   /// The original configuration should be supplied when users are editing it.
-  Future<EstimationSchemeInstance> getOriginalEstimationScheme();
+  Future<EstimationScheme> getOriginalEstimationScheme();
   // </presenters>
 
   // <controllers>
   /// Update the estimation scheme with the specified parameters.
   /// [targetSchemeId] is used to identify the estimation scheme to be updated.
-  Future<void> updateEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationDisplayOption displayOption, int currencyId);
+  Future<void> updateEstimationScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required EstimationDisplayOption displayOption,
+      required int currencyId});
 
   /// Delete the estimation scheme.
   /// [targetSchemeId] is used to identify the estimation scheme to be deleted.
@@ -82,15 +85,14 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
   }
 
   @override
-  Future<EstimationSchemeInstance> getOriginalEstimationScheme() {
+  Future<EstimationScheme> getOriginalEstimationScheme() {
     final today = DateTime.now();
-    final twoWeeksLater = today.add(const Duration(days: 14));
-    final twoWeeksAgo = today.subtract(const Duration(days: 14));
-    return Future.value(EstimationSchemeInstance(
-      id: targetSchemeId,
+    final twoWeeksLater = today.add(const Duration(days: 14)).cutOffTime();
+    final twoWeeksAgo = today.subtract(const Duration(days: 14)).cutOffTime();
+    return Future.value(EstimationScheme(
       period: OpenPeriod(
-        begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
-        ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
+        begins: twoWeeksAgo,
+        ends: twoWeeksLater,
       ),
       currency: currencyList[0],
       displayOption: EstimationDisplayOption.perWeek,
@@ -99,8 +101,11 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
   }
 
   @override
-  Future<void> updateEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationDisplayOption displayOption, int currencyId) async {
+  Future<void> updateEstimationScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required EstimationDisplayOption displayOption,
+      required int currencyId}) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);

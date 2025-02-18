@@ -27,14 +27,17 @@ abstract interface class MonitorSchemeEditWindow {
   Future<List<Currency>> getCurrencyOptions();
 
   /// get original monitor scheme. original configuration should be supplied when users editing it.
-  Future<MonitorSchemeInstance> getOriginalMonitorScheme();
+  Future<MonitorScheme> getOriginalMonitorScheme();
   // </presenters>
 
   // <controllers>
   /// update the monitor scheme with the specified parameters.
   /// [targetTicketId] is used to identify the monitor scheme to be updated.
-  Future<void> updateMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayOption displayOption, int currencyId);
+  Future<void> updateMonitorScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required MonitorDisplayOption displayOption,
+      required int currencyId});
 
   /// delete the monitor scheme.
   /// [targetTicketId] is used to identify the monitor scheme to be deleted.
@@ -79,15 +82,14 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
   }
 
   @override
-  Future<MonitorSchemeInstance> getOriginalMonitorScheme() {
+  Future<MonitorScheme> getOriginalMonitorScheme() {
     final today = DateTime.now();
-    final twoWeeksLater = today.add(const Duration(days: 14));
-    final twoWeeksAgo = today.subtract(const Duration(days: 14));
-    return Future.value(MonitorSchemeInstance(
-      id: targetTicketId,
+    final twoWeeksLater = today.add(const Duration(days: 14)).cutOffTime();
+    final twoWeeksAgo = today.subtract(const Duration(days: 14)).cutOffTime();
+    return Future.value(MonitorScheme(
       period: OpenPeriod(
-        begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
-        ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day),
+        begins: twoWeeksAgo,
+        ends: twoWeeksLater,
       ),
       currency: currencyList[0],
       displayOption: MonitorDisplayOption.meanInDays,
@@ -96,8 +98,11 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
   }
 
   @override
-  Future<void> updateMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayOption displayOption, int currencyId) async {
+  Future<void> updateMonitorScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required MonitorDisplayOption displayOption,
+      required int currencyId}) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);

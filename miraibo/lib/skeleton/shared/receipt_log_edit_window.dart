@@ -30,14 +30,18 @@ abstract interface class ReceiptLogEditWindow {
   // here, we do not need default currency, because original receipt log already has currency.
 
   /// get original receipt log. original configuration should be supplied when users editing it.
-  Future<ReceiptLogSchemeInstance> getOriginalReceiptLog();
+  Future<ReceiptLogScheme> getOriginalReceiptLog();
   // </presenters>
 
   // <controllers>
   /// update the receipt log with the specified parameters.
   /// [targetLogId] is used to identify the receipt log to be updated.
-  Future<void> updateReceiptLog(int categoryId, String description, Price price,
-      Date date, bool confirmed);
+  Future<void> updateReceiptLog(
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Date date});
 
   /// delete the receipt log.
   /// [targetLogId] is used to identify the receipt log to be deleted.
@@ -81,22 +85,25 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
   }
 
   @override
-  Future<ReceiptLogSchemeInstance> getOriginalReceiptLog() {
-    final today = DateTime.now();
-    return Future.value(ReceiptLogSchemeInstance(
-      id: targetLogId,
+  Future<ReceiptLogScheme> getOriginalReceiptLog() {
+    final today = DateTime.now().cutOffTime();
+    return Future.value(ReceiptLogScheme(
       category: categoryList[0],
-      date: Date(today.year, today.month, today.day),
-      price:
-          const PriceConfig(amount: 1000, currencyId: 0, currencySymbol: 'JPY'),
+      date: today,
+      price: const ConfigureblePrice(
+          amount: 1000, currencyId: 0, currencySymbol: 'JPY'),
       description: 'original description of the receipt log',
       confirmed: false,
     ));
   }
 
   @override
-  Future<void> updateReceiptLog(int categoryId, String description, Price price,
-      Date date, bool confirmed) async {
+  Future<void> updateReceiptLog(
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Date date}) async {
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -110,11 +117,11 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
       }
       newTickets.add(ReceiptLogTicket(
         id: targetLogId,
-        price: price,
+        price: Price(amount: amount, symbol: currencyList[currencyId].symbol),
         date: date,
         description: description,
         categoryName: categoryList[categoryId].name,
-        confirmed: confirmed,
+        confirmed: true,
       ));
     }
     tickets.addAll(newTickets);

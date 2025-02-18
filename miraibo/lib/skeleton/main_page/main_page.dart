@@ -64,18 +64,12 @@ class MockMainPage implements MainPage {
   MockMainPage() {
     // <prepare parameters>
     final now = DateTime.now();
-    today = Date(now.year, now.month, now.day);
-    final twoMonthAgo = now.subtract(const Duration(days: 2 * 31));
-    final twoMonthLater = now.add(const Duration(days: 2 * 31));
-    final startlessPeriod = OpenPeriod(
-        begins: null,
-        ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
-    final endlessPeriod = OpenPeriod(
-        begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
-        ends: null);
-    final closedPeriod = OpenPeriod(
-        begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
-        ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
+    today = now.cutOffTime();
+    final twoMonthAgo = now.subtract(const Duration(days: 2 * 31)).cutOffTime();
+    final twoMonthLater = now.add(const Duration(days: 2 * 31)).cutOffTime();
+    final startlessPeriod = OpenPeriod(begins: null, ends: twoMonthLater);
+    final endlessPeriod = OpenPeriod(begins: twoMonthAgo, ends: null);
+    final closedPeriod = OpenPeriod(begins: twoMonthAgo, ends: twoMonthLater);
     const price = Price(amount: 1000, symbol: 'JPY');
     // </prepare parameters>
 

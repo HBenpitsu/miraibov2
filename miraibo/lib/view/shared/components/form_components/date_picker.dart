@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/shared/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 
 // <DatePicker>
 /// A button to call the date picker dialog
@@ -34,7 +34,7 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   void pickupDate() {
-    final selected = DateTime(current.year, current.month, current.day);
+    final selected = current.asDateTime();
     // There is no specific reason why the firstDate and lastDate are set to
     // 20 years before and 200 years after the [selectedDate]
     // I just think it is enough for the user to select the date
@@ -51,7 +51,7 @@ class _DatePickerState extends State<DatePicker> {
       (value) {
         if (value == null) return;
         setState(() {
-          current = dto.Date(value.year, value.month, value.day);
+          current = value.cutOffTime();
           widget.onChanged(current);
         });
       },

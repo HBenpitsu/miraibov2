@@ -297,8 +297,7 @@ class MockDataPage implements DataPage {
     final twoWeeksLater = now.add(const Duration(days: 14));
     final thisMonth = Date(now.year, now.month, 1);
     final period = ClosedPeriod(
-        begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
-        ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
+        begins: twoWeeksAgo.cutOffTime(), ends: twoWeeksLater.cutOffTime());
     // </prepare parameters>
     return chartStream.map((scheme) {
       switch (scheme) {
@@ -451,7 +450,7 @@ class MockReceiptLogVault {
       for (var i = 0; i < 20; i++)
         ReceiptLogSchemeInstance(
             id: i,
-            price: const PriceConfig(
+            price: const ConfigureblePrice(
                 amount: 1000, currencySymbol: 'JPY', currencyId: 0),
             date: Date(2021, 1, i + 1),
             category: const Category(id: 0, name: 'category0'),
@@ -484,7 +483,7 @@ class MockReceiptLogVault {
         if (ticket is! ReceiptLogTicket) continue;
         final log = ReceiptLogSchemeInstance(
             id: ticket.id,
-            price: PriceConfig(
+            price: ConfigureblePrice(
                 amount: ticket.price.amount,
                 currencySymbol: ticket.price.symbol,
                 currencyId: 0),

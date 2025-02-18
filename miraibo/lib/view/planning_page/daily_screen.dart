@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/planning_page/bidirectional_infinite_list.dart';
-import 'package:miraibo/view/shared/ticket_container.dart';
+import 'package:miraibo/view/shared/components/ticket_container.dart';
+import 'package:miraibo/view/shared/receipt_log_edit_window.dart';
 
 /// DailyScreen has an infinite horizontal list of TicketContainer widgets, container label and ticket creation button.
 /// DailyScreen implement list-function. It updates label content. It instanciate the button as a floating button.
@@ -53,7 +54,7 @@ class _DailyScreenState extends State<DailyScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data!;
-            final date = DateTime(data.year, data.month, data.day);
+            final date = data.asDateTime();
             return Text(
                 "${date.year}-${date.month}-${date.day} (${widget.getWeekdayString(date.weekday)})",
                 style: Theme.of(context).textTheme.headlineSmall);
@@ -93,7 +94,8 @@ class _DailyScreenState extends State<DailyScreen> {
         widget.skeleton.openPlanEditWindow(ticket.id);
       case dto.ReceiptLogTicket ticket:
         if (ticket.confirmed) {
-          widget.skeleton.openReceiptLogEditWindow(ticket.id);
+          openReceiptLogEditWindow(
+              context, widget.skeleton.openReceiptLogEditWindow(ticket.id));
         } else {
           widget.skeleton.openReceiptLogConfirmationWindow(ticket.id);
         }

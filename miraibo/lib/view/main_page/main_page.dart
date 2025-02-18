@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/shared/form_components/form_components.dart';
-import 'package:miraibo/view/shared/form_components/multi_selector.dart';
+import 'package:miraibo/view/shared/components/form_components/form_components.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -13,12 +12,14 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   Future<ListView> ticketList() async {
     final today = DateTime.now();
-    final aYearAgo = DateTime(today.year - 1, today.month, today.day);
-    final aYearLater = DateTime(today.year + 1, today.month, today.day);
+    final aYearAgo =
+        DateTime(today.year - 1, today.month, today.day).cutOffTime();
+    final aYearLater =
+        DateTime(today.year + 1, today.month, today.day).cutOffTime();
     return ListView(
       children: [
         DatePicker(
-          initial: dto.Date(today.year, today.month, today.day),
+          initial: today.cutOffTime(),
           onChanged: (date) {
             print('${date.year}-${date.month}-${date.day}');
           },
@@ -51,10 +52,7 @@ class _MainPageState extends State<MainPage> {
           },
         ),
         ClosedPeriodPicker(
-            initial: dto.ClosedPeriod(
-                begins: dto.Date(aYearAgo.year, aYearAgo.month, aYearAgo.day),
-                ends: dto.Date(
-                    aYearLater.year, aYearLater.month, aYearLater.day)),
+            initial: dto.ClosedPeriod(begins: aYearAgo, ends: aYearLater),
             onChanged: (period) {
               print(
                   '${period.begins.year}-${period.begins.month}-${period.begins.day} to ${period.ends.year}-${period.ends.month}-${period.ends.day}');
@@ -74,10 +72,14 @@ class _MainPageState extends State<MainPage> {
               print(value);
             }),
         MultiSelector.fromTuple(
-            items: [for (var i = 0; i < 200; i++) ('item あ $i', i, i.isEven)],
+            items: [for (var i = 0; i < 200; i++) ('item $i', i, i.isEven)],
             onChanged: (value) {
               print(value);
-            })
+            }),
+        SingleSelector.fromTaple(
+            initialIndex: 0,
+            onChanged: print,
+            items: [for (var i = 0; i < 200; i++) ('item $i', i)])
       ],
     );
   }

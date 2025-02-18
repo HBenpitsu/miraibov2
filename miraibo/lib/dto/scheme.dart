@@ -2,24 +2,17 @@ import 'package:miraibo/dto/general.dart';
 import 'package:miraibo/dto/schedule.dart';
 import 'package:miraibo/dto/enumration.dart';
 
-sealed class TicketSchemeInstance {
-  final int id; // only id is the clue to identify the entity
-  const TicketSchemeInstance({required this.id});
-}
-
-sealed class TicketScheme {
-  const TicketScheme();
-}
-
-class ReceiptLogSchemeInstance extends TicketSchemeInstance {
+class ReceiptLogSchemeInstance {
+  // there is an id field in addition to the fields in ReceiptLogScheme
+  final int id;
   final Date date;
-  final PriceConfig price;
+  final ConfigureblePrice price;
   final String description;
   final Category category;
   final bool confirmed;
 
   const ReceiptLogSchemeInstance(
-      {required super.id,
+      {required this.id,
       required this.date,
       required this.price,
       required this.description,
@@ -27,9 +20,9 @@ class ReceiptLogSchemeInstance extends TicketSchemeInstance {
       required this.confirmed});
 }
 
-class ReceiptLogScheme extends TicketScheme {
+class ReceiptLogScheme {
   final Date date;
-  final PriceConfig price;
+  final ConfigureblePrice price;
   final String description;
   final Category category;
   final bool confirmed;
@@ -40,25 +33,37 @@ class ReceiptLogScheme extends TicketScheme {
       required this.description,
       required this.category,
       required this.confirmed});
+
+  ReceiptLogSchemeInstance toInstance(int id) {
+    return ReceiptLogSchemeInstance(
+        id: id,
+        date: date,
+        price: price,
+        description: description,
+        category: category,
+        confirmed: confirmed);
+  }
+
+  ReceiptLogScheme copyWith({
+    Date? date,
+    ConfigureblePrice? price,
+    String? description,
+    Category? category,
+    bool? confirmed,
+  }) {
+    return ReceiptLogScheme(
+      date: date ?? this.date,
+      price: price ?? this.price,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      confirmed: confirmed ?? this.confirmed,
+    );
+  }
 }
 
-class PlanSchemeInstance extends TicketSchemeInstance {
+class PlanScheme {
   final Schedule schedule;
-  final PriceConfig price;
-  final String description;
-  final Category category;
-
-  const PlanSchemeInstance(
-      {required super.id,
-      required this.schedule,
-      required this.price,
-      required this.description,
-      required this.category});
-}
-
-class PlanScheme extends TicketScheme {
-  final Schedule schedule;
-  final PriceConfig price;
+  final ConfigureblePrice price;
   final String description;
   final Category category;
 
@@ -67,23 +72,23 @@ class PlanScheme extends TicketScheme {
       required this.price,
       required this.description,
       required this.category});
+
+  PlanScheme copyWith({
+    Schedule? schedule,
+    ConfigureblePrice? price,
+    String? description,
+    Category? category,
+  }) {
+    return PlanScheme(
+      schedule: schedule ?? this.schedule,
+      price: price ?? this.price,
+      description: description ?? this.description,
+      category: category ?? this.category,
+    );
+  }
 }
 
-class EstimationSchemeInstance extends TicketSchemeInstance {
-  final OpenPeriod period;
-  final Currency currency;
-  final EstimationDisplayOption displayOption;
-  final List<Category> categories;
-
-  const EstimationSchemeInstance(
-      {required super.id,
-      required this.period,
-      required this.currency,
-      required this.displayOption,
-      required this.categories});
-}
-
-class EstimationScheme extends TicketScheme {
+class EstimationScheme {
   final OpenPeriod period;
   final Currency currency;
   final EstimationDisplayOption displayOption;
@@ -94,23 +99,23 @@ class EstimationScheme extends TicketScheme {
       required this.currency,
       required this.displayOption,
       required this.categories});
+
+  EstimationScheme copyWith({
+    OpenPeriod? period,
+    Currency? currency,
+    EstimationDisplayOption? displayOption,
+    List<Category>? categories,
+  }) {
+    return EstimationScheme(
+      period: period ?? this.period,
+      currency: currency ?? this.currency,
+      displayOption: displayOption ?? this.displayOption,
+      categories: categories ?? this.categories,
+    );
+  }
 }
 
-class MonitorSchemeInstance extends TicketSchemeInstance {
-  final OpenPeriod period;
-  final Currency currency;
-  final MonitorDisplayOption displayOption;
-  final List<Category> categories;
-
-  const MonitorSchemeInstance(
-      {required super.id,
-      required this.period,
-      required this.currency,
-      required this.displayOption,
-      required this.categories});
-}
-
-class MonitorScheme extends TicketScheme {
+class MonitorScheme {
   final OpenPeriod period;
   final Currency currency;
   final MonitorDisplayOption displayOption;
@@ -121,27 +126,41 @@ class MonitorScheme extends TicketScheme {
       required this.currency,
       required this.displayOption,
       required this.categories});
+
+  MonitorScheme copyWith({
+    OpenPeriod? period,
+    Currency? currency,
+    MonitorDisplayOption? displayOption,
+    List<Category>? categories,
+  }) {
+    return MonitorScheme(
+      period: period ?? this.period,
+      currency: currency ?? this.currency,
+      displayOption: displayOption ?? this.displayOption,
+      categories: categories ?? this.categories,
+    );
+  }
 }
 
-class CurrencyConfig {
+class CurrencyInstance {
   final int id;
   final String symbol;
   final double ratio;
   final bool isDefault;
 
-  const CurrencyConfig(
+  const CurrencyInstance(
       {required this.id,
       required this.symbol,
       required this.ratio,
       required this.isDefault});
 }
 
-class PriceConfig {
+class ConfigureblePrice {
   final int amount;
   final int currencyId;
   final String currencySymbol;
 
-  const PriceConfig(
+  const ConfigureblePrice(
       {required this.amount,
       required this.currencyId,
       required this.currencySymbol});

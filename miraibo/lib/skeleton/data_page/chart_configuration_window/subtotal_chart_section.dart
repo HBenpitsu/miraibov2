@@ -84,8 +84,7 @@ class MockSubtotalChartSection implements SubtotalChartSection {
     final twoWeeksAgo = now.subtract(const Duration(days: 14));
     final twoWeeksLater = now.add(const Duration(days: 14));
     final closedPeriod = ClosedPeriod(
-        begins: Date(twoWeeksAgo.year, twoWeeksAgo.month, twoWeeksAgo.day),
-        ends: Date(twoWeeksLater.year, twoWeeksLater.month, twoWeeksLater.day));
+        begins: twoWeeksAgo.cutOffTime(), ends: twoWeeksLater.cutOffTime());
     // </prepare parameters>
     return SubtotalChartScheme(
         currency: currencyList[0],

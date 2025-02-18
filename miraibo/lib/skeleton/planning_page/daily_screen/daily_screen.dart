@@ -109,17 +109,12 @@ class MockDailyScreen implements DailyScreen {
 
     // <prepare parameters>
     final today = DateTime(year, month, day);
-    final twoMonthAgo = today.subtract(const Duration(days: 2 * 31));
-    final twoMonthLater = today.add(const Duration(days: 2 * 31));
-    final startlessPeriod = OpenPeriod(
-        begins: null,
-        ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
-    final endlessPeriod = OpenPeriod(
-        begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
-        ends: null);
-    final closedPeriod = OpenPeriod(
-        begins: Date(twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
-        ends: Date(twoMonthLater.year, twoMonthLater.month, twoMonthLater.day));
+    final twoMonthAgo =
+        today.subtract(const Duration(days: 2 * 31)).cutOffTime();
+    final twoMonthLater = today.add(const Duration(days: 2 * 31)).cutOffTime();
+    final startlessPeriod = OpenPeriod(begins: null, ends: twoMonthLater);
+    final endlessPeriod = OpenPeriod(begins: twoMonthAgo, ends: null);
+    final closedPeriod = OpenPeriod(begins: twoMonthAgo, ends: twoMonthLater);
     const price = Price(amount: 1000, symbol: 'JPY');
     // </prepare parameters>
 
@@ -195,11 +190,7 @@ class MockDailyScreen implements DailyScreen {
           id: 7,
           schedule: IntervalSchedule(
               originDate: Date(year, month, day),
-              period: OpenPeriod(
-                  begins: Date(
-                      twoMonthAgo.year, twoMonthAgo.month, twoMonthAgo.day),
-                  ends: Date(twoMonthLater.year, twoMonthLater.month,
-                      twoMonthLater.day)),
+              period: OpenPeriod(begins: twoMonthAgo, ends: twoMonthLater),
               interval: 1),
           price: price,
           description: 'this is a description of the plan.',
@@ -306,8 +297,7 @@ class MockDailyScreen implements DailyScreen {
   MonthlyScreen navigateToMonthlyScreen() {
     final currentDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
-    return MockMonthlyScreen(
-        Date(currentDate.year, currentDate.month, currentDate.day));
+    return MockMonthlyScreen(currentDate.cutOffTime());
   }
 
   @override
@@ -348,8 +338,7 @@ class MockDailyScreen implements DailyScreen {
     this.offset = offset;
     final centeredDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
-    labelSink
-        .add(Date(centeredDate.year, centeredDate.month, centeredDate.day));
+    labelSink.add(centeredDate.cutOffTime());
   }
 
   @override
