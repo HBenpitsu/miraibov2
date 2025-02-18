@@ -10,8 +10,10 @@ import 'package:miraibo/skeleton/planning_page/daily_screen/plan_edit_window.dar
 export 'package:miraibo/skeleton/planning_page/daily_screen/plan_edit_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/ticket_create_window.dart';
 export 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/ticket_create_window.dart';
-import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/skeleton/planning_page/daily_screen/receipt_log_confirmation_window.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen/receipt_log_confirmation_window.dart';
 import 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
+import 'package:miraibo/dto/dto.dart';
 
 // <interface>
 /// Daily screen consists of infinite set of tickets.
@@ -65,8 +67,12 @@ abstract interface class DailyScreen {
   /// When the estimation ticket is tapped, open the estimation scheme edit window.
   EstimationSchemeEditWindow openEstimationSchemeEditWindow(int targetTicketId);
 
-  /// When the receipt log ticket is tapped, open the receipt log edit window.
+  /// When the confirmed receipt log ticket is tapped, open the receipt log edit window.
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId);
+
+  /// When the unconfirmed receipt log ticket is tapped, open the receipt log confirmation window.
+  ReceiptLogConfirmationWindow openReceiptLogConfirmationWindow(
+      int targetTicketId);
 
   // button
   /// When the ticket create button is tapped, open the ticket create window.
@@ -323,6 +329,13 @@ class MockDailyScreen implements DailyScreen {
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId) {
     return MockReceiptLogEditWindow(targetTicketId, ticketSink, tickets);
+  }
+
+  @override
+  ReceiptLogConfirmationWindow openReceiptLogConfirmationWindow(
+      int targetTicketId) {
+    return MockReceiptLogConfirmationWindow(
+        targetTicketId, tickets, ticketSink);
   }
 
   @override
