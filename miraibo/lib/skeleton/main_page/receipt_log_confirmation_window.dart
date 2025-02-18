@@ -46,7 +46,7 @@ class MockReceiptLogConfirmationWindow implements ReceiptLogConfirmationWindow {
 
   @override
   Future<ReceiptLogTicket> getLogContent() async {
-    for (var ticket in tickets) {
+    for (final ticket in tickets) {
       if (ticket is! ReceiptLogTicket) continue;
       if (ticket.id == targetReceiptLogId) return ticket;
     }

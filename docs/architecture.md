@@ -370,11 +370,11 @@ namespace entity {
 		-id: string
 		+period: Period
 		+category: Category
-		+displayOption: EstimationdisplayOption
+		+displayOption: EstimationDisplayOption
 
 		+setPeriod(period: Period) void
 		+setCategory(category: Category) void
-		+setdisplayOption(displayOption: EstimationdisplayOption) void
+		+setDisplayOption(displayOption: EstimationDisplayOption) void
 		+delete() void
 
 		+new(period, category, displayOption) EstimationScheme$
@@ -401,11 +401,11 @@ namespace entity {
 	class MonitorScheme {
 		-id: string
 		+period: Period
-		+displayOption: MonitordisplayOption
+		+displayOption: MonitorDisplayOption
 		+categories: CategoryCollection
 
 		+setPeriod(period: Period) void
-		+setdisplayOption(displayCondig: MonitordisplayOption) void
+		+setDisplayOption(displayCondig: MonitorDisplayOption) void
 		+setCategories(categories: CategoryCollection) void
 		+delete() void
 
@@ -513,13 +513,13 @@ namespace valueObject {
 		+new(origin, period) AnnualSchedule$
 	}
 
-	class MonitordisplayOption {
+	class MonitorDisplayOption {
 		<<enumeration>>
 		Sum
 		Mean
 		QartileMean
 	}
-	class EstimationdisplayOption {
+	class EstimationDisplayOption {
 		<<enumeration>>
 		PerDay
 		PerWeek
@@ -594,9 +594,9 @@ ReceiptLog *-- Price
 ReceiptRecord *-- Date
 ReceiptRecord *-- Price
 MonitorScheme *-- Period
-MonitorScheme *-- MonitordisplayOption
+MonitorScheme *-- MonitorDisplayOption
 EstimationScheme *-- Period
-EstimationScheme *-- EstimationdisplayOption
+EstimationScheme *-- EstimationDisplayOption
 Plan *-- Price
 Plan *-- Schedule
 
@@ -670,7 +670,7 @@ The date of the created `ReceiptLog` is based on the schedule. Other attributes 
 
 - `id`
 - `period`
-- `displayOption`: an `EstimationdisplayOption`. It affects the price of the ticket.
+- `displayOption`: an `EstimationDisplayOption`. It affects the price of the ticket.
 - `categories`
 
 #### 3.2.1.6. MonitorScheme
@@ -680,7 +680,7 @@ The date of the created `ReceiptLog` is based on the schedule. Other attributes 
 
 - `id`
 - `period`
-- `displayOption`: a `MonitordisplayOption`. It affects the price of the ticket.
+- `displayOption`: a `MonitorDisplayOption`. It affects the price of the ticket.
 - `categories`
 
 #### 3.2.1.7. Ticket
@@ -758,19 +758,19 @@ A `AnnualSchedule` consists of
 - `origin`
 - `period`
 
-#### 3.2.2.5. displayOption
+#### 3.2.2.5. DisplayOption
 
-##### 3.2.2.5.1. MonitordisplayOption
+##### 3.2.2.5.1. MonitorDisplayOption
 
-`MonitordisplayOption` is a enumeration of:
+`MonitorDisplayOption` is a enumeration of:
 
 - `summation`
 - `mean`
 - `quartileMean`
 
-##### 3.2.2.5.2. EstimationdisplayOption
+##### 3.2.2.5.2. EstimationDisplayOption
 
-`EstimationdisplayOption` is a enumeration of:
+`EstimationDisplayOption` is a enumeration of:
 
 - `perDay`
 - `perWeek`

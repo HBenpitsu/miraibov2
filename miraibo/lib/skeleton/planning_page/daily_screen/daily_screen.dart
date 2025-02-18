@@ -124,13 +124,24 @@ class MockDailyScreen implements DailyScreen {
           period: startlessPeriod,
           price: price,
           displayOption: MonitorDisplayOption.meanInDays,
-          categoryNames: ['list of categories']),
+          categoryNames: [
+            'list of categories aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+          ]),
       MonitorTicket(
           id: 1,
           period: endlessPeriod,
           price: price,
           displayOption: MonitorDisplayOption.quartileMeanInDays,
-          categoryNames: ['category1', 'category2']),
+          categoryNames: [
+            'category1',
+            'category2',
+            'category3',
+            'category4',
+            'category5',
+            'category6',
+            'category7',
+            'category8',
+          ]),
       MonitorTicket(
           id: 2,
           period: closedPeriod,
@@ -274,7 +285,9 @@ class MockDailyScreen implements DailyScreen {
 
   @override
   Stream<List<Ticket>> getTicketsOn(int index) {
-    ticketSink.add(tickets);
+    Future.delayed(const Duration(milliseconds: 100)).then(
+      (value) => ticketSink.add(tickets),
+    );
     return ticketStream;
   }
 

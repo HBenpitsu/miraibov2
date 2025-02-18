@@ -65,13 +65,16 @@ class LogTicketContent extends StatelessWidget {
       super.key});
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return TicketContentTemplate(
-        ticketType: 'Log',
-        categories: categories,
-        amount: amount,
-        currencySymbol: currencySymbol,
-        description: description,
-        timeInfo: '${timestamp.year}-${timestamp.month}-${timestamp.day}');
+      ticketType: 'Log',
+      categories: categories,
+      amount: amount,
+      currencySymbol: currencySymbol,
+      description: description,
+      timeInfo: '${timestamp.year}-${timestamp.month}-${timestamp.day}',
+      priceBackgroundColor: colorScheme.surfaceContainerHighest,
+    );
   }
 }
 
@@ -91,6 +94,7 @@ class PlanTicketContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return TicketContentTemplate(
       ticketType: 'Plan',
       categories: categories,
@@ -98,6 +102,10 @@ class PlanTicketContent extends StatelessWidget {
       currencySymbol: currencySymbol,
       description: description,
       timeInfo: makeScheduleString(schedule),
+      priceBackgroundColor: colorScheme.secondaryContainer,
+      priceColor: colorScheme.secondary,
+      ticketTypeColor: colorScheme.secondary,
+      timeStampColor: colorScheme.secondary,
     );
   }
 }
@@ -128,6 +136,7 @@ class EstimateTicketContent extends StatelessWidget {
       case dto.EstimationDisplayOption.perYear:
         currencySymbol += '/year';
     }
+    final colorScheme = Theme.of(context).colorScheme;
     return TicketContentTemplate(
       ticketType: 'Estimate',
       categories: categories,
@@ -136,6 +145,10 @@ class EstimateTicketContent extends StatelessWidget {
       description:
           'is spent for the categories recently. This trend would continue',
       timeInfo: makePeriodString(period),
+      priceBackgroundColor: colorScheme.tertiaryContainer,
+      priceColor: colorScheme.tertiary,
+      ticketTypeColor: colorScheme.tertiary,
+      timeStampColor: colorScheme.tertiary,
     );
   }
 }
@@ -197,13 +210,22 @@ class MonitorTicketContent extends StatelessWidget {
 
 class TicketContentTemplate extends StatelessWidget {
   static const double maxTicketWidth = 330;
-  static const double minTicketHeight = 180;
   final String ticketType;
   final List<String> categories;
   final String description;
   final int amount;
   final String currencySymbol;
   final String timeInfo;
+  final Color? cardColor;
+  final Color? priceBackgroundColor;
+  final Color? priceColor;
+  final Color? descriptionColor;
+  final Color? ticketTypeColor;
+  final Color? timeStampColor;
+  static const double contentPadding = 6;
+  static const double priceSpacing = 10;
+  static const double amountFontSize = 40;
+  static const double currencyFontSize = 20;
   const TicketContentTemplate(
       {required this.ticketType,
       required this.categories,
@@ -211,32 +233,77 @@ class TicketContentTemplate extends StatelessWidget {
       required this.currencySymbol,
       required this.description,
       required this.timeInfo,
+      this.cardColor,
+      this.priceBackgroundColor,
+      this.priceColor,
+      this.descriptionColor,
+      this.ticketTypeColor,
+      this.timeStampColor,
       super.key});
+
+  List<Widget> content(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final priceLabel = Container(
+      color: priceBackgroundColor ?? colorScheme.primaryContainer,
+      width: double.infinity,
+      child: Wrap(alignment: WrapAlignment.center, children: [
+        Text('$amount',
+            style: TextStyle(
+                color: priceColor ?? colorScheme.primary,
+                fontSize: amountFontSize,
+                fontWeight: FontWeight.w300,
+                height: 1)),
+        const SizedBox(width: priceSpacing),
+        Text(currencySymbol,
+            style: TextStyle(
+                color: priceColor ?? colorScheme.primary,
+                fontSize: currencyFontSize,
+                fontWeight: FontWeight.w300,
+                height: amountFontSize / currencyFontSize)),
+      ]),
+    );
+    return [
+      Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            ticketType,
+            style: TextStyle(color: ticketTypeColor ?? colorScheme.primary),
+          )),
+      Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            categories.isEmpty ? 'for all categories' : categories.join(', '),
+            style: TextStyle(color: descriptionColor ?? colorScheme.onSurface),
+            textAlign: TextAlign.right,
+          )),
+      const Divider(),
+      priceLabel,
+      const Divider(),
+      Align(
+          alignment: Alignment.center,
+          child: Text(description,
+              style:
+                  TextStyle(color: descriptionColor ?? colorScheme.onSurface))),
+      Align(
+          alignment: Alignment.centerRight,
+          child: Text(timeInfo,
+              style: TextStyle(
+                color: timeStampColor ?? colorScheme.primary,
+              ),
+              textAlign: TextAlign.right)),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-        child: SizedBox(
-            width: Ticket.maxTicketWidth,
-            height: Ticket.minTicketHeight,
-            child: Card(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Text(ticketType),
-                      Text(categories.isEmpty
-                          ? 'all of categories'
-                          : categories.join(', ')),
-                    ],
-                  ),
-                  Text('$amount $currencySymbol'),
-                  Text(description),
-                  Text(timeInfo),
-                ],
-              ),
-            )));
+    return SizedBox(
+        width: Ticket.maxTicketWidth,
+        child: Card(
+          color: cardColor ?? Theme.of(context).colorScheme.surfaceContainer,
+          child: Padding(
+              padding: const EdgeInsets.all(contentPadding),
+              child: Column(children: content(context))),
+        ));
   }
 }
 
@@ -280,7 +347,7 @@ String makeScheduleString(dto.Schedule schedule) {
     case dto.IntervalSchedule schedule:
       return 'every ${schedule.interval} days ${makePeriodString(schedule.period)}';
     case dto.WeeklySchedule schedule:
-      var weekdays = [
+      final weekdays = [
         if (schedule.sunday) 'Sun.',
         if (schedule.monday) 'Mon.',
         if (schedule.tuesday) 'Tue.',
