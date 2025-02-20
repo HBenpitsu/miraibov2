@@ -9,6 +9,8 @@ export 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/plan_section.dart';
 export 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/plan_section.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// ticket create window is shown when user wants to create a new ticket.
 ///
@@ -52,6 +54,7 @@ class MockTicketCreateWindow implements TicketCreateWindow {
 
   MockTicketCreateWindow(
       List<Ticket> tickets, Sink<List<Ticket>> ticketsStream) {
+    log('MockTicketCreateWindow is constructed');
     planSection = MockPlanSection(tickets, ticketsStream);
     estimationSchemeSection =
         MockEstimationSchemeSection(tickets, ticketsStream);
@@ -61,6 +64,7 @@ class MockTicketCreateWindow implements TicketCreateWindow {
 
   @override
   void dispose() {
+    log('MockTicketCreateWindow is disposed');
     planSection.dispose();
     estimationSchemeSection.dispose();
     monitorSchemeSection.dispose();

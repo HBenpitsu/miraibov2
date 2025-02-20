@@ -7,6 +7,8 @@ export 'package:miraibo/skeleton/planning_page/planning_page.dart';
 import 'package:miraibo/skeleton/utils_page/utils_page.dart';
 export 'package:miraibo/skeleton/utils_page/utils_page.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// root consists of four pages: planning page, main page, data page, and utils page.
 abstract interface class Root {
@@ -49,6 +51,7 @@ class MockRoot implements Root {
     mainPage.dispose();
     dataPage.dispose();
     utilsPage.dispose();
+    log('MockRoot disposed');
   }
 }
 // </mock>

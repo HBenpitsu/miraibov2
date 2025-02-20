@@ -9,6 +9,8 @@ import 'package:miraibo/skeleton/main_page/receipt_log_create_window.dart';
 export 'package:miraibo/skeleton/main_page/receipt_log_create_window.dart';
 import 'package:miraibo/skeleton/main_page/receipt_log_edit_window.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// main page consists of a row of tickets and a button to create a new receipt-log.
 /// The tickets in main page are Log Tickets and Monitor Tickets.
@@ -27,7 +29,7 @@ abstract interface class MainPage {
 
   // <presenters>
   /// main page shows a row of tickets. So, the tickets should be provided.
-  Stream<List<ReceiptLogAndMonitorTicket>> getTickets();
+  Stream<List<Ticket>> getTickets();
   // </presenters>
 
   // <navigators>
@@ -57,11 +59,12 @@ abstract interface class MainPage {
 class MockMainPage implements MainPage {
   @override
   late final Date today;
-  late final List<ReceiptLogAndMonitorTicket> tickets;
-  late final Stream<List<ReceiptLogAndMonitorTicket>> ticketsStream;
-  late final Sink<List<ReceiptLogAndMonitorTicket>> ticketsSink;
+  late final List<Ticket> tickets;
+  late final Stream<List<Ticket>> ticketsStream;
+  late final Sink<List<Ticket>> ticketsSink;
 
   MockMainPage() {
+    log('MockMainPage is constructed');
     // <prepare parameters>
     final now = DateTime.now();
     today = now.cutOffTime();
@@ -111,8 +114,7 @@ class MockMainPage implements MainPage {
     // </make mock tickets to show>
 
     // <initialize stream>
-    final ticketsStreamController =
-        StreamController<List<ReceiptLogAndMonitorTicket>>();
+    final ticketsStreamController = StreamController<List<Ticket>>.broadcast();
     ticketsStream = ticketsStreamController.stream;
     ticketsSink = ticketsStreamController.sink;
 
@@ -121,35 +123,43 @@ class MockMainPage implements MainPage {
   }
 
   @override
-  Stream<List<ReceiptLogAndMonitorTicket>> getTickets() {
-    return ticketsStream;
+  Stream<List<Ticket>> getTickets() {
+    log('getTickets is called');
+    final returnStreamController = StreamController<List<Ticket>>();
+    returnStreamController.add(tickets);
+    returnStreamController.addStream(ticketsStream);
+    return returnStreamController.stream;
   }
 
   @override
   MonitorSchemeEditWindow openMonitorSchemeEditWindow(int targetTicketId) {
+    log('openMonitorSchemeEditWindow is called with targetTicketId: $targetTicketId');
     return MockMonitorSchemeEditWindow(targetTicketId, ticketsSink, tickets);
   }
 
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId) {
+    log('openReceiptLogEditWindow is called with targetTicketId: $targetTicketId');
     return MockReceiptLogEditWindow(targetTicketId, ticketsSink, tickets);
   }
 
   @override
   ReceiptLogConfirmationWindow openReceiptLogConfirmationWindow(
       int targetTicketId) {
+    log('openReceiptLogConfirmationWindow is called with targetTicketId: $targetTicketId');
     return MockReceiptLogConfirmationWindow(
         targetTicketId, tickets, ticketsSink);
   }
 
   @override
   ReceiptLogCreateWindow openReceiptLogCreateWindow() {
+    log('openReceiptLogCreateWindow is called');
     return MockReceiptLogCreateWindow(tickets, ticketsSink);
   }
 
   @override
   void dispose() {
-    ticketsSink.close();
+    log('MockMainPage is disposed');
   }
 }
 // </mock>

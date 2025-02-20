@@ -1,5 +1,6 @@
 import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
+import 'dart:developer' show log;
 
 // <interface>
 /// MonitorSchemeSection is a section to create a monitor scheme.
@@ -28,8 +29,11 @@ abstract interface class MonitorSchemeSection {
 
   // <controllers>
   /// create the monitor scheme with the specified scheme.
-  Future<void> createMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayOption displayOption, int currencyId);
+  Future<void> createMonitorScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required MonitorDisplayOption displayOption,
+      required int currencyId});
   // </controllers>
 
   // <navigators>
@@ -59,22 +63,29 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<Currency> getDefaultCurrency() async {
+    log('getDefaultCurrency is called');
     return currencyList[0];
   }
 
   @override
-  Future<void> createMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayOption displayOption, int currencyId) async {
+  Future<void> createMonitorScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required MonitorDisplayOption displayOption,
+      required int currencyId}) async {
+    log('createMonitorScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(MonitorTicket(
         id: id,
@@ -87,6 +98,8 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MonitorSchemeSection is disposed');
+  }
 }
 // </mock>

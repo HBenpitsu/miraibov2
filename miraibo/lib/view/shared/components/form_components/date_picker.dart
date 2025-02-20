@@ -6,8 +6,13 @@ import 'package:miraibo/view/shared/components/form_components/shared_constants.
 /// A button to call the date picker dialog
 class DatePicker extends StatefulWidget {
   final dto.Date initial;
+  final String? coverLabel;
   final void Function(dto.Date) onChanged;
-  const DatePicker({required this.initial, required this.onChanged, super.key});
+  const DatePicker(
+      {required this.initial,
+      this.coverLabel,
+      required this.onChanged,
+      super.key});
 
   @override
   State<DatePicker> createState() => _DatePickerState();
@@ -23,7 +28,8 @@ class _DatePickerState extends State<DatePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final label = Text('${current.year}-${current.month}-${current.day}');
+    final label = Text(
+        widget.coverLabel ?? '${current.year}-${current.month}-${current.day}');
     final style = TextButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         minimumSize: const Size.fromHeight(formChipHeight));

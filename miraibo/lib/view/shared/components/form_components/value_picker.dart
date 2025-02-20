@@ -1,6 +1,7 @@
 import 'package:flutter/scheduler.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:flutter/material.dart';
+import 'package:miraibo/view/shared/components/form_components/custom_text_field.dart';
 import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 
 // <NumberPicker>
@@ -42,7 +43,7 @@ class _NumberPickerState extends State<NumberPicker> {
     textCtl = TextEditingController(text: _current.toString());
   }
 
-  List<Widget> makeIncrementButtons() {
+  List<Widget> incrementButtons() {
     final style = TextButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         minimumSize: const Size(formChipHeight, formChipHeight));
@@ -59,7 +60,7 @@ class _NumberPickerState extends State<NumberPicker> {
     ];
   }
 
-  List<Widget> makeDecrementButtons() {
+  List<Widget> decrementButtons() {
     final style = TextButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         minimumSize: const Size(formChipHeight, formChipHeight));
@@ -76,38 +77,29 @@ class _NumberPickerState extends State<NumberPicker> {
     ];
   }
 
-  void apply() {
-    final number = int.tryParse(textCtl.text);
-    if (number == null) {
-      textCtl.text = current.toString();
-      return;
-    }
-    current = number.clamp(widget.min, widget.max);
-  }
+  void apply() {}
 
-  Widget makeNumberField() {
-    final focusNode = FocusNode();
-    return Focus(
-        onFocusChange: (hasFocus) {
-          if (!hasFocus) apply();
-        },
-        child: TextField(
-          focusNode: focusNode,
-          textAlign: TextAlign.center,
-          controller: textCtl,
-          keyboardType: TextInputType.number,
-          onSubmitted: (_) => apply(),
-          onTapOutside: (_) => focusNode.unfocus(),
-        ));
+  Widget numberField() {
+    return CustomTextField(
+        controller: textCtl,
+        keyboardType: TextInputType.number,
+        onEditCompleted: (text) {
+          final number = int.tryParse(text);
+          if (number == null) {
+            textCtl.text = current.toString();
+            return;
+          }
+          current = number.clamp(widget.min, widget.max);
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     final mainContent = Row(
       children: [
-        ...makeDecrementButtons(),
-        Expanded(child: makeNumberField()),
-        ...makeIncrementButtons(),
+        ...decrementButtons(),
+        Expanded(child: numberField()),
+        ...incrementButtons(),
       ],
     );
     return Padding(
@@ -134,6 +126,14 @@ class MoneyPicker extends StatefulWidget {
 class _MoneyPickerState extends State<MoneyPicker> {
   late int _current;
   int get current => _current;
+  set current(int value) {
+    setState(() {
+      _current = value;
+      textCtl.text = _current.abs().toString();
+      widget.onChanged(_current);
+    });
+  }
+
   late final TextEditingController textCtl;
   final FocusNode fieldFocus = FocusNode();
   @override
@@ -141,14 +141,6 @@ class _MoneyPickerState extends State<MoneyPicker> {
     super.initState();
     _current = widget.initial;
     textCtl = TextEditingController(text: widget.initial.toString());
-  }
-
-  set current(int value) {
-    setState(() {
-      _current = value;
-      textCtl.text = _current.abs().toString();
-      widget.onChanged(_current);
-    });
   }
 
   int get sign => _current < 0 ? -1 : 1;
@@ -180,31 +172,22 @@ class _MoneyPickerState extends State<MoneyPicker> {
         child: Text(labelString));
   }
 
-  void apply() {
-    final number = int.tryParse(textCtl.text);
-    if (number == null) {
-      textCtl.text = current.abs().toString();
-      return;
-    }
-    // if [current] express income (=current is negative) now, the negative number expresses outcome
-    // if [current] express outcome (=current is positive) now, the nagative number expresses income
-    current = number * sign;
-    fieldFocus.unfocus();
-  }
-
   Widget numberField() {
-    return Focus(
-        onFocusChange: (hasFocus) {
-          if (!hasFocus) apply();
-        },
-        child: TextField(
-          focusNode: fieldFocus,
-          textAlign: TextAlign.center,
-          controller: textCtl,
-          keyboardType: TextInputType.number,
-          onSubmitted: (_) => apply(),
-          onTapOutside: (_) => fieldFocus.unfocus(),
-        ));
+    return CustomTextField(
+        focusNode: fieldFocus,
+        controller: textCtl,
+        keyboardType: TextInputType.number,
+        onEditCompleted: (text) {
+          final number = int.tryParse(text);
+          if (number == null) {
+            textCtl.text = current.abs().toString();
+            return;
+          }
+          // if [current] express income (=current is negative) now, the negative number expresses outcome
+          // if [current] express outcome (=current is positive) now, the nagative number expresses income
+          current = number * sign;
+          fieldFocus.unfocus();
+        });
   }
 
   Widget overwriteButton() {
@@ -262,9 +245,6 @@ class _InAppCalculatorWindow extends StatefulWidget {
   final String initial;
   final List<int> memos;
   final void Function(int) onApply;
-  static const buttonHeight = 60.0;
-  static const buttonFontStyle = TextStyle(fontSize: 30);
-  static const buttonPadding = EdgeInsets.all(2);
   const _InAppCalculatorWindow(
       {required this.initial, required this.memos, required this.onApply});
 
@@ -410,11 +390,9 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
       backgroundCursorColor: colorScheme.primary,
       key: expressionFieldKey,
     );
-    return SizedBox(
-        height: 120,
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: mainContent));
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: mainContent);
   }
 
   Widget resultMonitor() {
@@ -437,7 +415,8 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
         // we need to add some space to avoid the overlap
         const Spacer(),
         resultMonitor(),
-        Expanded(child: expressionField()),
+        expressionField(),
+        const Spacer(),
         memosCache,
         keyBoardCache
       ],
@@ -482,109 +461,105 @@ class _KeyBoard extends StatelessWidget {
   final void Function() onClear;
   final void Function() onApply;
   final void Function() onDel;
+  static const buttonhHeight = 45.0;
+  static const buttonPadding = EdgeInsets.all(2);
   const _KeyBoard(
       {required this.onKey,
       required this.onClear,
       required this.onApply,
       required this.onDel});
 
-  Widget delButton(Size size, ColorScheme colorScheme) {
+  Widget delButton(ColorScheme colorScheme) {
     final style = TextButton.styleFrom(
-        backgroundColor: colorScheme.surfaceContainer, fixedSize: size);
-    return TextButton(
+        backgroundColor: colorScheme.surfaceContainer,
+        fixedSize: const Size.fromHeight(buttonhHeight));
+    final mainContent = TextButton(
         onPressed: onDel, style: style, child: const Icon(Icons.backspace));
+    return Padding(padding: buttonPadding, child: mainContent);
   }
 
-  Widget operatorButton(String operator, Size size, ColorScheme colorScheme) {
+  Widget operatorButton(String operator, ColorScheme colorScheme) {
     final buttonStyle = TextButton.styleFrom(
-        backgroundColor: colorScheme.primaryContainer, fixedSize: size);
+        backgroundColor: colorScheme.primaryContainer,
+        fixedSize: const Size.fromHeight(buttonhHeight));
     final mainContent = TextButton(
         onPressed: () => onKey(operator),
         style: buttonStyle,
-        child: Text(operator, style: _InAppCalculatorWindow.buttonFontStyle));
-    return SizedBox.fromSize(
-        size: size,
-        child: Padding(
-            padding: _InAppCalculatorWindow.buttonPadding, child: mainContent));
+        child: Text(operator,
+            style: const TextStyle(fontSize: buttonhHeight / 2)));
+    return Padding(padding: buttonPadding, child: mainContent);
   }
 
-  Widget numberButton(String number, Size size, ColorScheme colorScheme) {
+  Widget numberButton(String number, ColorScheme colorScheme) {
     final buttonStyle = TextButton.styleFrom(
-        backgroundColor: colorScheme.surfaceContainer, fixedSize: size);
+        backgroundColor: colorScheme.surfaceContainer,
+        fixedSize: const Size.fromHeight(buttonhHeight));
     final mainContent = TextButton(
         onPressed: () => onKey(number),
         style: buttonStyle,
-        child: Text(number, style: _InAppCalculatorWindow.buttonFontStyle));
-    return SizedBox.fromSize(
-        size: size,
-        child: Padding(
-            padding: _InAppCalculatorWindow.buttonPadding, child: mainContent));
+        child:
+            Text(number, style: const TextStyle(fontSize: buttonhHeight / 2)));
+    return Padding(padding: buttonPadding, child: mainContent);
   }
 
-  Widget clearButton(Size size, ColorScheme colorScheme) {
+  Widget clearButton(ColorScheme colorScheme) {
     final buttonStyle = TextButton.styleFrom(
-        backgroundColor: colorScheme.tertiaryContainer, fixedSize: size);
+        backgroundColor: colorScheme.tertiaryContainer,
+        fixedSize: const Size.fromHeight(buttonhHeight));
     final mainContent = TextButton(
         onPressed: onClear,
         style: buttonStyle,
         child: Text('AC',
-            style: _InAppCalculatorWindow.buttonFontStyle
-                .copyWith(color: colorScheme.tertiary)));
-    return SizedBox.fromSize(
-        size: size,
-        child: Padding(
-            padding: _InAppCalculatorWindow.buttonPadding, child: mainContent));
+            style: TextStyle(
+                fontSize: buttonhHeight / 2, color: colorScheme.tertiary)));
+    return Padding(padding: buttonPadding, child: mainContent);
   }
 
-  Widget applyButton(Size size, ColorScheme colorScheme) {
+  Widget applyButton(ColorScheme colorScheme) {
     final buttonStyle = TextButton.styleFrom(
-        backgroundColor: colorScheme.secondaryContainer, fixedSize: size);
+        backgroundColor: colorScheme.secondaryContainer,
+        fixedSize: const Size.fromHeight(buttonhHeight));
     final mainContent = TextButton(
         onPressed: onApply,
         style: buttonStyle,
         child: Icon(Icons.check, color: colorScheme.secondary));
-    return SizedBox.fromSize(
-        size: size,
-        child: Padding(
-            padding: _InAppCalculatorWindow.buttonPadding, child: mainContent));
+    return Padding(padding: buttonPadding, child: mainContent);
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final buttonWidth = MediaQuery.of(context).size.width / 4;
-    final buttonSize = Size(buttonWidth, _InAppCalculatorWindow.buttonHeight);
     return Column(
       children: [
         Row(children: [
-          clearButton(buttonSize, colorScheme),
-          operatorButton('(', buttonSize, colorScheme),
-          operatorButton(')', buttonSize, colorScheme),
-          operatorButton('/', buttonSize, colorScheme)
+          Expanded(child: clearButton(colorScheme)),
+          Expanded(child: operatorButton('(', colorScheme)),
+          Expanded(child: operatorButton(')', colorScheme)),
+          Expanded(child: operatorButton('/', colorScheme))
         ]),
         Row(children: [
-          numberButton('7', buttonSize, colorScheme),
-          numberButton('8', buttonSize, colorScheme),
-          numberButton('9', buttonSize, colorScheme),
-          operatorButton('*', buttonSize, colorScheme)
+          Expanded(child: numberButton('7', colorScheme)),
+          Expanded(child: numberButton('8', colorScheme)),
+          Expanded(child: numberButton('9', colorScheme)),
+          Expanded(child: operatorButton('*', colorScheme))
         ]),
         Row(children: [
-          numberButton('4', buttonSize, colorScheme),
-          numberButton('5', buttonSize, colorScheme),
-          numberButton('6', buttonSize, colorScheme),
-          operatorButton('-', buttonSize, colorScheme)
+          Expanded(child: numberButton('4', colorScheme)),
+          Expanded(child: numberButton('5', colorScheme)),
+          Expanded(child: numberButton('6', colorScheme)),
+          Expanded(child: operatorButton('-', colorScheme))
         ]),
         Row(children: [
-          numberButton('1', buttonSize, colorScheme),
-          numberButton('2', buttonSize, colorScheme),
-          numberButton('3', buttonSize, colorScheme),
-          operatorButton('+', buttonSize, colorScheme)
+          Expanded(child: numberButton('1', colorScheme)),
+          Expanded(child: numberButton('2', colorScheme)),
+          Expanded(child: numberButton('3', colorScheme)),
+          Expanded(child: operatorButton('+', colorScheme))
         ]),
         Row(children: [
-          numberButton('0', buttonSize, colorScheme),
-          numberButton('.', buttonSize, colorScheme),
-          delButton(buttonSize, colorScheme),
-          applyButton(buttonSize, colorScheme)
+          Expanded(child: numberButton('0', colorScheme)),
+          Expanded(child: numberButton('.', colorScheme)),
+          Expanded(child: delButton(colorScheme)),
+          Expanded(child: applyButton(colorScheme))
         ]),
       ],
     );

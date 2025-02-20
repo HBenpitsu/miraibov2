@@ -4,6 +4,8 @@ export 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/tempor
 import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_monitor_scheme_section.dart';
 export 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_monitor_scheme_section.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// There are two types of instances of temporary tickets: estimation and monitor.
 /// This window is shown when user wants to configure the temporary ticket.
@@ -49,6 +51,7 @@ class MockTemporaryTicketConfigWindow implements TemporaryTicketConfigWindow {
   late final TemporaryMonitorSchemeSection monitorSchemeSection;
 
   MockTemporaryTicketConfigWindow(this.initialScheme, this.schemeSetter) {
+    log('MockTemporaryTicketConfigWindow is constructed');
     estimationSchemeSection =
         MockTemporaryEstimationSchemeSection(initialScheme, schemeSetter);
     monitorSchemeSection =
@@ -57,6 +60,7 @@ class MockTemporaryTicketConfigWindow implements TemporaryTicketConfigWindow {
 
   @override
   void dispose() {
+    log('MockTemporaryTicketConfigWindow is disposed');
     estimationSchemeSection.dispose();
     monitorSchemeSection.dispose();
   }

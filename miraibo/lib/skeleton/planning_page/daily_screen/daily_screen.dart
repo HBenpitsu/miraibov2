@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' show log;
 
 import 'package:miraibo/skeleton/planning_page/daily_screen/estimation_scheme_edit_window.dart';
 export 'package:miraibo/skeleton/planning_page/daily_screen/estimation_scheme_edit_window.dart';
@@ -105,6 +106,7 @@ class MockDailyScreen implements DailyScreen {
   late final Stream<List<Ticket>> ticketStream;
   late final Sink<List<Ticket>> ticketSink;
   MockDailyScreen(int year, int month, int day) {
+    log('MockDailyScreen is constructed with year: $year, month: $month, day: $day');
     initiallyCenteredDate = Date(year, month, day);
 
     // <prepare parameters>
@@ -115,7 +117,7 @@ class MockDailyScreen implements DailyScreen {
     final startlessPeriod = OpenPeriod(begins: null, ends: twoMonthLater);
     final endlessPeriod = OpenPeriod(begins: twoMonthAgo, ends: null);
     final closedPeriod = OpenPeriod(begins: twoMonthAgo, ends: twoMonthLater);
-    const price = Price(amount: 1000, symbol: 'JPY');
+    const price = Price(amount: -1000, symbol: 'JPY');
     // </prepare parameters>
 
     // <make mock tickets>
@@ -270,7 +272,7 @@ class MockDailyScreen implements DailyScreen {
     // </make mock tickets>
 
     // <initialize streams>
-    final labelStreamController = StreamController<Date>();
+    final labelStreamController = StreamController<Date>.broadcast();
     labelStream = labelStreamController.stream;
     labelSink = labelStreamController.sink;
     labelSink.add(initiallyCenteredDate);
@@ -282,19 +284,25 @@ class MockDailyScreen implements DailyScreen {
 
   @override
   Stream<List<Ticket>> getTicketsOn(int index) {
-    Future.delayed(const Duration(milliseconds: 100)).then(
-      (value) => ticketSink.add(tickets),
-    );
-    return ticketStream;
+    log('getTicketsOn is called with index: $index');
+    final returnStreamController = StreamController<List<Ticket>>();
+    returnStreamController.add(tickets);
+    returnStreamController.addStream(ticketStream);
+    return returnStreamController.stream;
   }
 
   @override
   Stream<Date> getLabel() {
-    return labelStream;
+    log('getLabel is called');
+    final returnStreamController = StreamController<Date>();
+    returnStreamController.add(initiallyCenteredDate);
+    returnStreamController.addStream(labelStream);
+    return returnStreamController.stream;
   }
 
   @override
   MonthlyScreen navigateToMonthlyScreen() {
+    log('navigateToMonthlyScreen is called');
     final currentDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
     return MockMonthlyScreen(currentDate.cutOffTime());
@@ -302,39 +310,46 @@ class MockDailyScreen implements DailyScreen {
 
   @override
   MonitorSchemeEditWindow openMonitorSchemeEditWindow(int targetTicketId) {
+    log('openMonitorSchemeEditWindow is called with targetTicketId: $targetTicketId');
     return MockMonitorSchemeEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   PlanEditWindow openPlanEditWindow(int targetTicketId) {
+    log('openPlanEditWindow is called with targetTicketId: $targetTicketId');
     return MockPlanEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   EstimationSchemeEditWindow openEstimationSchemeEditWindow(
       int targetTicketId) {
+    log('openEstimationSchemeEditWindow is called with targetTicketId: $targetTicketId');
     return MockEstimationSchemeEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetTicketId) {
+    log('openReceiptLogEditWindow is called with targetTicketId: $targetTicketId');
     return MockReceiptLogEditWindow(targetTicketId, ticketSink, tickets);
   }
 
   @override
   ReceiptLogConfirmationWindow openReceiptLogConfirmationWindow(
       int targetTicketId) {
+    log('openReceiptLogConfirmationWindow is called with targetTicketId: $targetTicketId');
     return MockReceiptLogConfirmationWindow(
         targetTicketId, tickets, ticketSink);
   }
 
   @override
   TicketCreateWindow openTicketCreateWindow() {
+    log('openTicketCreateWindow is called');
     return MockTicketCreateWindow(tickets, ticketSink);
   }
 
   @override
   Future<void> setOffset(int offset) async {
+    log('setOffset is called with offset: $offset');
     this.offset = offset;
     final centeredDate = DateTime(initiallyCenteredDate.year,
         initiallyCenteredDate.month, initiallyCenteredDate.day + offset);
@@ -343,6 +358,7 @@ class MockDailyScreen implements DailyScreen {
 
   @override
   void dispose() {
+    log('DailyScreen is disposed');
     labelSink.close();
     ticketSink.close();
   }

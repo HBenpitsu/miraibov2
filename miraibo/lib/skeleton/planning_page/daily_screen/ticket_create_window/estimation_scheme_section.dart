@@ -1,6 +1,6 @@
 import 'dart:math' show Random;
-
 import 'package:miraibo/dto/dto.dart';
+import 'dart:developer' show log;
 
 // <interface>
 /// EstimationSchemeSection is a section to create an estimation scheme.
@@ -28,8 +28,11 @@ abstract interface class EstimationSchemeSection {
 
   // <controllers>
   /// create the estimation scheme with the specified scheme.
-  Future<void> createEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationDisplayOption displayOption, int currencyId);
+  Future<void> createEstimationScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required EstimationDisplayOption displayOption,
+      required int currencyId});
   // </controllers>
 
   // <navigators>
@@ -59,22 +62,29 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<Currency> getDefaultCurrency() async {
+    log('getDefaultCurrency is called');
     return currencyList[0];
   }
 
   @override
-  Future<void> createEstimationScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationDisplayOption displayOption, int currencyId) async {
+  Future<void> createEstimationScheme(
+      {required List<int> categoryIds,
+      required OpenPeriod period,
+      required EstimationDisplayOption displayOption,
+      required int currencyId}) async {
+    log('createEstimationScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(EstimationTicket(
         id: id,
@@ -87,6 +97,8 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('EstimationSchemeSection is disposed');
+  }
 }
 // </mock>

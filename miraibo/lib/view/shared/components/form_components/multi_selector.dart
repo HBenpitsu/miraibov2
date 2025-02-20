@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 import 'package:miraibo/view/shared/components/modal_window.dart';
+import 'package:miraibo/view/shared/components/form_components/custom_search_bar.dart';
+import 'package:miraibo/view/shared/components/valed_container.dart';
+import 'package:miraibo/view/shared/constants.dart';
+import 'package:miraibo/view/shared/components/foldable_section.dart';
 
 // <multi_selector>
 /// A widget that allows multiple selections from dropdowns
@@ -15,11 +18,11 @@ class MultiSelector<T> extends StatefulWidget {
   final List<bool> initial;
   final void Function(List<T>) onChanged;
 
-  static const double heightOfItem = 40;
-  static const double heightOfItemMargin = 2;
-  static const double heightOfItemDisplay = 200;
-  static const double heightOfUpperVale = 10;
-  static const double widthOfHorizontalPadding = 30;
+  static const double _heightOfItem = 40;
+  static const double _heightOfItemMargin = 2;
+  static const double _heightOfItemDisplay = 200;
+  static const double _heightOfUpperVale = 10;
+  static const double _widthOfHorizontalPadding = 30;
 
   const MultiSelector(
       {required this.labels,
@@ -58,7 +61,6 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
 
   late bool expanded;
   late StreamController<List<bool>> selectionNotifier;
-  late Widget itemDisplayCache;
 
   @override
   void initState() {
@@ -66,20 +68,6 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
     expanded = false;
     _currentlySelected = widget.initial;
     selectionNotifier = StreamController<List<bool>>();
-    itemDisplayCache = _NotifiableItemList(
-        heightOfTopDummy: MultiSelector.heightOfUpperVale,
-        heightOfBottomDummy: MultiSelector.heightOfItem,
-        heightOfItem: MultiSelector.heightOfItem,
-        heightOfItemMargin: MultiSelector.heightOfItemMargin,
-        initiallyVisible: _currentlySelected,
-        labels: widget.labels,
-        visiblityNotifier: selectionNotifier.stream,
-        overlap: const Color.fromARGB(10, 255, 0, 0),
-        onTap: (index) {
-          _currentlySelected[index] = false;
-          selectionNotifier.add(_currentlySelected);
-          widget.onChanged(getSelectedValues());
-        });
   }
   // </init>
 
@@ -94,37 +82,23 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
   }
 
   Widget header() {
-    final colorScheme = Theme.of(context).colorScheme;
-    final headerContent = Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: MultiSelector.widthOfHorizontalPadding),
-        child: Row(
-          children: [
-            Expanded(
-                child: ElevatedButton(
-                    onPressed: showItemPickWindow,
-                    child: const Icon(Icons.add))),
-            const SizedBox(
-              width: 5,
-            ),
-            // deselect all
-            ElevatedButton(
-                onPressed: () {
-                  currentlySelected = List.filled(widget.initial.length, false);
-                },
-                child: const Icon(Icons.autorenew)),
-          ],
-        ));
-    final header = Container(
-        width: double.infinity,
-        height: formChipHeight,
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(formChipHeight / 2), bottom: Radius.zero),
+    final showPickItemButton = ElevatedButton(
+        onPressed: showItemPickWindow, child: const Icon(Icons.add));
+    final unselectAllButton = ElevatedButton(
+        onPressed: () {
+          currentlySelected = List.filled(widget.initial.length, false);
+        },
+        child: const Icon(Icons.autorenew));
+    final headerContent = Row(
+      children: [
+        Expanded(child: showPickItemButton),
+        const SizedBox(
+          width: 5,
         ),
-        child: headerContent);
-    return header;
+        unselectAllButton,
+      ],
+    );
+    return headerContent;
   }
 
   void showItemPickWindow() {
@@ -141,102 +115,33 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
         });
   }
 
-  Widget listHolder(Widget list) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    // vale
-    final upperVale = Container(
+  Widget body() {
+    final list = _NotifiableItemList(
+        initiallyVisible: _currentlySelected,
+        labels: widget.labels,
+        visiblityNotifier: selectionNotifier.stream,
+        heightOfTopDummy: MultiSelector._heightOfUpperVale,
+        overlap: const Color.fromARGB(10, 255, 0, 0),
+        vale: Theme.of(context).colorScheme.surfaceContainer,
+        onTap: (index) {
+          _currentlySelected[index] = false;
+          selectionNotifier.add(_currentlySelected);
+          widget.onChanged(getSelectedValues());
+        });
+    return Container(
         width: double.infinity,
-        height: MultiSelector.heightOfUpperVale,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                colorScheme.surfaceContainer,
-                colorScheme.surfaceContainer.withOpacity(0)
-              ]),
-        ));
-    final lowerVale = Container(
-        width: double.infinity,
-        height: MultiSelector.heightOfItem,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                colorScheme.surfaceContainer.withOpacity(0),
-                colorScheme.surfaceContainer
-              ]),
-        ));
-
-    final fadedOutContent = Stack(
-      children: [
-        list,
-        Positioned(top: 0, left: 0, right: 0, child: upperVale),
-        Positioned(bottom: 0, left: 0, right: 0, child: lowerVale)
-      ],
-    );
-
-    // layout
-    final layoutedContent = Container(
-        width: double.infinity,
-        color: colorScheme.surfaceContainer, // set background color
-        child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: MultiSelector.widthOfHorizontalPadding),
-            child: fadedOutContent));
-
-    // animation
-    final animatedContent = AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        height: expanded ? MultiSelector.heightOfItemDisplay : 0,
-        curve: Curves.easeInOut,
-        child: layoutedContent);
-
-    return animatedContent;
-  }
-
-  Widget footer() {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final label = Row(children: [
-      const Spacer(),
-      Text(expanded ? 'Tap to fold' : 'Tap to expand',
-          style: textTheme.labelSmall),
-      Icon(expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-      const Spacer(),
-    ]);
-    final footer = Container(
-        width: double.infinity,
-        height: formChipHeight,
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: const BorderRadius.vertical(
-              top: Radius.zero, bottom: Radius.circular(formChipHeight / 2)),
-        ),
-        child: label);
-    final footerBottunized = GestureDetector(
-        onTap: () {
-          setState(() {
-            expanded = !expanded;
-          });
-        },
-        child: footer);
-    return footerBottunized;
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        child: list);
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.all(2.0),
-        child: Column(
-          children: [
-            header(),
-            listHolder(itemDisplayCache),
-            footer(),
-          ],
-        ));
+        child: FoldableSection(
+            header: header(),
+            bodyHeight: MultiSelector._heightOfItemDisplay,
+            body: body()));
   }
 }
 
@@ -256,11 +161,8 @@ class _ItemPickerWindow<T> extends StatefulWidget {
 class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
   late List<bool> currentlySelected;
   late List<bool> currentlyVisible;
-  late final TextEditingController searchController;
-  late final FocusNode searchFocusNode;
   late final StreamController<List<bool>> visibilityNotifier;
   late final StreamController<List<bool>> highliteNotifier;
-  late final Widget itemListCache;
 
   @override
   void initState() {
@@ -268,139 +170,81 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
     currentlySelected = widget.initial;
     currentlyVisible =
         List.filled(currentlySelected.length, true); // all visible
-    searchController = TextEditingController();
-    searchFocusNode = FocusNode();
     visibilityNotifier = StreamController<List<bool>>();
     highliteNotifier = StreamController<List<bool>>();
-    itemListCache = _NotifiableItemList(
-        heightOfTopDummy: MultiSelector.heightOfItem,
-        heightOfBottomDummy: MultiSelector.heightOfItem,
-        heightOfItem: MultiSelector.heightOfItem,
-        heightOfItemMargin: MultiSelector.heightOfItemMargin,
+  }
+
+  Widget actionButtons() {
+    final selectAllButton = TextButton(
+        onPressed: () {
+          currentlySelected = List.filled(currentlySelected.length, true);
+          highliteNotifier.add(currentlySelected);
+          widget.onChange(currentlySelected);
+        },
+        child: const Text('Select All'));
+    final releaseAllButton = TextButton(
+        onPressed: () {
+          currentlySelected = List.filled(currentlySelected.length, false);
+          highliteNotifier.add(currentlySelected);
+          widget.onChange(currentlySelected);
+        },
+        child: const Text('Release All'));
+    final okButton = TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: const Text('OK'));
+    return Padding(
+        padding: const EdgeInsets.all(actionButtonPadding),
+        child: Row(
+          children: [
+            const Spacer(),
+            Expanded(flex: 3, child: selectAllButton),
+            const SizedBox(width: 5),
+            Expanded(flex: 3, child: releaseAllButton),
+            const SizedBox(width: 5),
+            Expanded(flex: 3, child: okButton),
+            const Spacer(),
+          ],
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final serachBar = Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: MultiSelector._widthOfHorizontalPadding),
+        child: CustomSearchBar(onSearchWordChanged: (text) {
+          final search = text.toLowerCase();
+          currentlyVisible = widget.labels
+              .map((elem) => elem.toLowerCase().contains(search))
+              .toList();
+          visibilityNotifier.add(currentlyVisible);
+        }));
+    final list = _NotifiableItemList(
         initiallyVisible: currentlyVisible,
         initiallyHighlited: currentlySelected,
         labels: widget.labels,
         visiblityNotifier: visibilityNotifier.stream,
         highliteNotifier: highliteNotifier.stream,
         overlap: const Color.fromARGB(10, 0, 0, 0),
+        heightOfTopDummy: MultiSelector._heightOfItem,
+        vale: Theme.of(context).colorScheme.surface,
         onTap: (index) {
           currentlySelected[index] = !currentlySelected[index];
           highliteNotifier.add(currentlySelected);
           widget.onChange(currentlySelected);
         });
-  }
-
-  Widget searchBar() {
-    final inputField = TextField(
-        controller: searchController,
-        focusNode: searchFocusNode,
-        decoration: InputDecoration(
-            hintText: 'Search',
-            hintStyle:
-                TextStyle(color: Theme.of(context).colorScheme.surfaceDim),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(formChipHeight))),
-        onSubmitted: (value) {
-          final search = value.toLowerCase();
-          currentlyVisible = widget.labels
-              .map((elem) => elem.toLowerCase().contains(search))
-              .toList();
-          visibilityNotifier.add(currentlyVisible);
-        });
-    final resetButton = IconButton(
-      onPressed: () {
-        searchController.clear();
-        currentlyVisible = List.filled(currentlyVisible.length, true);
-        visibilityNotifier.add(currentlyVisible);
-      },
-      style: TextButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          minimumSize: const Size(formChipHeight, formChipHeight)),
-      icon: const Icon(Icons.backspace),
-    );
-    final bar = SizedBox(
-        height: formChipHeight,
-        child: Row(
-          children: [
-            Expanded(child: inputField),
-            const SizedBox(width: 5), // spacer
-            resetButton,
-          ],
-        ));
-    return bar;
-  }
-
-  Widget actionButtons() {
-    return Row(
-      children: [
-        const Spacer(),
-        TextButton(
-            onPressed: () {
-              currentlySelected = List.filled(currentlySelected.length, true);
-              highliteNotifier.add(currentlySelected);
-              widget.onChange(currentlySelected);
-            },
-            child: const Text('Select All')),
-        const Spacer(),
-        TextButton(
-            onPressed: () {
-              currentlySelected = List.filled(currentlySelected.length, false);
-              highliteNotifier.add(currentlySelected);
-              widget.onChange(currentlySelected);
-            },
-            child: const Text('Release All')),
-        const Spacer(),
-        TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('OK')),
-        const Spacer(),
-      ],
-    );
-  }
-
-  Widget itemListHolder() {
-    // vale
-    final upperVale = Container(
-        width: double.infinity,
-        height: MultiSelector.heightOfItem,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).colorScheme.surface,
-                Theme.of(context).colorScheme.surface.withOpacity(0)
-              ]),
-        ));
-    final lowerVale = Container(
-        width: double.infinity,
-        height: MultiSelector.heightOfItem,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Theme.of(context).colorScheme.surface,
-                Theme.of(context).colorScheme.surface.withOpacity(0)
-              ]),
-        ));
-    final stack = Stack(children: [
-      itemListCache,
-      Positioned(top: 0, left: 0, right: 0, child: upperVale),
-      Positioned(bottom: 0, left: 0, right: 0, child: lowerVale)
-    ]);
-    return stack;
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return ModalWindowContainer(
         child: Column(children: [
-      Expanded(child: itemListHolder()),
+      Expanded(
+          child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: MultiSelector._widthOfHorizontalPadding,
+                  vertical: 10),
+              child: list)),
       const SizedBox(height: 10),
-      searchBar(),
+      serachBar,
       actionButtons(),
     ]));
   }
@@ -414,22 +258,22 @@ class _NotifiableItemList extends StatefulWidget {
   final Stream<List<bool>>? highliteNotifier;
   final void Function(int) onTap;
   final Color overlap;
+  final Color vale;
   final double heightOfTopDummy;
-  final double heightOfBottomDummy;
-  final double heightOfItem;
-  final double heightOfItemMargin;
+  static const double heightOfBottomDummy = MultiSelector._heightOfItem;
+  static const double heightOfItem = MultiSelector._heightOfItem;
+  static const double heightOfItemMargin = MultiSelector._heightOfItemMargin;
+
   const _NotifiableItemList({
     required this.initiallyVisible,
     this.initiallyHighlited,
     required this.labels,
     required this.visiblityNotifier,
     this.highliteNotifier,
+    required this.heightOfTopDummy,
     required this.onTap,
     required this.overlap,
-    required this.heightOfTopDummy,
-    required this.heightOfBottomDummy,
-    required this.heightOfItem,
-    required this.heightOfItemMargin,
+    required this.vale,
   });
   @override
   State<_NotifiableItemList> createState() => _NotifiableItemListState();
@@ -474,25 +318,9 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
     return result;
   }
 
-  Widget? item(
-      BuildContext context, int viewIndex, List<int> effectiveIndexes) {
+  Widget item(BuildContext context, int viewIndex, List<int> effectiveIndexes) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-
-    if (viewIndex == 0) {
-      return SizedBox(height: widget.heightOfTopDummy);
-    }
-    // shift down by 1 to add a dummy item at the top
-    viewIndex -= 1;
-
-    // the last item is a dummy item
-    if (viewIndex == effectiveIndexes.length) {
-      return SizedBox(height: widget.heightOfItem - widget.heightOfItemMargin);
-    }
-    // if the index is out of range return null
-    if (viewIndex > effectiveIndexes.length) {
-      return null;
-    }
 
     // now we are not curious about the viewIndex (the index of the shown list)
     // but we have to know the index of the list that holds data of all items
@@ -500,8 +328,7 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
 
     // making real item below
     final itemLabel = SizedBox(
-        height: widget.heightOfItem,
-        width: double.infinity,
+        height: _NotifiableItemList.heightOfItem,
         child: Center(
             child:
                 Text(widget.labels[modelIndex], style: textTheme.labelLarge)));
@@ -520,7 +347,8 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
         ));
 
     return Padding(
-      padding: EdgeInsets.only(bottom: widget.heightOfItemMargin),
+      padding:
+          const EdgeInsets.only(bottom: _NotifiableItemList.heightOfItemMargin),
       key: ValueKey(modelIndex),
       child: item,
     );
@@ -530,9 +358,11 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
   Widget build(BuildContext context) {
     var effectiveIndexes = getEffectiveIndexes();
 
-    return ListView.builder(
-        itemCount: effectiveIndexes.length + 2, // add dummy items
-        itemBuilder: (context, index) =>
-            item(context, index, effectiveIndexes));
+    return ValedList(
+        upperValeHeight: widget.heightOfTopDummy,
+        lowerValeHeight: _NotifiableItemList.heightOfBottomDummy,
+        valeColor: widget.vale,
+        itemCount: effectiveIndexes.length,
+        builder: (context, index) => item(context, index, effectiveIndexes));
   }
 }

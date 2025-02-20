@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' show log;
 
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/data_page/shared.dart';
@@ -278,6 +279,7 @@ class MockDataPage implements DataPage {
   final MockReceiptLogVault mockVault = MockReceiptLogVault();
 
   MockDataPage() {
+    log('MockDataPage: constructed');
     currentChartScheme = const ChartSchemeUnspecified();
     currentTicketScheme = const TemporaryTicketSchemeUnspecified();
     final chartStreamController = StreamController<ChartScheme>();
@@ -291,6 +293,7 @@ class MockDataPage implements DataPage {
 
   @override
   Stream<Chart> getChart() {
+    log('MockDataPage: getChart called');
     // <prepare parameters>
     final now = DateTime.now();
     final twoWeeksAgo = now.subtract(const Duration(days: 14));
@@ -346,6 +349,7 @@ class MockDataPage implements DataPage {
 
   @override
   Stream<TemporaryTicket> getTemporaryTicket() {
+    log('MockDataPage: getTemporaryTicket called');
     // <prepare parameters>
     const period = OpenPeriod(begins: null, ends: null);
     const price = Price(amount: 1000, symbol: 'JPY');
@@ -373,59 +377,70 @@ class MockDataPage implements DataPage {
 
   @override
   ChartConfigurationWindow openChartConfigurationWindow() {
+    log('MockDataPage: openChartConfigurationWindow called');
     return MockChartConfigurationWindow(currentChartScheme, setChartScheme);
   }
 
   @override
   TemporaryTicketConfigWindow openTemporaryTicketConfigWindow() {
+    log('MockDataPage: openTemporaryTicketConfigWindow called');
     return MockTemporaryTicketConfigWindow(
         currentTicketScheme, setTicketScheme);
   }
 
   @override
   ExportationWindow openExportationWindow() {
+    log('MockDataPage: openExportationWindow called');
     return MockExportationWindow();
   }
 
   @override
   ImportationWindow openImportationWindow() {
+    log('MockDataPage: openImportationWindow called');
     return MockImportationWindow();
   }
 
   @override
   OverwriteWindow openOverwriteWindow() {
+    log('MockDataPage: openOverwriteWindow called');
     return MockOverwriteWindow();
   }
 
   @override
   BackupWindow openBackupWindow() {
+    log('MockDataPage: openBackupWindow called');
     return MockBackupWindow();
   }
 
   @override
   RestoreWindow openRestoreWindow() {
+    log('MockDataPage: openRestoreWindow called');
     return MockRestoreWindow();
   }
 
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow(int targetReceiptLogId) {
+    log('MockDataPage: openReceiptLogEditWindow called with targetReceiptLogId: $targetReceiptLogId');
     return MockReceiptLogEditWindow(
         targetReceiptLogId, mockVault.ticketsSink, mockVault.tickets);
   }
 
   @override
   Stream<int?> generateFirstKey() {
+    log('MockDataPage: generateFirstKey called');
     return mockVault.firstKey;
   }
 
   @override
   Future<TableSegment> getTableSegment(int key, int limit) {
+    log('MockDataPage: getTableSegment called with key: $key, limit: $limit');
     final (records, successkey) = mockVault.getReceiptLogs(key, limit);
     return Future.value(TableSegment(records, successkey));
   }
 
   @override
   void dispose() {
+    log('MockDataPage: dispose called');
     chartSink.close();
     temporaryTicketSink.close();
     mockVault.dispose();

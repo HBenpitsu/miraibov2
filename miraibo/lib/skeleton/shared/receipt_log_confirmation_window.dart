@@ -1,5 +1,6 @@
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/shared/receipt_log_edit_window.dart';
+import 'dart:developer' show log;
 
 // <interface>
 /// The window shows the receipt log and the buttons to confirm/edit the receipt log.
@@ -46,6 +47,7 @@ class MockReceiptLogConfirmationWindow implements ReceiptLogConfirmationWindow {
 
   @override
   Future<ReceiptLogTicket> getLogContent() async {
+    log('getLogContent is called with targetReceiptLogId: $targetReceiptLogId');
     for (final ticket in tickets) {
       if (ticket is! ReceiptLogTicket) continue;
       if (ticket.id == targetReceiptLogId) return ticket;
@@ -55,11 +57,13 @@ class MockReceiptLogConfirmationWindow implements ReceiptLogConfirmationWindow {
 
   @override
   ReceiptLogEditWindow openReceiptLogEditWindow() {
+    log('openReceiptLogEditWindow is called with targetReceiptLogId: $targetReceiptLogId');
     return MockReceiptLogEditWindow(targetReceiptLogId, ticketsStream, tickets);
   }
 
   @override
   Future<void> confirmReceiptLog() async {
+    log('confirmReceiptLog is called with targetReceiptLogId: $targetReceiptLogId');
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -84,6 +88,8 @@ class MockReceiptLogConfirmationWindow implements ReceiptLogConfirmationWindow {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('ReceiptLogConfirmationWindow is disposed');
+  }
 }
 // </mock>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/valed_container.dart';
 
 // <DayOfWeekSelector>
 /// DayOfWeekSelector is a widget to select some days of the week
@@ -8,8 +9,9 @@ class DayOfWeekSelector extends StatefulWidget {
   /// the first element (index=0) represents Sunday, the second Monday, and so on
   final List<bool> initial;
   static const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  static const minimumPadding = 2.0;
-  static const maximumPadding = 10.0;
+  static const minimumSpacer = 2.0;
+  static const maximumSpacer = 10.0;
+  static const buttonWidth = 55.0;
 
   /// the callback function to be called when the selection is changed
   /// the argument is a list of bools which represents the selection of each day
@@ -17,6 +19,10 @@ class DayOfWeekSelector extends StatefulWidget {
   final void Function(List<bool>) onChanged;
   const DayOfWeekSelector(
       {required this.initial, required this.onChanged, super.key});
+
+  /// the callback function to be called when the selection is changed
+  /// the argument is a list of bools which represents the selection of each day
+  /// the first element (index=0) represents Sunday, the second Monday, and so on
   factory DayOfWeekSelector.fromDayNames({
     bool sunday = false,
     bool monday = false,
@@ -38,6 +44,9 @@ class DayOfWeekSelector extends StatefulWidget {
     ], onChanged: onChanged);
   }
 
+  /// the callback function to be called when the selection is changed
+  /// the argument is a list of bools which represents the selection of each day
+  /// the first element (index=0) represents Sunday, the second Monday, and so on
   factory DayOfWeekSelector.fromIntList(List<int> list,
       {required void Function(List<bool>) onChanged}) {
     final initial = List<bool>.filled(7, false);
@@ -64,7 +73,7 @@ class _DayOfWeekSelectorState extends State<DayOfWeekSelector> {
     final screenWidth = constraints.maxWidth - 2 * formChipPadding;
     final residure = screenWidth - _DayChip.width * 7;
     final padding = (residure / 6).clamp(
-        DayOfWeekSelector.minimumPadding, DayOfWeekSelector.maximumPadding);
+        DayOfWeekSelector.minimumSpacer, DayOfWeekSelector.maximumSpacer);
     final chips = [
       for (var i = 0; i < 7; i++) ...[
         _DayChip(
@@ -77,10 +86,16 @@ class _DayOfWeekSelectorState extends State<DayOfWeekSelector> {
       ]
     ];
     chips.removeLast(); // last spacer is not needed
-    final mainContent = SingleChildScrollView(child: Row(children: chips));
+    final mainContent = Row(children: chips);
+
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: formChipPadding),
-        child: mainContent);
+        child: Center(
+            child: ScrollableLine(
+          valeColor: Theme.of(context).colorScheme.surface,
+          valeSize: 10,
+          child: mainContent,
+        )));
   }
 
   @override
@@ -109,7 +124,7 @@ class _DayChip extends StatefulWidget {
   final bool initiallySelected;
   final void Function(int) onSelected;
   final void Function(int) onUnselected;
-  static const width = 55.0;
+  static const width = DayOfWeekSelector.buttonWidth;
 
   const _DayChip(
       {required this.day,

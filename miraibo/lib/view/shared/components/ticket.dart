@@ -1,5 +1,3 @@
-import 'dart:math' show min;
-
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
 
@@ -9,11 +7,6 @@ class Ticket extends StatelessWidget {
   const Ticket({required this.data, required this.onTap, super.key});
 
   static const double maxTicketWidth = 330;
-  static const double minTicketHeight = 180;
-
-  double width(BuildContext context) {
-    return min(maxTicketWidth, MediaQuery.of(context).size.width);
-  }
 
   Widget content(BuildContext context) {
     switch (data) {
@@ -76,11 +69,18 @@ class LogTicketContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final supplimentaryTexts = [
+      if (!confirmed) 'unconfirmed',
+      if (amount < 0) 'income',
+    ];
     return TicketContentTemplate(
       ticketType: 'Log',
       categories: categories,
       amount: amount,
-      currencySymbol: currencySymbol + (confirmed ? '' : ' (unconfirmed)'),
+      currencySymbol: currencySymbol +
+          (supplimentaryTexts.isNotEmpty
+              ? ' (${supplimentaryTexts.join(', ')})'
+              : ''),
       description: description,
       timeInfo: '${timestamp.year}-${timestamp.month}-${timestamp.day}',
       priceBackgroundColor: colorScheme.surfaceContainerHighest,
@@ -109,7 +109,7 @@ class PlanTicketContent extends StatelessWidget {
       ticketType: 'Plan',
       categories: categories,
       amount: amount,
-      currencySymbol: currencySymbol,
+      currencySymbol: currencySymbol + (amount < 0 ? ' (income)' : ''),
       description: description,
       timeInfo: makeScheduleString(schedule),
       priceBackgroundColor: colorScheme.secondaryContainer,
@@ -151,9 +151,10 @@ class EstimateTicketContent extends StatelessWidget {
       ticketType: 'Estimate',
       categories: categories,
       amount: amount,
-      currencySymbol: currencySymbol,
-      description:
-          'is spent for the categories recently. This trend would continue',
+      currencySymbol: currencySymbol + (amount < 0 ? ' (income)' : ''),
+      description: amount < 0
+          ? 'is earned for the categories recently. This trend would continue'
+          : 'is spent for the categories recently. This trend would continue',
       timeInfo: makePeriodString(period),
       priceBackgroundColor: colorScheme.tertiaryContainer,
       priceColor: colorScheme.tertiary,
@@ -178,17 +179,36 @@ class MonitorTicketContent extends StatelessWidget {
       super.key});
 
   String makeDescription() {
-    switch (displayOption) {
-      case dto.MonitorDisplayOption.meanInDays:
-      case dto.MonitorDisplayOption.meanInWeeks:
-      case dto.MonitorDisplayOption.meanInMonths:
-        return 'is spent for the categories in average';
-      case dto.MonitorDisplayOption.quartileMeanInDays:
-      case dto.MonitorDisplayOption.quartileMeanInWeeks:
-      case dto.MonitorDisplayOption.quartileMeanInMonths:
-        return 'is spent for the categories in average excluding outliers';
-      case dto.MonitorDisplayOption.summation:
-        return 'is spent for the categories in total';
+    if (amount < 0) {
+      switch (displayOption) {
+        case dto.MonitorDisplayOption.meanInDays:
+        case dto.MonitorDisplayOption.meanInWeeks:
+        case dto.MonitorDisplayOption.meanInMonths:
+        case dto.MonitorDisplayOption.meanInYears:
+          return 'would be earned for the categories in average';
+        case dto.MonitorDisplayOption.quartileMeanInDays:
+        case dto.MonitorDisplayOption.quartileMeanInWeeks:
+        case dto.MonitorDisplayOption.quartileMeanInMonths:
+        case dto.MonitorDisplayOption.quartileMeanInYears:
+          return 'would be earned for the categories in average excluding outliers';
+        case dto.MonitorDisplayOption.summation:
+          return 'would be earned for the categories in total';
+      }
+    } else {
+      switch (displayOption) {
+        case dto.MonitorDisplayOption.meanInDays:
+        case dto.MonitorDisplayOption.meanInWeeks:
+        case dto.MonitorDisplayOption.meanInMonths:
+        case dto.MonitorDisplayOption.meanInYears:
+          return 'would be spent for the categories in average';
+        case dto.MonitorDisplayOption.quartileMeanInDays:
+        case dto.MonitorDisplayOption.quartileMeanInWeeks:
+        case dto.MonitorDisplayOption.quartileMeanInMonths:
+        case dto.MonitorDisplayOption.quartileMeanInYears:
+          return 'would be  spent for the categories in average excluding outliers';
+        case dto.MonitorDisplayOption.summation:
+          return 'would be  spent for the categories in total';
+      }
     }
   }
 
@@ -211,7 +231,7 @@ class MonitorTicketContent extends StatelessWidget {
       ticketType: 'Monitor',
       categories: categories,
       amount: amount,
-      currencySymbol: currencySymbol,
+      currencySymbol: currencySymbol + (amount < 0 ? ' (income)' : ''),
       description: makeDescription(),
       timeInfo: makePeriodString(period),
     );
@@ -219,7 +239,7 @@ class MonitorTicketContent extends StatelessWidget {
 }
 
 class TicketContentTemplate extends StatelessWidget {
-  static const double maxTicketWidth = 330;
+  static const double ticketWidth = 330;
   final String ticketType;
   final List<String> categories;
   final String description;
@@ -257,7 +277,7 @@ class TicketContentTemplate extends StatelessWidget {
       color: priceBackgroundColor ?? colorScheme.primaryContainer,
       width: double.infinity,
       child: Wrap(alignment: WrapAlignment.center, children: [
-        Text('$amount',
+        Text('${amount.abs()}',
             style: TextStyle(
                 color: priceColor ?? colorScheme.primary,
                 fontSize: amountFontSize,
@@ -306,14 +326,15 @@ class TicketContentTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        width: Ticket.maxTicketWidth,
-        child: Card(
-          color: cardColor ?? Theme.of(context).colorScheme.surfaceContainer,
-          child: Padding(
-              padding: const EdgeInsets.all(contentPadding),
-              child: Column(children: content(context))),
-        ));
+    return Card(
+      color: cardColor ?? Theme.of(context).colorScheme.surfaceContainer,
+      child: Padding(
+          padding: const EdgeInsets.all(contentPadding),
+          child: SizedBox(
+              width: ticketWidth,
+              child: Column(
+                  mainAxisSize: MainAxisSize.min, children: content(context)))),
+    );
   }
 }
 
@@ -375,6 +396,6 @@ String makeScheduleString(dto.Schedule schedule) {
       final dayString = convertIntoOrdinal(schedule.offset + 1);
       return 'every $dayString day ${makePeriodString(schedule.period)}';
     case dto.AnnualSchedule schedule:
-      return 'every ${schedule.originDate.year}-${schedule.originDate.month} ${makePeriodString(schedule.period)}';
+      return 'every ${schedule.originDate.month}-${schedule.originDate.day} ${makePeriodString(schedule.period)}';
   }
 }

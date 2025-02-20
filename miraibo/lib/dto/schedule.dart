@@ -8,6 +8,10 @@ class OneshotSchedule extends Schedule {
   final Date date;
 
   const OneshotSchedule({required this.date});
+
+  OneshotSchedule copyWith({Date? date}) {
+    return OneshotSchedule(date: date ?? this.date);
+  }
 }
 
 class IntervalSchedule extends Schedule {
@@ -17,6 +21,14 @@ class IntervalSchedule extends Schedule {
 
   const IntervalSchedule(
       {required this.originDate, required this.period, required this.interval});
+
+  IntervalSchedule copyWith(
+      {Date? originDate, OpenPeriod? period, int? interval}) {
+    return IntervalSchedule(
+        originDate: originDate ?? this.originDate,
+        period: period ?? this.period,
+        interval: interval ?? this.interval);
+  }
 }
 
 /// watch out: at least one of the weekdays should be true.
@@ -40,6 +52,26 @@ class WeeklySchedule extends Schedule {
       required this.thursday,
       required this.friday,
       required this.saturday});
+
+  WeeklySchedule copyWith(
+      {OpenPeriod? period,
+      bool? sunday,
+      bool? monday,
+      bool? tuesday,
+      bool? wednesday,
+      bool? thursday,
+      bool? friday,
+      bool? saturday}) {
+    return WeeklySchedule(
+        period: period ?? this.period,
+        sunday: sunday ?? this.sunday,
+        monday: monday ?? this.monday,
+        tuesday: tuesday ?? this.tuesday,
+        wednesday: wednesday ?? this.wednesday,
+        thursday: thursday ?? this.thursday,
+        friday: friday ?? this.friday,
+        saturday: saturday ?? this.saturday);
+  }
 }
 
 class MonthlySchedule extends Schedule {
@@ -47,6 +79,11 @@ class MonthlySchedule extends Schedule {
   final int offset; // offset
 
   const MonthlySchedule({required this.period, required this.offset});
+
+  MonthlySchedule copyWith({OpenPeriod? period, int? offset}) {
+    return MonthlySchedule(
+        period: period ?? this.period, offset: offset ?? this.offset);
+  }
 }
 
 class AnnualSchedule extends Schedule {
@@ -54,4 +91,10 @@ class AnnualSchedule extends Schedule {
   final OpenPeriod period;
 
   const AnnualSchedule({required this.originDate, required this.period});
+
+  AnnualSchedule copyWith({Date? originDate, OpenPeriod? period}) {
+    return AnnualSchedule(
+        originDate: originDate ?? this.originDate,
+        period: period ?? this.period);
+  }
 }

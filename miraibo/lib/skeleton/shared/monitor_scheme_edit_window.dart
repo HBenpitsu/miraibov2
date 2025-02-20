@@ -1,4 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
+import 'dart:developer' show log;
 
 // <interface>
 /// monitor scheme edit window is shown when user wants to edit monitor scheme.
@@ -73,16 +74,19 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<MonitorScheme> getOriginalMonitorScheme() {
+    log('getOriginalMonitorScheme is called');
     final today = DateTime.now();
     final twoWeeksLater = today.add(const Duration(days: 14)).cutOffTime();
     final twoWeeksAgo = today.subtract(const Duration(days: 14)).cutOffTime();
@@ -103,6 +107,7 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
       required OpenPeriod period,
       required MonitorDisplayOption displayOption,
       required int currencyId}) async {
+    log('updateMonitorScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -131,12 +136,15 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
 
   @override
   Future<void> deleteMonitorScheme() async {
+    log('deleteMonitorScheme is called with targetTicketId: $targetTicketId');
     tickets.removeWhere(
         (element) => element is MonitorTicket && element.id == targetTicketId);
     ticketsStream.add(tickets);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MonitorSchemeEditWindow is disposed');
+  }
 }
 // </mock>

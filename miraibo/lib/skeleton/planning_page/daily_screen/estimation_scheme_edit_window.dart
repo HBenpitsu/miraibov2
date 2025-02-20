@@ -1,5 +1,7 @@
 import 'package:miraibo/dto/dto.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// EstimationSchemeEditWindow is shown when the user wants to edit an estimation scheme.
 ///
@@ -76,16 +78,19 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<EstimationScheme> getOriginalEstimationScheme() {
+    log('getOriginalEstimationScheme is called');
     final today = DateTime.now();
     final twoWeeksLater = today.add(const Duration(days: 14)).cutOffTime();
     final twoWeeksAgo = today.subtract(const Duration(days: 14)).cutOffTime();
@@ -106,6 +111,7 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
       required OpenPeriod period,
       required EstimationDisplayOption displayOption,
       required int currencyId}) async {
+    log('updateEstimationScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -134,12 +140,15 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
 
   @override
   Future<void> deleteEstimationScheme() async {
+    log('deleteEstimationScheme is called with targetSchemeId: $targetSchemeId');
     tickets.removeWhere((element) =>
         element is EstimationTicket && element.id == targetSchemeId);
     ticketsStream.add(tickets);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('EstimationSchemeEditWindow is disposed');
+  }
 }
 // </mock>

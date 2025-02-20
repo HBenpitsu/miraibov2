@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
 import 'package:miraibo/view/planning_page/bidirectional_infinite_list.dart';
+import 'package:miraibo/view/shared/constants.dart';
 
 /// MonthlyScreen has infinite list of MonthlyCalendar widgets
 /// Main function of MonthlyScreen is to show a list of MonthlyCalendar widgets
@@ -19,15 +20,58 @@ class MonthlyScreen extends StatefulWidget {
 }
 
 class _MonthlyScreenState extends State<MonthlyScreen> {
+  late final ScrollController scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController = ScrollController();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BiInifiniteList(itemBuilder: (index) {
-      final calenderData = widget.skeleton.getCalender(index);
-      return Calender(calenderData, onTap: (date) {
-        widget.navigateToDailyScreen(widget.skeleton
-            .navigateToDailyScreen(date.year, date.month, date.day));
-      }, key: ValueKey(index));
-    });
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      body: BiInifiniteList(
+          controller: scrollController,
+          itemBuilder: (index) {
+            final calenderData = widget.skeleton.getCalender(index);
+            return Calender(calenderData, onTap: (date) {
+              widget.navigateToDailyScreen(widget.skeleton
+                  .navigateToDailyScreen(date.year, date.month, date.day));
+            }, key: ValueKey(index));
+          }),
+      bottomNavigationBar: SizedBox(
+          height: bottomNavigationBarHeight,
+          child: Row(
+            children: [
+              const Spacer(),
+              IconButton(
+                onPressed: () {
+                  scrollController.jumpTo(
+                      scrollController.position.pixels - screenHeight * 12);
+                },
+                icon: const Icon(Icons.arrow_upward),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () {
+                  scrollController.jumpTo(0);
+                },
+                icon: const Icon(Icons.autorenew),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () {
+                  scrollController.jumpTo(
+                      scrollController.position.pixels + screenHeight * 12);
+                },
+                icon: const Icon(Icons.arrow_downward),
+              ),
+              const Spacer(),
+            ],
+          )),
+    );
   }
 
   @override

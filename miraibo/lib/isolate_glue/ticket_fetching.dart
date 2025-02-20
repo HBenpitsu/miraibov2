@@ -10,14 +10,12 @@ Future<List<Ticket>> fetchTicketsOn(Date date) {
 // </fetchTicketsOn
 
 // <fetchReceiptLogsAndMonitorsForToday>
-Future<List<ReceiptLogAndMonitorTicket>> __fetchReceiptLogsAndMonitorsForToday(
-    () param) {
+Future<List<Ticket>> __fetchReceiptLogsAndMonitorsForToday(() param) {
   return usecase.fetchReceiptLogsAndMonitorsForToday();
 }
 
 /// {@macro fetchReceiptLogsAndMonitorsForToday}
-Future<List<ReceiptLogAndMonitorTicket>>
-    fetchReceiptLogsAndMonitorsForToday() async {
+Future<List<Ticket>> fetchReceiptLogsAndMonitorsForToday() async {
   return compute(__fetchReceiptLogsAndMonitorsForToday, ());
 }
 // </fetchReceiptLogsAndMonitorsForToday>

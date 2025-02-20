@@ -6,6 +6,8 @@ export 'package:miraibo/skeleton/utils_page/currency_integration_window.dart';
 import 'package:miraibo/skeleton/utils_page/category_integration_window.dart';
 export 'package:miraibo/skeleton/utils_page/category_integration_window.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// Utils page have two sections: category section and currency section.
 /// Each section is exists to edit categories and currencies.
@@ -71,6 +73,7 @@ class MockUtilsPage implements UtilsPage {
   late int defaultCurrency;
 
   MockUtilsPage() {
+    log('MockUtilsPage is constructed');
     categories = {for (int i = 0; i < 20; i++) i: 'category $i'};
 
     currencies = {for (int i = 0; i < 5; i++) i: ('currency $i', i.toDouble())};
@@ -78,10 +81,10 @@ class MockUtilsPage implements UtilsPage {
     defaultCurrency = 0;
 
     // <initialize stream>
-    final categoryController = StreamController<MockCategoryMap>();
+    final categoryController = StreamController<MockCategoryMap>.broadcast();
     categoryStream = categoryController.stream;
     categorySink = categoryController.sink;
-    final currencyController = StreamController<MockCurrencyMap>();
+    final currencyController = StreamController<MockCurrencyMap>.broadcast();
     currencyStream = currencyController.stream;
     currencySink = currencyController.sink;
     // </initialize stream>
@@ -89,30 +92,48 @@ class MockUtilsPage implements UtilsPage {
 
   @override
   CategorySection categorySection() {
-    return categoryStream.map((data) => data.entries
+    log('categorySection is called');
+    final returnStreamController = StreamController<List<Category>>();
+    returnStreamController.add(categories.entries
         .map((entry) => Category(id: entry.key, name: entry.value))
         .toList());
+    returnStreamController.addStream(categoryStream.map((data) => data.entries
+        .map((entry) => Category(id: entry.key, name: entry.value))
+        .toList()));
+    return returnStreamController.stream;
   }
 
   @override
   CurrencySection currencySection() {
-    return currencyStream.map((data) => data.entries
+    log('currencySection is called');
+    final returnStreamController = StreamController<List<CurrencyInstance>>();
+    returnStreamController.add(currencies.entries
         .map((entry) => CurrencyInstance(
             id: entry.key,
             symbol: entry.value.$1,
             ratio: entry.value.$2,
             isDefault: defaultCurrency == entry.key))
         .toList());
+    returnStreamController.addStream(currencyStream.map((data) => data.entries
+        .map((entry) => CurrencyInstance(
+            id: entry.key,
+            symbol: entry.value.$1,
+            ratio: entry.value.$2,
+            isDefault: defaultCurrency == entry.key))
+        .toList()));
+    return returnStreamController.stream;
   }
 
   @override
   Future<void> editCategory(int categoryId, String categoryName) async {
+    log('editCategory is called with categoryId: $categoryId, categoryName: $categoryName');
     categories[categoryId] = categoryName;
     categorySink.add(categories);
   }
 
   @override
   Future<void> newCategory(String categoryName) async {
+    log('newCategory is called with categoryName: $categoryName');
     categories[categories.length] = categoryName;
     categorySink.add(categories);
   }
@@ -120,34 +141,40 @@ class MockUtilsPage implements UtilsPage {
   @override
   Future<void> editCurrency(
       int currencyId, String currencyName, double currencyRatio) async {
+    log('editCurrency is called with currencyId: $currencyId, currencyName: $currencyName, currencyRatio: $currencyRatio');
     currencies[currencyId] = (currencyName, currencyRatio);
     currencySink.add(currencies);
   }
 
   @override
   Future<void> newCurrency(String currencyName, double currencyRatio) async {
+    log('newCurrency is called with currencyName: $currencyName, currencyRatio: $currencyRatio');
     currencies[currencies.length] = (currencyName, currencyRatio);
     currencySink.add(currencies);
   }
 
   @override
   Future<void> setDefaultCurrency(int currencyId) async {
+    log('setDefaultCurrency is called with currencyId: $currencyId');
     defaultCurrency = currencyId;
     currencySink.add(currencies);
   }
 
   @override
   CurrencyIntegrationWindow openCurrencyIntegrationWindow(int replaceeId) {
+    log('openCurrencyIntegrationWindow is called with replaceeId: $replaceeId');
     return MockCurrencyIntegrationWindow(replaceeId, currencySink, currencies);
   }
 
   @override
   CategoryIntegrationWindow openCategoryIntegrationWindow(int replaceeId) {
+    log('openCategoryIntegrationWindow is called with replaceeId: $replaceeId');
     return MockCategoryIntegrationWindow(replaceeId, categorySink, categories);
   }
 
   @override
   void dispose() {
+    log('UtilsPage is disposed');
     categorySink.close();
     currencySink.close();
   }

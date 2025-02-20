@@ -53,12 +53,11 @@ class _AppViewRootState extends State<AppViewRoot> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text('Miraibo'),
-          bottom: const TabBar(
+          title: const TabBar(
             tabs: <Widget>[
+              Tab(icon: Icon(Icons.calendar_today)),
               Tab(icon: Icon(Icons.home)),
               Tab(icon: Icon(Icons.data_usage)),
-              Tab(icon: Icon(Icons.calendar_today)),
               Tab(icon: Icon(Icons.settings)),
             ],
           ),
@@ -66,9 +65,9 @@ class _AppViewRootState extends State<AppViewRoot> {
         body: TabBarView(
           children: <Widget>[
             PlanningPage(widget.skeleton.planningPage),
-            MainPage(),
+            MainPage(widget.skeleton.mainPage),
             DataPage(),
-            UtilsPage(),
+            UtilsPage(widget.skeleton.utilsPage),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' show log;
 
 import 'package:miraibo/dto/dto.dart';
 
@@ -17,6 +18,8 @@ abstract interface class CurrencyIntegrationWindow {
   // </states>
 
   // <presenters>
+  Future<Currency> getReplacee();
+
   /// In integration window, all currencies (except replacee) are shown as replacer options.
   Future<List<Currency>> getOptions();
   // </presenters>
@@ -46,7 +49,14 @@ class MockCurrencyIntegrationWindow implements CurrencyIntegrationWindow {
       this.replaceeId, this._currencyStream, this._currencies);
 
   @override
+  Future<Currency> getReplacee() async {
+    log('getReplacee is called with replaceeId: $replaceeId');
+    return Currency(id: replaceeId, symbol: _currencies[replaceeId]?.$1 ?? '');
+  }
+
+  @override
   Future<List<Currency>> getOptions() async {
+    log('getOptions is called');
     return _currencies.entries
         .where((entry) => entry.key != replaceeId)
         .map((entry) => Currency(id: entry.key, symbol: entry.value.$1))
@@ -55,10 +65,13 @@ class MockCurrencyIntegrationWindow implements CurrencyIntegrationWindow {
 
   @override
   Future<void> integrateCurrency(int replacerId) async {
+    log('integrateCurrency is called with replacerId: $replacerId');
     _currencies.remove(replaceeId);
     _currencyStream.add(_currencies);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('CurrencyIntegrationWindow is disposed');
+  }
 }

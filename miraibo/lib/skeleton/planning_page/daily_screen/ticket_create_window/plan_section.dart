@@ -1,6 +1,8 @@
 import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// PlanSection is a section to create a plan.
 /// A plan consists of following information:
@@ -28,7 +30,11 @@ abstract interface class PlanSection {
   // <controllers>
   /// create the plan with the specified scheme.
   Future<void> createPlan(
-      int categoryId, String description, Price price, Schedule schedule);
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Schedule schedule});
   // </controllers>
 
   // <navigators>
@@ -58,26 +64,34 @@ class MockPlanSection implements PlanSection {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<Currency> getDefaultCurrency() async {
+    log('getDefaultCurrency is called');
     return currencyList[0];
   }
 
   @override
-  Future<void> createPlan(int categoryId, String description, Price price,
-      Schedule schedule) async {
+  Future<void> createPlan(
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Schedule schedule}) async {
+    log('createPlan is called');
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(PlanTicket(
         id: id,
-        price: price,
+        price: Price(amount: amount, symbol: currencyList[currencyId].symbol),
         schedule: schedule,
         description: description,
         categoryName: categoryList[categoryId].name));
@@ -85,6 +99,8 @@ class MockPlanSection implements PlanSection {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('dispose is called');
+  }
 }
 // </mock>

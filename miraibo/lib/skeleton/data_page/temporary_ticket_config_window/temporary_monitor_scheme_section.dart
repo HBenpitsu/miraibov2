@@ -1,6 +1,8 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// MonitorSchemeSection is a section to create a monitor scheme.
 /// A monitor scheme consists of the following information:
@@ -74,16 +76,19 @@ class MockTemporaryMonitorSchemeSection
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<TemporaryMonitorScheme> getInitialScheme() async {
+    log('getInitialScheme is called');
     if (initialScheme is TemporaryMonitorScheme) {
       return initialScheme as TemporaryMonitorScheme;
     }
@@ -98,6 +103,7 @@ class MockTemporaryMonitorSchemeSection
   @override
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       MonitorDisplayOption displayOption, int currencyId) async {
+    log('applyMonitorScheme is called');
     // cast bunch of parameters to the temporary monitor scheme
     currentScheme = TemporaryMonitorScheme(
         categories: categoryIds.map((id) => categoryList[id]).toList(),
@@ -107,6 +113,8 @@ class MockTemporaryMonitorSchemeSection
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockTemporaryMonitorSchemeSection is disposed');
+  }
 }
 // </mock>

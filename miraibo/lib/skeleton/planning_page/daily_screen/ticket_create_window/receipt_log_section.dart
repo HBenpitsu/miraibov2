@@ -1,6 +1,8 @@
 import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// ReceiptLogSection is a section to create a receipt log.
 /// A receipt log consists of the following information:
@@ -30,8 +32,12 @@ abstract interface class ReceiptLogSection {
 
   // <controllers>
   /// create the receipt log with the specified scheme.
-  Future<void> createReceiptLog(int categoryId, String description, Price price,
-      Date date, bool confirmed);
+  Future<void> createReceiptLog(
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Date date});
   // </controllers>
 
   // <navigators>
@@ -61,34 +67,44 @@ class MockReceiptLogSection implements ReceiptLogSection {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<Currency> getDefaultCurrency() async {
+    log('getDefaultCurrency is called');
     return currencyList[0];
   }
 
   @override
-  Future<void> createReceiptLog(int categoryId, String description, Price price,
-      Date date, bool confirmed) async {
+  Future<void> createReceiptLog(
+      {required int categoryId,
+      required String description,
+      required int amount,
+      required int currencyId,
+      required Date date}) async {
+    log('createReceiptLog is called');
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(ReceiptLogTicket(
         id: id,
-        price: price,
+        price: Price(amount: amount, symbol: currencyList[currencyId].symbol),
         date: date,
         description: description,
         categoryName: categoryList[categoryId].name,
-        confirmed: confirmed));
+        confirmed: true));
     ticketsStream.add(tickets);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockReceiptLogSection is disposed');
+  }
 }
 // </mock>

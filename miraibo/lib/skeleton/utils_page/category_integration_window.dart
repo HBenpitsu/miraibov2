@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' show log;
 
 import 'package:miraibo/dto/dto.dart';
 
@@ -19,6 +20,7 @@ abstract interface class CategoryIntegrationWindow {
 
   // <presenters>
   /// In integration window, all categories (except replacee) are shown as replacer options.
+  Future<Category> getReplacee();
   Future<List<Category>> getOptions();
   // </presenters>
 
@@ -46,7 +48,14 @@ class MockCategoryIntegrationWindow implements CategoryIntegrationWindow {
       this.replaceeId, this._categoryStream, this._categories);
 
   @override
+  Future<Category> getReplacee() async {
+    log('getReplacee is called with replaceeId: $replaceeId');
+    return Category(name: _categories[replaceeId] ?? '', id: replaceeId);
+  }
+
+  @override
   Future<List<Category>> getOptions() async {
+    log('getOptions is called');
     return _categories.entries
         .where((entry) => entry.key != replaceeId)
         .map((entry) => Category(id: entry.key, name: entry.value))
@@ -55,11 +64,14 @@ class MockCategoryIntegrationWindow implements CategoryIntegrationWindow {
 
   @override
   Future<void> integrateCategory(int replacerId) async {
+    log('integrateCategory is called with replacerId: $replacerId');
     _categories.remove(replaceeId);
     _categoryStream.add(_categories);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('CategoryIntegrationWindow is disposed');
+  }
 }
 // </mock>

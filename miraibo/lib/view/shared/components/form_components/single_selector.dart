@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:miraibo/view/shared/components/form_components/custom_search_bar.dart';
 import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 import 'package:miraibo/view/shared/components/modal_window.dart';
+import 'package:miraibo/view/shared/components/valed_container.dart';
 
 class SingleSelector<T> extends StatefulWidget {
   final int initialIndex;
@@ -106,7 +108,6 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
   late final TextEditingController searchController;
   late final FocusNode searchFocusNode;
   late final StreamController<List<bool>> visibilityNotifier;
-  late final Widget itemListCache;
 
   @override
   void initState() {
@@ -115,116 +116,52 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
     searchController = TextEditingController();
     searchFocusNode = FocusNode();
     visibilityNotifier = StreamController<List<bool>>();
-    itemListCache = _NotifiableItemList(
-        heightOfTopDummy: SingleSelector.heightOfItem,
-        heightOfBottomDummy: SingleSelector.heightOfItem,
-        heightOfItem: SingleSelector.heightOfItem,
-        heightOfItemMargin: SingleSelector.heightOfItemMargin,
-        initiallyHighlited: widget.initial,
-        labels: widget.labels,
-        initiallyVisible: currentlyVisible,
-        visiblityNotifier: visibilityNotifier.stream,
-        overlap: const Color.fromARGB(10, 0, 0, 0),
-        onChanged: widget.onChange);
-  }
-
-  Widget searchBar() {
-    final inputField = TextField(
-        controller: searchController,
-        focusNode: searchFocusNode,
-        decoration: InputDecoration(
-            hintText: 'Search',
-            hintStyle:
-                TextStyle(color: Theme.of(context).colorScheme.surfaceDim),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(formChipHeight))),
-        onSubmitted: (value) {
-          final search = value.toLowerCase();
-          currentlyVisible = widget.labels
-              .map((elem) => elem.toLowerCase().contains(search))
-              .toList();
-          visibilityNotifier.add(currentlyVisible);
-        });
-    final resetButton = IconButton(
-      onPressed: () {
-        searchController.clear();
-        currentlyVisible = List.filled(currentlyVisible.length, true);
-        visibilityNotifier.add(currentlyVisible);
-      },
-      style: TextButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          minimumSize: const Size(formChipHeight, formChipHeight)),
-      icon: const Icon(Icons.backspace),
-    );
-    final bar = SizedBox(
-        height: formChipHeight,
-        child: Row(
-          children: [
-            Expanded(child: inputField),
-            const SizedBox(width: 5), // spacer
-            resetButton,
-          ],
-        ));
-    return bar;
-  }
-
-  Widget actionButtons() {
-    return Row(
-      children: [
-        const Spacer(),
-        TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK')),
-        const Spacer(),
-      ],
-    );
-  }
-
-  Widget itemListHolder() {
-    // vale
-    final upperVale = Container(
-        width: double.infinity,
-        height: SingleSelector.heightOfItem,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).colorScheme.surface,
-                Theme.of(context).colorScheme.surface.withOpacity(0)
-              ]),
-        ));
-    final lowerVale = Container(
-        width: double.infinity,
-        height: SingleSelector.heightOfItem,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Theme.of(context).colorScheme.surface,
-                Theme.of(context).colorScheme.surface.withOpacity(0)
-              ]),
-        ));
-    final stack = Stack(children: [
-      itemListCache,
-      Positioned(top: 0, left: 0, right: 0, child: upperVale),
-      Positioned(bottom: 0, left: 0, right: 0, child: lowerVale)
-    ]);
-    return stack;
   }
 
   @override
   Widget build(BuildContext context) {
+    final list = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: _NotifiableItemList(
+            initiallyHighlited: widget.initial,
+            labels: widget.labels,
+            initiallyVisible: currentlyVisible,
+            visiblityNotifier: visibilityNotifier.stream,
+            overlap: const Color.fromARGB(10, 0, 0, 0),
+            onChanged: widget.onChange));
+    final searchBar = CustomSearchBar(onSearchWordChanged: (text) {
+      final search = text.toLowerCase();
+      currentlyVisible = widget.labels
+          .map((elem) => elem.toLowerCase().contains(search))
+          .toList();
+      visibilityNotifier.add(currentlyVisible);
+    });
+    final actionButton = Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          children: [
+            const Spacer(flex: 1),
+            Expanded(
+                flex: 3,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'))),
+            const Spacer(flex: 1),
+          ],
+        ));
+
     return ModalWindowContainer(
-        child: Column(children: [
-      Expanded(child: itemListHolder()),
-      const SizedBox(height: 10),
-      searchBar(),
-      actionButtons()
-    ]));
+        child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: SingleSelector.widthOfHorizontalPadding),
+            child: Column(children: [
+              Expanded(child: list),
+              const SizedBox(height: 10),
+              searchBar,
+              actionButton
+            ])));
   }
 }
 
@@ -235,10 +172,11 @@ class _NotifiableItemList extends StatefulWidget {
   final Stream<List<bool>> visiblityNotifier;
   final void Function(int) onChanged;
   final Color overlap;
-  final double heightOfTopDummy;
-  final double heightOfBottomDummy;
-  final double heightOfItem;
-  final double heightOfItemMargin;
+  static const double heightOfTopDummy = SingleSelector.heightOfItem;
+  static const double heightOfBottomDummy = SingleSelector.heightOfItem;
+  static const double heightOfItem = SingleSelector.heightOfItem;
+  static const double heightOfItemMargin = SingleSelector.heightOfItemMargin;
+
   const _NotifiableItemList({
     required this.initiallyVisible,
     required this.initiallyHighlited,
@@ -246,10 +184,6 @@ class _NotifiableItemList extends StatefulWidget {
     required this.visiblityNotifier,
     required this.onChanged,
     required this.overlap,
-    required this.heightOfTopDummy,
-    required this.heightOfBottomDummy,
-    required this.heightOfItem,
-    required this.heightOfItemMargin,
   });
   @override
   State<_NotifiableItemList> createState() => _NotifiableItemListState();
@@ -282,26 +216,9 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
     return result;
   }
 
-  Widget? item(
-      BuildContext context, int viewIndex, List<int> effectiveIndexes) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    if (viewIndex == 0) {
-      return SizedBox(height: widget.heightOfTopDummy);
-    }
-    // shift down by 1 to add a dummy item at the top
-    viewIndex -= 1;
-
-    // the last item is a dummy item
-    if (viewIndex == effectiveIndexes.length) {
-      return SizedBox(height: widget.heightOfItem - widget.heightOfItemMargin);
-    }
-    // if the index is out of range return null
-    if (viewIndex > effectiveIndexes.length) {
-      return null;
-    }
+  Widget item(BuildContext context, int viewIndex, List<int> effectiveIndexes) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     // now we are not curious about the viewIndex (the index of the shown list)
     // but we have to know the index of the list that holds data of all items
@@ -309,8 +226,7 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
 
     // making real item below
     final itemLabel = SizedBox(
-        height: widget.heightOfItem,
-        width: double.infinity,
+        height: _NotifiableItemList.heightOfItem,
         child: Center(
             child:
                 Text(widget.labels[modelIndex], style: textTheme.labelLarge)));
@@ -332,7 +248,8 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
         ));
 
     return Padding(
-      padding: EdgeInsets.only(bottom: widget.heightOfItemMargin),
+      padding:
+          const EdgeInsets.only(bottom: _NotifiableItemList.heightOfItemMargin),
       key: ValueKey(modelIndex),
       child: item,
     );
@@ -342,9 +259,11 @@ class _NotifiableItemListState extends State<_NotifiableItemList> {
   Widget build(BuildContext context) {
     var effectiveIndexes = getEffectiveIndexes();
 
-    return ListView.builder(
-        itemCount: effectiveIndexes.length + 2, // add dummy items
-        itemBuilder: (context, index) =>
-            item(context, index, effectiveIndexes));
+    return ValedList(
+        builder: (context, index) => item(context, index, effectiveIndexes),
+        upperValeHeight: _NotifiableItemList.heightOfTopDummy,
+        lowerValeHeight: _NotifiableItemList.heightOfBottomDummy,
+        valeColor: Theme.of(context).colorScheme.surface,
+        itemCount: effectiveIndexes.length);
   }
 }

@@ -1,6 +1,8 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// EstimationSchemeSection is a section to create an estimation scheme.
 /// An estimation scheme consists of the following information:
@@ -76,16 +78,19 @@ class MockTemporaryEstimationSchemeSection
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<TemporaryEstimationScheme> getInitialScheme() async {
+    log('getInitialScheme is called');
     if (initialScheme is TemporaryEstimationScheme) {
       return initialScheme as TemporaryEstimationScheme;
     }
@@ -100,6 +105,7 @@ class MockTemporaryEstimationSchemeSection
   @override
   Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
       EstimationDisplayOption displayOption, int currencyId) async {
+    log('applyMonitorScheme is called');
     // cast bunch of parameters to the temporary estimation scheme
     currentScheme = TemporaryEstimationScheme(
         categories: categoryList
@@ -111,6 +117,8 @@ class MockTemporaryEstimationSchemeSection
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockTemporaryEstimationSchemeSection is disposed');
+  }
 }
 // </mock>

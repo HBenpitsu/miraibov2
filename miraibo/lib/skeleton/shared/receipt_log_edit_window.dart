@@ -1,4 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
+import 'dart:developer' show log;
 
 // <interface>
 /// receipt log edit window is shown when user wants to edit receipt log.
@@ -76,16 +77,19 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<ReceiptLogScheme> getOriginalReceiptLog() {
+    log('getOriginalReceiptLog is called with targetLogId: $targetLogId');
     final today = DateTime.now().cutOffTime();
     return Future.value(ReceiptLogScheme(
       category: categoryList[0],
@@ -104,6 +108,7 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
       required int amount,
       required int currencyId,
       required Date date}) async {
+    log('updateReceiptLog is called with categoryId: $categoryId, description: $description, amount: $amount, currencyId: $currencyId, date: $date');
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -130,13 +135,16 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
 
   @override
   Future<void> deleteReceiptLog() async {
+    log('deleteReceiptLog is called with targetLogId: $targetLogId');
     tickets.removeWhere(
         (element) => element is ReceiptLogTicket && element.id == targetLogId);
     ticketsStream.add(tickets);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('ReceiptLogEditWindow is disposed');
+  }
 }
 // </mock>
 

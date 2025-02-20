@@ -4,6 +4,8 @@ import 'dart:math' show Random;
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/daily_screen.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// Monthly screen consists of infinite set of monthly calenders.
 /// Each date of the calender navigates to the daily screen.
@@ -67,6 +69,7 @@ class MockMonthlyScreen implements MonthlyScreen {
 
   @override
   Calender getCalender(int index) {
+    log('getCalender is called with index: $index');
     final firstDay = DateTime(
         initiallyCenteredDate.year, initiallyCenteredDate.month + index, 1);
     final lastDay = DateTime(
@@ -90,10 +93,13 @@ class MockMonthlyScreen implements MonthlyScreen {
 
   @override
   DailyScreen navigateToDailyScreen(int year, int month, int day) {
+    log('navigateToDailyScreen is called with year: $year, month: $month, day: $day');
     return MockDailyScreen(year, month, day);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MonthlyScreen is disposed');
+  }
 }
 // </mock>

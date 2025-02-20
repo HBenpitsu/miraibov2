@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 // following skeleton classes are so small, so they are merged into this single file.
 
 // <interface>
@@ -78,36 +80,61 @@ abstract interface class RestoreWindow {
 // <mock>
 class MockExportationWindow implements ExportationWindow {
   @override
-  Future<void> exportDataTo(String path) async {}
+  Future<void> exportDataTo(String path) async {
+    log('MockExportationWindow: exportDataTo called with path: $path');
+  }
+
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockExportationWindow: dispose called');
+  }
 }
 
 class MockOverwriteWindow implements OverwriteWindow {
   @override
-  Future<void> overwriteDataWith(String path) async {}
+  Future<void> overwriteDataWith(String path) async {
+    log('MockOverwriteWindow: overwriteDataWith called with path: $path');
+  }
+
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockOverwriteWindow: dispose called');
+  }
 }
 
 class MockImportationWindow implements ImportationWindow {
   @override
-  Future<void> importDataFrom(String path) async {}
+  Future<void> importDataFrom(String path) async {
+    log('MockImportationWindow: importDataFrom called with path: $path');
+  }
+
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockImportationWindow: dispose called');
+  }
 }
 
 class MockBackupWindow implements BackupWindow {
   @override
-  Future<void> backupDataTo(String path) async {}
+  Future<void> backupDataTo(String path) async {
+    log('MockBackupWindow: backupDataTo called with path: $path');
+  }
+
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockBackupWindow: dispose called');
+  }
 }
 
 class MockRestoreWindow implements RestoreWindow {
   @override
-  Future<void> restoreDataFrom(String path) async {}
+  Future<void> restoreDataFrom(String path) async {
+    log('MockRestoreWindow: restoreDataFrom called with path: $path');
+  }
+
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockRestoreWindow: dispose called');
+  }
 }
 // </mock>

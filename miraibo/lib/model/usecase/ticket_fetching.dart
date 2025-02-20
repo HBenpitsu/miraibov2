@@ -11,7 +11,6 @@ Future<List<Ticket>> fetchTicketsOn(Date date) async {
 /// {@template fetchReceiptLogsAndMonitorsForToday}
 /// fetches tickets for today
 /// {@endtemplate}
-Future<List<ReceiptLogAndMonitorTicket>>
-    fetchReceiptLogsAndMonitorsForToday() async {
+Future<List<Ticket>> fetchReceiptLogsAndMonitorsForToday() async {
   throw UnimplementedError();
 }

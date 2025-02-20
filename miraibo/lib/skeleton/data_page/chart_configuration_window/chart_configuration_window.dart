@@ -6,6 +6,8 @@ export 'package:miraibo/skeleton/data_page/chart_configuration_window/pie_chart_
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/subtotal_chart_section.dart';
 export 'package:miraibo/skeleton/data_page/chart_configuration_window/subtotal_chart_section.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// There are three types of charts: accumulation, pie, and subtotal.
 /// This window is shown when user wants to configure the chart.
@@ -55,6 +57,7 @@ class MockChartConfigurationWindow implements ChartConfigurationWindow {
   late final SubtotalChartSection subtotalChartSection;
 
   MockChartConfigurationWindow(this.initialScheme, this.schemeSetter) {
+    log('MockChartConfigurationWindow: constructed');
     accumulationChartSection =
         MockAccumulationChartSection(initialScheme, schemeSetter);
     pieChartSection = MockPieChartSection(initialScheme, schemeSetter);
@@ -64,6 +67,7 @@ class MockChartConfigurationWindow implements ChartConfigurationWindow {
 
   @override
   void dispose() {
+    log('MockChartConfigurationWindow: dispose called');
     accumulationChartSection.dispose();
     pieChartSection.dispose();
     subtotalChartSection.dispose();

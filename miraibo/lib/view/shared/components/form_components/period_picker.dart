@@ -8,7 +8,8 @@ import 'package:miraibo/view/shared/components/form_components/shared_constants.
 class OpenPeriodPicker extends StatefulWidget {
   final dto.OpenPeriod initial;
   final void Function(dto.OpenPeriod) onChanged;
-  static const edgeButtonRatio = 0.15;
+  static const edgeButtonFlex = 1;
+  static const pickUpSectionFlex = 3;
   static const borderRadius = Radius.circular(formChipHeight / 2);
   const OpenPeriodPicker(
       {required this.initial, required this.onChanged, super.key});
@@ -37,12 +38,16 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final screenSize = MediaQuery.of(context).size;
     final mainContent = Row(
       children: [
-        leftEdgeButton(colorScheme, screenSize.width),
-        Expanded(child: pickUpSection()),
-        rightEdgeButton(colorScheme, screenSize.width)
+        Expanded(
+            flex: OpenPeriodPicker.edgeButtonFlex,
+            child: leftEdgeButton(colorScheme)),
+        Expanded(
+            flex: OpenPeriodPicker.pickUpSectionFlex, child: pickUpSection()),
+        Expanded(
+            flex: OpenPeriodPicker.edgeButtonFlex,
+            child: rightEdgeButton(colorScheme))
       ],
     );
     return Padding(
@@ -62,13 +67,12 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
     }
   }
 
-  TextButton leftEdgeButton(ColorScheme colorScheme, double screenWidth) {
+  TextButton leftEdgeButton(ColorScheme colorScheme) {
     final style = TextButton.styleFrom(
         backgroundColor: isBeginningOpen
             ? colorScheme.primaryContainer
             : colorScheme.surfaceContainer,
-        minimumSize: Size(
-            screenWidth * OpenPeriodPicker.edgeButtonRatio, formChipHeight),
+        minimumSize: const Size.fromHeight(formChipHeight),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(
                 right: Radius.zero, left: OpenPeriodPicker.borderRadius)));
@@ -83,13 +87,12 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
         child: const Text(''));
   }
 
-  TextButton rightEdgeButton(ColorScheme colorScheme, double screenWidth) {
+  TextButton rightEdgeButton(ColorScheme colorScheme) {
     final style = TextButton.styleFrom(
         backgroundColor: isEndingOpen
             ? colorScheme.primaryContainer
             : colorScheme.surfaceContainer,
-        minimumSize: Size(
-            screenWidth * OpenPeriodPicker.edgeButtonRatio, formChipHeight),
+        minimumSize: const Size.fromHeight(formChipHeight),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(
                 right: OpenPeriodPicker.borderRadius, left: Radius.zero)));

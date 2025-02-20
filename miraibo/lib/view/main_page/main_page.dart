@@ -1,103 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:miraibo/view/main_page/receipt_log_create_window.dart';
+import 'package:miraibo/view/shared/components/ticket_container.dart';
+import 'package:miraibo/skeleton/main_page/main_page.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
-import 'package:miraibo/view/shared/components/form_components/form_components.dart';
+import 'package:miraibo/view/shared/constants.dart';
+import 'package:miraibo/view/shared/receipt_log_confirmation_window.dart';
+import 'package:miraibo/view/shared/receipt_log_edit_window.dart';
+import 'package:miraibo/view/shared/monitor_scheme_edit_window.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final skt.MainPage skeleton;
+  const MainPage(this.skeleton, {super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  Future<ListView> ticketList() async {
-    final today = DateTime.now();
-    final aYearAgo =
-        DateTime(today.year - 1, today.month, today.day).cutOffTime();
-    final aYearLater =
-        DateTime(today.year + 1, today.month, today.day).cutOffTime();
-    return ListView(
-      children: [
-        DatePicker(
-          initial: today.cutOffTime(),
-          onChanged: (date) {
-            print('${date.year}-${date.month}-${date.day}');
-          },
-        ),
-        OpenPeriodPicker(
-            initial: const dto.OpenPeriod(begins: null, ends: null),
-            onChanged: (period) {
-              switch ((period.begins, period.ends)) {
-                case (dto.Date begins, dto.Date ends):
-                  print(
-                      '${begins.year}-${begins.month}-${begins.day} to ${ends.year}-${ends.month}-${ends.day}');
-                case (dto.Date begins, null):
-                  print('from ${begins.year}-${begins.month}-${begins.day}');
-                case (null, dto.Date ends):
-                  print('until ${ends.year}-${ends.month}-${ends.day}');
-                case (null, null):
-                  print('all the time');
-              }
-            }),
-        DayOfWeekSelector.fromDayNames(
-          sunday: true,
-          monday: true,
-          tuesday: true,
-          wednesday: true,
-          thursday: true,
-          friday: true,
-          saturday: true,
-          onChanged: (selection) {
-            print(selection);
-          },
-        ),
-        ClosedPeriodPicker(
-            initial: dto.ClosedPeriod(begins: aYearAgo, ends: aYearLater),
-            onChanged: (period) {
-              print(
-                  '${period.begins.year}-${period.begins.month}-${period.begins.day} to ${period.ends.year}-${period.ends.month}-${period.ends.day}');
-            }),
-        NumberPicker(
-            initial: 0,
-            min: -31,
-            max: 31,
-            steps: const [1, 5],
-            onChanged: (number) {
-              print(number);
-            }),
-        MoneyPicker(
-            initial: 0,
-            memos: const [100, 1000, 1230],
-            onChanged: (value) {
-              print(value);
-            }),
-        MultiSelector.fromTuple(
-            items: [for (var i = 0; i < 200; i++) ('item $i', i, i.isEven)],
-            onChanged: (value) {
-              print(value);
-            }),
-        SingleSelector.fromTaple(
-            initialIndex: 0,
-            onChanged: print,
-            items: [for (var i = 0; i < 200; i++) ('item $i', i)])
-      ],
+  Future<Widget> ticketList() async {
+    final width = MediaQuery.of(context).size.width * 0.9;
+    return TicketContainer(
+      widget.skeleton.getTickets(),
+      onTap: (ticket) {
+        switch (ticket) {
+          case dto.ReceiptLogTicket ticket:
+            if (ticket.confirmed) {
+              openReceiptLogEditWindow(
+                  context, widget.skeleton.openReceiptLogEditWindow(ticket.id));
+            } else {
+              openReceiptLogConfirmationWindow(context,
+                  widget.skeleton.openReceiptLogConfirmationWindow(ticket.id));
+            }
+          case dto.MonitorTicket ticket:
+            openMonitorSchemeEditWindow(context,
+                widget.skeleton.openMonitorSchemeEditWindow(ticket.id));
+          case dto.PlanTicket _:
+          case dto.EstimationTicket _:
+            throw Exception('those tickets should not be shown here');
+        }
+      },
+      width: width,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-          future: ticketList(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return snapshot.data!;
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          }),
+      body: Center(
+          child: FutureBuilder(
+              future: ticketList(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data!;
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              })),
+      bottomNavigationBar: SizedBox(
+        height: bottomNavigationBarHeight,
+        child: Row(
+          children: [
+            const Spacer(),
+            IconButton(
+              onPressed: () {
+                openReceiptLogCreateWindow(
+                    context, widget.skeleton.openReceiptLogCreateWindow());
+              },
+              icon: const Icon(Icons.add),
+            ),
+            const Spacer(),
+          ],
+        ),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.skeleton.dispose();
+    super.dispose();
   }
 }

@@ -62,6 +62,17 @@ class Currency {
   final String symbol;
 
   const Currency({required this.id, required this.symbol});
+
+  @override
+  int get hashCode => id.hashCode ^ symbol.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Currency) {
+      return id == other.id && symbol == other.symbol;
+    }
+    return false;
+  }
 }
 
 class Category {
@@ -69,4 +80,15 @@ class Category {
   final String name;
 
   const Category({required this.id, required this.name});
+
+  @override
+  int get hashCode => id.hashCode ^ name.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Category) {
+      return id == other.id && name == other.name;
+    }
+    return false;
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
+import 'dart:developer' show log;
 
 // <interface>
 /// SubtotalChartSection is a section to configure a subtotal chart.
@@ -65,16 +66,19 @@ class MockSubtotalChartSection implements SubtotalChartSection {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('MockSubtotalChartSection: getCategoryOptions called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('MockSubtotalChartSection: getCurrencyOptions called');
     return currencyList;
   }
 
   @override
   Future<SubtotalChartScheme> getInitialScheme() async {
+    log('MockSubtotalChartSection: getInitialScheme called');
     if (initialScheme is SubtotalChartScheme) {
       return initialScheme as SubtotalChartScheme;
     }
@@ -96,6 +100,7 @@ class MockSubtotalChartSection implements SubtotalChartSection {
   @override
   Future<void> applyScheme(List<int> categoryIds, int currencyId,
       ClosedPeriod viewportRange, int intervalInDays) async {
+    log('MockSubtotalChartSection: applyScheme called with categoryIds: $categoryIds, currencyId: $currencyId, viewportRange: $viewportRange, intervalInDays: $intervalInDays');
     // cast bunch of parameters to SubtotalChartScheme and set it to currentScheme
     currentScheme = SubtotalChartScheme(
         currency: currencyList[currencyId],
@@ -105,6 +110,8 @@ class MockSubtotalChartSection implements SubtotalChartSection {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockSubtotalChartSection: dispose called');
+  }
 }
 // </mock>

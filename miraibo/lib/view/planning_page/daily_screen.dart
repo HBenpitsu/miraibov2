@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/planning_page/bidirectional_infinite_list.dart';
+import 'package:miraibo/view/planning_page/ticket_create_window.dart';
+import 'package:miraibo/view/planning_page/ticket_edit_windows.dart';
 import 'package:miraibo/view/shared/components/ticket_container.dart';
+import 'package:miraibo/view/shared/constants.dart';
 import 'package:miraibo/view/shared/receipt_log_edit_window.dart';
+import 'package:miraibo/view/shared/receipt_log_confirmation_window.dart';
+import 'package:miraibo/view/shared/monitor_scheme_edit_window.dart';
 
 /// DailyScreen has an infinite horizontal list of TicketContainer widgets, container label and ticket creation button.
 /// DailyScreen implement list-function. It updates label content. It instanciate the button as a floating button.
@@ -49,6 +54,7 @@ class _DailyScreenState extends State<DailyScreen> {
       TicketContainer.maxWidth);
 
   TextButton get label {
+    final textTheme = Theme.of(context).textTheme;
     final labelContent = StreamBuilder(
         stream: widget.skeleton.getLabel(),
         builder: (context, snapshot) {
@@ -57,10 +63,9 @@ class _DailyScreenState extends State<DailyScreen> {
             final date = data.asDateTime();
             return Text(
                 "${date.year}-${date.month}-${date.day} (${widget.getWeekdayString(date.weekday)})",
-                style: Theme.of(context).textTheme.headlineSmall);
+                style: textTheme.displaySmall);
           }
-          return Text('------',
-              style: Theme.of(context).textTheme.headlineSmall);
+          return Text('------', style: textTheme.displaySmall);
         });
     return TextButton(
         onPressed: () {
@@ -87,28 +92,55 @@ class _DailyScreenState extends State<DailyScreen> {
   void onTap(dto.Ticket ticket) {
     switch (ticket) {
       case dto.MonitorTicket ticket:
-        widget.skeleton.openMonitorSchemeEditWindow(ticket.id);
+        openMonitorSchemeEditWindow(
+            context, widget.skeleton.openMonitorSchemeEditWindow(ticket.id));
       case dto.EstimationTicket ticket:
-        widget.skeleton.openEstimationSchemeEditWindow(ticket.id);
+        openEstimationSchemeEditWindow(
+            context, widget.skeleton.openEstimationSchemeEditWindow(ticket.id));
       case dto.PlanTicket ticket:
-        widget.skeleton.openPlanEditWindow(ticket.id);
+        openPlanEditWindow(
+            context, widget.skeleton.openPlanEditWindow(ticket.id));
       case dto.ReceiptLogTicket ticket:
         if (ticket.confirmed) {
           openReceiptLogEditWindow(
               context, widget.skeleton.openReceiptLogEditWindow(ticket.id));
         } else {
-          widget.skeleton.openReceiptLogConfirmationWindow(ticket.id);
+          openReceiptLogConfirmationWindow(context,
+              widget.skeleton.openReceiptLogConfirmationWindow(ticket.id));
         }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        label,
-        Expanded(child: ticketContainers),
-      ],
+    return Scaffold(
+      body: Column(
+        children: [
+          label,
+          Expanded(child: ticketContainers),
+        ],
+      ),
+      bottomNavigationBar: SizedBox(
+          height: bottomNavigationBarHeight,
+          child: Row(
+            children: [
+              const Spacer(),
+              IconButton(
+                  onPressed: () {
+                    widget.navigateToMonthlyScreen(
+                        widget.skeleton.navigateToMonthlyScreen());
+                  },
+                  icon: const Icon(Icons.arrow_circle_left)),
+              const Spacer(),
+              IconButton(
+                  onPressed: () {
+                    openTicketCreateWindow(
+                        context, widget.skeleton.openTicketCreateWindow());
+                  },
+                  icon: const Icon(Icons.add)),
+              const Spacer(),
+            ],
+          )),
     );
   }
 

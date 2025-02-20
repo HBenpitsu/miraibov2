@@ -1,6 +1,8 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 /// AccumulationChartSection is a section to configure an accumulation chart.
 /// An accumulation chart consists of the following information:
@@ -76,16 +78,19 @@ class MockAccumulationChartSection implements AccumulationChartSection {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<AccumulationChartScheme> getInitialScheme() async {
+    log('getInitialScheme is called');
     if (initialScheme is AccumulationChartScheme) {
       return initialScheme as AccumulationChartScheme;
     }
@@ -114,6 +119,7 @@ class MockAccumulationChartSection implements AccumulationChartSection {
       ClosedPeriod viewportRange,
       List<int> categoryIds,
       int intervalInDays) async {
+    log('applyScheme is called');
     // cast bunch of parameters to AccumulationChartScheme and set it to currentScheme
     currentScheme = AccumulationChartScheme(
         currency: currencyList[currencyId],
@@ -124,6 +130,8 @@ class MockAccumulationChartSection implements AccumulationChartSection {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockAccumulationChartSection is disposed');
+  }
 }
 // </mock>

@@ -1,6 +1,8 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
+import 'dart:developer' show log;
+
 // <interface>
 
 /// PieChartSection is a section to configure a pie chart.
@@ -65,16 +67,19 @@ class MockPieChartSection implements PieChartSection {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<PieChartScheme> getInitialScheme() async {
+    log('getInitialScheme is called');
     if (initialScheme is PieChartScheme) {
       return initialScheme as PieChartScheme;
     }
@@ -95,6 +100,7 @@ class MockPieChartSection implements PieChartSection {
   @override
   Future<void> applyScheme(
       int currencyId, OpenPeriod period, List<int> categoryIds) async {
+    log('applyScheme is called');
     // cast bunch of parameters to PieChartScheme and set it to currentScheme
     currentScheme = PieChartScheme(
         currency: currencyList[currencyId],
@@ -103,6 +109,8 @@ class MockPieChartSection implements PieChartSection {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('MockPieChartSection is disposed');
+  }
 }
 // </mock>

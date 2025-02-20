@@ -1,3 +1,5 @@
+import 'dart:math' show min;
+
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/ticket.dart';
@@ -36,6 +38,8 @@ class TicketContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: double.infinity, width: width, child: ticketsColumn(context));
+        height: double.infinity,
+        width: min(width, maxWidth),
+        child: ticketsColumn(context));
   }
 }
