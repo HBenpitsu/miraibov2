@@ -116,7 +116,7 @@ class _CategorySection extends StatelessWidget {
       children: [
         GestureDetector(
             onTap: () {
-              controller.fold();
+              controller.toggle();
             },
             child: Text('Category',
                 style: Theme.of(context).textTheme.headlineLarge)),

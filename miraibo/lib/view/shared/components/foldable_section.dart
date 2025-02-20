@@ -31,6 +31,7 @@ class FoldableSection extends StatefulWidget {
   final FoldingController? controller;
   final Color? color;
   static const radius = Radius.circular(30);
+  static const animationDuration = 500;
 
   const FoldableSection({
     required this.header,
@@ -87,9 +88,7 @@ class _FoldableSectionState extends State<FoldableSection> {
         child: footer);
     return GestureDetector(
         onTap: () {
-          setState(() {
-            controller.toggle();
-          });
+          controller.toggle();
         },
         child: container);
   }
@@ -112,7 +111,8 @@ class _FoldableSectionState extends State<FoldableSection> {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       headerContainer(widget.header),
       AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration:
+            const Duration(milliseconds: FoldableSection.animationDuration),
         curve: Curves.easeOut,
         color: widget.color ?? Theme.of(context).colorScheme.surfaceContainer,
         height: controller.folded ? 0 : widget.bodyHeight,

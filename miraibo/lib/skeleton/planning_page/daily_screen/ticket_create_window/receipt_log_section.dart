@@ -28,6 +28,9 @@ abstract interface class ReceiptLogSection {
 
   /// for convenience, default currency should be supplied.
   Future<Currency> getDefaultCurrency();
+
+  /// for convenience, presets for the receipt log should be supplied.
+  Future<List<ReceiptLogSchemePreset>> getPresets();
   // </presenters>
 
   // <controllers>
@@ -81,6 +84,43 @@ class MockReceiptLogSection implements ReceiptLogSection {
   Future<Currency> getDefaultCurrency() async {
     log('getDefaultCurrency is called');
     return currencyList[0];
+  }
+
+  @override
+  Future<List<ReceiptLogSchemePreset>> getPresets() async {
+    log('getPresets is called');
+    return [
+      ReceiptLogSchemePreset(
+        price: ConfigureblePrice(
+            amount: 100, currencyId: 0, currencySymbol: currencyList[0].symbol),
+        description: 'preset1',
+        category: Category(id: 0, name: categoryList[0].name),
+      ),
+      ReceiptLogSchemePreset(
+        price: ConfigureblePrice(
+            amount: 100, currencyId: 1, currencySymbol: currencyList[1].symbol),
+        description: 'preset2',
+        category: Category(id: 0, name: categoryList[0].name),
+      ),
+      ReceiptLogSchemePreset(
+        price: ConfigureblePrice(
+            amount: 100, currencyId: 1, currencySymbol: currencyList[1].symbol),
+        description: '',
+        category: Category(id: 0, name: categoryList[0].name),
+      ),
+      ReceiptLogSchemePreset(
+        price: ConfigureblePrice(
+            amount: 100, currencyId: 1, currencySymbol: currencyList[1].symbol),
+        description: '',
+        category: Category(id: 0, name: categoryList[0].name),
+      ),
+      ReceiptLogSchemePreset(
+        price: ConfigureblePrice(
+            amount: 100, currencyId: 1, currencySymbol: currencyList[1].symbol),
+        description: 'preset5',
+        category: Category(id: 0, name: categoryList[0].name),
+      ),
+    ];
   }
 
   @override

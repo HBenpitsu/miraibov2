@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/view/shared/components/modal_window.dart';
 import 'package:miraibo/view/shared/constants.dart';
-import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
+import 'package:miraibo/view/shared/components/form_components/fixed_value_presenter.dart';
 
 const windowPadding = EdgeInsets.only(left: 30, right: 30, top: 10, bottom: 0);
 
@@ -11,18 +11,9 @@ abstract class IntegrateWindowPreState<T extends StatefulWidget>
 
   Widget replacee(String name) {
     final textTheme = Theme.of(context).textTheme;
-    final nameContainerStyle = BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(formChipHeight / 2));
     return Wrap(children: [
       Text('Replace:', style: textTheme.headlineMedium),
-      Container(
-          decoration: nameContainerStyle,
-          height: formChipHeight,
-          child: Center(child: Text(name, style: textTheme.bodyLarge))),
+      FixedValuePresenter(name)
     ]);
   }
 

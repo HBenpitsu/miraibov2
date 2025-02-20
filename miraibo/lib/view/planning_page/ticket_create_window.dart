@@ -4,6 +4,7 @@ import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/modal_window.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/ticket_create_window.dart'
     as skt;
+import 'package:miraibo/view/shared/components/receipt_log_config_section_with_presets.dart';
 import 'package:miraibo/view/shared/components/ticket_scheme_config_section.dart';
 import 'package:miraibo/view/shared/constants.dart';
 
@@ -19,6 +20,7 @@ void openTicketCreateWindow(
 
 class TicketCreateWindow extends StatefulWidget {
   final skt.TicketCreateWindow skeleton;
+  static const double windowHorizontalPadding = 30;
   const TicketCreateWindow({required this.skeleton, super.key});
 
   @override
@@ -57,17 +59,30 @@ class _TicketCreateWindowState extends State<TicketCreateWindow>
         body: TabBarView(
           controller: tabController,
           children: [
-            MonitorConfigTab(
-                skeleton: widget.skeleton.monitorSchemeSection,
-                key: monitorSectionKey),
-            PlanConfigTab(
-                skeleton: widget.skeleton.planSection, key: planSectionKey),
-            EstimationConfigTab(
-                skeleton: widget.skeleton.estimationSchemeSection,
-                key: estimationSectionkey),
-            LogConfigTab(
-                skeleton: widget.skeleton.receiptLogSection,
-                key: logSectionKey),
+            Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: TicketCreateWindow.windowHorizontalPadding),
+                child: MonitorConfigTab(
+                    skeleton: widget.skeleton.monitorSchemeSection,
+                    key: monitorSectionKey)),
+            Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: TicketCreateWindow.windowHorizontalPadding),
+                child: PlanConfigTab(
+                    skeleton: widget.skeleton.planSection,
+                    key: planSectionKey)),
+            Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: TicketCreateWindow.windowHorizontalPadding),
+                child: EstimationConfigTab(
+                    skeleton: widget.skeleton.estimationSchemeSection,
+                    key: estimationSectionkey)),
+            Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: TicketCreateWindow.windowHorizontalPadding),
+                child: LogConfigTab(
+                    skeleton: widget.skeleton.receiptLogSection,
+                    key: logSectionKey)),
           ],
         ),
         bottomNavigationBar: SizedBox(
@@ -415,8 +430,15 @@ class LogConfigTab extends StatefulWidget {
 class _LogConfigTabState extends State<LogConfigTab> {
   dto.ReceiptLogScheme? currentScheme;
 
-  Future<(List<dto.Category>, List<dto.Currency>, dto.Currency)> data() async {
+  Future<
+      (
+        List<dto.ReceiptLogSchemePreset>,
+        List<dto.Category>,
+        List<dto.Currency>,
+        dto.Currency
+      )> data() async {
     return (
+      await widget.skeleton.getPresets(),
       await widget.skeleton.getCategoryOptions(),
       await widget.skeleton.getCurrencyOptions(),
       await widget.skeleton.getDefaultCurrency()
@@ -455,9 +477,11 @@ class _LogConfigTabState extends State<LogConfigTab> {
           if (snapshot.hasError) {
             return const Text('Error');
           }
-          final categoryOptions = snapshot.data!.$1;
-          final currencyOptions = snapshot.data!.$2;
-          final defaultCurrency = snapshot.data!.$3;
+
+          final presets = snapshot.data!.$1;
+          final categoryOptions = snapshot.data!.$2;
+          final currencyOptions = snapshot.data!.$3;
+          final defaultCurrency = snapshot.data!.$4;
 
           final initialScheme = dto.ReceiptLogScheme(
               category: categoryOptions.first,
@@ -476,7 +500,8 @@ class _LogConfigTabState extends State<LogConfigTab> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Log', style: Theme.of(context).textTheme.displaySmall),
-              ReceiptLogConfigSection(
+              ReceiptLogConfigSectionWithPresets(
+                  presets: presets,
                   categoryOptions: categoryOptions,
                   currencyOptions: currencyOptions,
                   initial: initialScheme,

@@ -3,7 +3,7 @@ import 'package:miraibo/skeleton/main_page/receipt_log_create_window.dart'
     as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/modal_window.dart';
-import 'package:miraibo/view/shared/components/ticket_scheme_config_section.dart';
+import 'package:miraibo/view/shared/components/receipt_log_config_section_with_presets.dart';
 
 void openReceiptLogCreateWindow(
     BuildContext context, skt.ReceiptLogCreateWindow skeleton) {
@@ -26,8 +26,15 @@ class ReceiptLogCreateWindow extends StatefulWidget {
 class _ReceiptLogCreateWindowState extends State<ReceiptLogCreateWindow> {
   dto.ReceiptLogScheme? currentScheme;
 
-  Future<(List<dto.Category>, List<dto.Currency>, dto.Currency)> data() async {
+  Future<
+      (
+        List<dto.ReceiptLogSchemePreset>,
+        List<dto.Category>,
+        List<dto.Currency>,
+        dto.Currency
+      )> data() async {
     return (
+      await widget.skeleton.getPresets(),
       await widget.skeleton.getCategoryOptions(),
       await widget.skeleton.getCurrencyOptions(),
       await widget.skeleton.getDefaultCurrency()
@@ -44,9 +51,11 @@ class _ReceiptLogCreateWindowState extends State<ReceiptLogCreateWindow> {
           if (snapshot.hasError) {
             return const Text('Error');
           }
-          final categoryOptions = snapshot.data!.$1;
-          final currencyOptions = snapshot.data!.$2;
-          final defaultCurrency = snapshot.data!.$3;
+
+          final presets = snapshot.data!.$1;
+          final categoryOptions = snapshot.data!.$2;
+          final currencyOptions = snapshot.data!.$3;
+          final defaultCurrency = snapshot.data!.$4;
 
           final initialScheme = dto.ReceiptLogScheme(
               category: categoryOptions.first,
@@ -61,19 +70,14 @@ class _ReceiptLogCreateWindowState extends State<ReceiptLogCreateWindow> {
           currentScheme ??= initialScheme;
 
           return SingleChildScrollView(
-              child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Log', style: Theme.of(context).textTheme.displaySmall),
-              ReceiptLogConfigSection(
+              child: ReceiptLogConfigSectionWithPresets(
+                  presets: presets,
                   categoryOptions: categoryOptions,
                   currencyOptions: currencyOptions,
                   initial: initialScheme,
                   onChanged: (scheme) {
                     currentScheme = scheme;
-                  })
-            ],
-          ));
+                  }));
         });
   }
 

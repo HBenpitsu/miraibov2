@@ -61,6 +61,15 @@ class ReceiptLogScheme {
   }
 }
 
+class ReceiptLogSchemePreset {
+  final ConfigureblePrice price;
+  final String description;
+  final Category category;
+
+  const ReceiptLogSchemePreset(
+      {required this.price, required this.description, required this.category});
+}
+
 class PlanScheme {
   final Schedule schedule;
   final ConfigureblePrice price;

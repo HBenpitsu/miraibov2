@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
 import 'package:miraibo/view/shared/components/ticket_scheme_config_section.dart';
-import 'package:miraibo/view/shared/prestates/edit_window_pre_state.dart';
+import 'package:miraibo/view/shared/edit_window_pre_state.dart';
 
 void openPlanEditWindow(BuildContext context, skt.PlanEditWindow skeleton) {
   showDialog(

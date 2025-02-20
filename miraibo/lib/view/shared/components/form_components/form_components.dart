@@ -4,3 +4,6 @@ export 'package:miraibo/view/shared/components/form_components/value_picker.dart
 export 'package:miraibo/view/shared/components/form_components/period_picker.dart';
 export 'package:miraibo/view/shared/components/form_components/multi_selector.dart';
 export 'package:miraibo/view/shared/components/form_components/single_selector.dart';
+export 'package:miraibo/view/shared/components/form_components/custom_search_bar.dart';
+export 'package:miraibo/view/shared/components/form_components/custom_text_field.dart';
+export 'package:miraibo/view/shared/components/form_components/fixed_value_presenter.dart';

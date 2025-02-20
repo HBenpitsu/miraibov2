@@ -1,4 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
+import 'dart:developer' show log;
 
 // <interface>
 /// PlanEditWindow is a window to edit a plan.
@@ -73,16 +74,19 @@ class MockPlanEditWindow implements PlanEditWindow {
 
   @override
   Future<List<Category>> getCategoryOptions() async {
+    log('getCategoryOptions is called');
     return categoryList;
   }
 
   @override
   Future<List<Currency>> getCurrencyOptions() async {
+    log('getCurrencyOptions is called');
     return currencyList;
   }
 
   @override
   Future<PlanScheme> getOriginalPlan() {
+    log('getOriginalPlan is called with targetPlanId: $targetPlanId');
     final today = DateTime.now().cutOffTime();
     return Future.value(PlanScheme(
         category: categoryList[0],
@@ -101,6 +105,7 @@ class MockPlanEditWindow implements PlanEditWindow {
       required int amount,
       required int currencyId,
       required Schedule schedule}) async {
+    log('updatePlan is called with categoryId: $categoryId, description: $description, amount: $amount, currencyId: $currencyId, schedule: $schedule');
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -126,12 +131,15 @@ class MockPlanEditWindow implements PlanEditWindow {
 
   @override
   Future<void> deletePlan() async {
+    log('deletePlan is called with targetPlanId: $targetPlanId');
     tickets.removeWhere(
         (element) => element is PlanTicket && element.id == targetPlanId);
     ticketsStream.add(tickets);
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    log('PlanEditWindow is disposed');
+  }
 }
 // </mock>
