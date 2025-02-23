@@ -1,4 +1,5 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
+export 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/accumulation_chart_section.dart';
 export 'package:miraibo/skeleton/data_page/chart_configuration_window/accumulation_chart_section.dart';
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/pie_chart_section.dart';
@@ -22,6 +23,10 @@ abstract interface class ChartConfigurationWindow {
   /// This will be changed on the end of the window-lifecycle.
   set currentScheme(ChartScheme value);
   // </states>
+
+  // <presenters>
+  Future<ChartScheme> getInitialScheme();
+  // </presenters>
 
   // <navigators>
   /// A tab of the window.
@@ -63,6 +68,11 @@ class MockChartConfigurationWindow implements ChartConfigurationWindow {
     pieChartSection = MockPieChartSection(initialScheme, schemeSetter);
     subtotalChartSection =
         MockSubtotalChartSection(initialScheme, schemeSetter);
+  }
+
+  @override
+  Future<ChartScheme> getInitialScheme() async {
+    return initialScheme;
   }
 
   @override

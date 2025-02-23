@@ -12,6 +12,7 @@ import 'package:miraibo/view/shared/constants.dart';
 class MonthlyScreen extends StatefulWidget {
   final skt.MonthlyScreen skeleton;
   final void Function(skt.DailyScreen) navigateToDailyScreen;
+  static const scrollDuration = Duration(milliseconds: 500);
   const MonthlyScreen(this.skeleton,
       {required this.navigateToDailyScreen, super.key});
 
@@ -20,13 +21,7 @@ class MonthlyScreen extends StatefulWidget {
 }
 
 class _MonthlyScreenState extends State<MonthlyScreen> {
-  late final ScrollController scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    scrollController = ScrollController();
-  }
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,23 +43,29 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
               const Spacer(),
               IconButton(
                 onPressed: () {
-                  scrollController.jumpTo(
-                      scrollController.position.pixels - screenHeight * 12);
+                  scrollController.animateTo(
+                      scrollController.position.pixels - screenHeight * 12,
+                      duration: MonthlyScreen.scrollDuration,
+                      curve: Curves.easeOut);
                 },
                 icon: const Icon(Icons.arrow_upward),
               ),
               const Spacer(),
               IconButton(
                 onPressed: () {
-                  scrollController.jumpTo(0);
+                  scrollController.animateTo(0,
+                      duration: MonthlyScreen.scrollDuration,
+                      curve: Curves.easeOut);
                 },
                 icon: const Icon(Icons.autorenew),
               ),
               const Spacer(),
               IconButton(
                 onPressed: () {
-                  scrollController.jumpTo(
-                      scrollController.position.pixels + screenHeight * 12);
+                  scrollController.animateTo(
+                      scrollController.position.pixels + screenHeight * 12,
+                      duration: MonthlyScreen.scrollDuration,
+                      curve: Curves.easeOut);
                 },
                 icon: const Icon(Icons.arrow_downward),
               ),
@@ -76,8 +77,9 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
 
   @override
   void dispose() {
-    super.dispose();
+    scrollController.dispose();
     widget.skeleton.dispose();
+    super.dispose();
   }
 }
 

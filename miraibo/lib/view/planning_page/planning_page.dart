@@ -16,9 +16,13 @@ class PlanningPage extends StatefulWidget {
   State<PlanningPage> createState() => _PlanningPageState();
 }
 
-class _PlanningPageState extends State<PlanningPage> {
+class _PlanningPageState extends State<PlanningPage>
+    with AutomaticKeepAliveClientMixin {
   late Widget screen;
   late final void Function() onPageDisposed;
+
+  @override
+  bool get wantKeepAlive => true;
 
   void navigateToDailyScreen(skt.DailyScreen skeleton) {
     setState(() {
@@ -43,6 +47,7 @@ class _PlanningPageState extends State<PlanningPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return AnimatedSwitcher(
         duration: PlanningPage.screenSwitchingDuration, child: screen);
   }

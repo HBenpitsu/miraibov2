@@ -45,6 +45,47 @@ class AppViewRoot extends StatefulWidget {
 }
 
 class _AppViewRootState extends State<AppViewRoot> {
+  late final AppBar appBar;
+  late final PlanningPage planningPage;
+  late final MainPage mainPage;
+  late final DataPage dataPage;
+  late final UtilsPage utilsPage;
+  late bool scrollLock;
+
+  @override
+  void initState() {
+    super.initState();
+    appBar = AppBar(
+      title: const TabBar(
+        tabs: [
+          Tab(icon: Icon(Icons.calendar_today)),
+          Tab(icon: Icon(Icons.home)),
+          Tab(icon: Icon(Icons.data_usage)),
+          Tab(icon: Icon(Icons.settings)),
+        ],
+      ),
+    );
+    planningPage = PlanningPage(widget.skeleton.planningPage);
+    mainPage = MainPage(widget.skeleton.mainPage);
+    dataPage = DataPage(
+      widget.skeleton.dataPage,
+      scrollLock: () {
+        if (!mounted) return;
+        setState(() {
+          scrollLock = true;
+        });
+      },
+      scrollUnlock: () {
+        if (!mounted) return;
+        setState(() {
+          scrollLock = false;
+        });
+      },
+    );
+    utilsPage = UtilsPage(widget.skeleton.utilsPage);
+    scrollLock = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -52,22 +93,14 @@ class _AppViewRootState extends State<AppViewRoot> {
       initialIndex: 1,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: const TabBar(
-            tabs: <Widget>[
-              Tab(icon: Icon(Icons.calendar_today)),
-              Tab(icon: Icon(Icons.home)),
-              Tab(icon: Icon(Icons.data_usage)),
-              Tab(icon: Icon(Icons.settings)),
-            ],
-          ),
-        ),
+        appBar: appBar,
         body: TabBarView(
-          children: <Widget>[
-            PlanningPage(widget.skeleton.planningPage),
-            MainPage(widget.skeleton.mainPage),
-            DataPage(),
-            UtilsPage(widget.skeleton.utilsPage),
+          physics: scrollLock ? const NeverScrollableScrollPhysics() : null,
+          children: [
+            planningPage,
+            mainPage,
+            dataPage,
+            utilsPage,
           ],
         ),
       ),

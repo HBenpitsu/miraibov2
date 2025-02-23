@@ -4,23 +4,25 @@ sealed class ChartChip {
   const ChartChip();
 }
 
-class PieChartChip extends ChartChip {
+class RatioValue extends ChartChip {
   final String categoryName;
   final double amount;
+  final double ratio;
 
-  const PieChartChip({required this.categoryName, required this.amount});
+  const RatioValue(
+      {required this.categoryName, required this.amount, required this.ratio});
 }
 
-class AccumulatedBar extends ChartChip {
+class AccumulatedValue extends ChartChip {
   final Date date;
   final double amount;
 
-  const AccumulatedBar({required this.date, required this.amount});
+  const AccumulatedValue({required this.date, required this.amount});
 }
 
-class SubtotalBar extends ChartChip {
+class SubtotalValue extends ChartChip {
   final Date date;
   final double amount;
 
-  const SubtotalBar({required this.date, required this.amount});
+  const SubtotalValue({required this.date, required this.amount});
 }

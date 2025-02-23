@@ -56,7 +56,7 @@ class _ReceiptLogConfigSectionState extends State<ReceiptLogConfigSection> {
       Text('Category', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<int>.fromTaple(
+        SingleSelector<int>.fromTuple(
             initialIndex: current.category.id,
             onChanged: (selected) {
               current =
@@ -94,7 +94,7 @@ class _ReceiptLogConfigSectionState extends State<ReceiptLogConfigSection> {
           const SizedBox(width: 10),
           Expanded(
               flex: 3,
-              child: SingleSelector<int>.fromTaple(
+              child: SingleSelector<int>.fromTuple(
                   initialIndex: current.price.currencyId,
                   onChanged: (index) {
                     final currency = widget.currencyOptions[index];
@@ -163,7 +163,7 @@ class _PlanConfigSectionState extends State<PlanConfigSection> {
       Text('Category', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<int>.fromTaple(
+        SingleSelector<int>.fromTuple(
             initialIndex: current.category.id,
             onChanged: (selected) {
               current =
@@ -201,7 +201,7 @@ class _PlanConfigSectionState extends State<PlanConfigSection> {
           const SizedBox(width: 10),
           Expanded(
               flex: 3,
-              child: SingleSelector<int>.fromTaple(
+              child: SingleSelector<int>.fromTuple(
                   initialIndex: current.price.currencyId,
                   onChanged: (index) {
                     final currency = widget.currencyOptions[index];
@@ -225,6 +225,13 @@ class _PlanConfigSectionState extends State<PlanConfigSection> {
             current = current.copyWith(schedule: schedule);
           })
     ]);
+  }
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    descriptionFocusNode.dispose();
+    super.dispose();
   }
 }
 
@@ -724,7 +731,7 @@ class _EstimationConfigSectionState extends State<EstimationConfigSection> {
       Text('Display Currency', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<dto.Currency>.fromTaple(
+        SingleSelector<dto.Currency>.fromTuple(
             initialIndex: widget.currencyOptions.indexOf(current.currency),
             items: widget.currencyOptions.map((e) => (e.symbol, e)),
             onChanged: (selected) {
@@ -735,7 +742,7 @@ class _EstimationConfigSectionState extends State<EstimationConfigSection> {
       Text('Display Option', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<dto.EstimationDisplayOption>.fromTaple(
+        SingleSelector<dto.EstimationDisplayOption>.fromTuple(
             initialIndex: current.displayOption.index,
             items: dto.EstimationDisplayOption.values.map((e) => (
                   switch (e) {
@@ -807,7 +814,7 @@ class _MonitorConfigSectionState extends State<MonitorConfigSection> {
       Text('Display Currency', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<dto.Currency>.fromTaple(
+        SingleSelector<dto.Currency>.fromTuple(
             initialIndex: widget.currencyOptions.indexOf(current.currency),
             items: widget.currencyOptions.map((e) => (e.symbol, e)),
             onChanged: (selected) {
@@ -828,7 +835,7 @@ class _MonitorConfigSectionState extends State<MonitorConfigSection> {
       Text('Display Option', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<dto.MonitorDisplayOption>.fromTaple(
+        SingleSelector<dto.MonitorDisplayOption>.fromTuple(
             initialIndex: current.displayOption.index,
             items: dto.MonitorDisplayOption.values.map((e) => (
                   switch (e) {

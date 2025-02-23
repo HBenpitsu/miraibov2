@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:developer' show log;
+import 'dart:math' show Random;
 
 import 'package:miraibo/dto/dto.dart';
-import 'package:miraibo/skeleton/data_page/shared.dart';
+// import 'package:miraibo/skeleton/data_page/shared.dart';
 export 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/skeleton/data_page/operation_windows.dart';
 export 'package:miraibo/skeleton/data_page/operation_windows.dart';
@@ -155,42 +156,62 @@ sealed class Chart {
 }
 
 class PieChart extends Chart {
-  final String currencyName;
+  final String currencySymbol;
   final OpenPeriod analysisRange;
-  final List<PieChartChip> chips;
+  final double gross;
+  final List<RatioValue> chips;
 
   const PieChart(
-      {required this.currencyName,
+      {required this.currencySymbol,
       required this.analysisRange,
+      required this.gross,
       required this.chips});
 }
 
 class SubtotalChart extends Chart {
-  final String currencyName;
+  final String currencySymbol;
   final ClosedPeriod viewportRange;
   final List<String> categoryNames;
-  final List<SubtotalBar> bars;
+  final List<SubtotalValue> bars;
+  final int intervalInDays;
+  final int yAxisExtent;
+  final double maxScale;
+  final int todaysIndex;
 
   const SubtotalChart(
-      {required this.currencyName,
+      {required this.currencySymbol,
       required this.categoryNames,
       required this.viewportRange,
-      required this.bars});
+      required this.bars,
+      required this.intervalInDays,
+      required this.yAxisExtent,
+      required this.maxScale,
+      required this.todaysIndex});
+
+  int get maxXIndex => bars.length;
 }
 
 class AccumulationChart extends Chart {
-  final String currencyName;
+  final String currencySymbol;
   final List<String> categoryNames;
   final OpenPeriod analysisRange;
   final ClosedPeriod viewportRange;
-  final List<AccumulatedBar> bars;
+  final List<AccumulatedValue> bars;
+  final int yAxisExtent;
+  final double maxScale;
+  final int todaysIndex;
 
   const AccumulationChart(
-      {required this.currencyName,
+      {required this.currencySymbol,
       required this.categoryNames,
       required this.analysisRange,
       required this.viewportRange,
-      required this.bars});
+      required this.bars,
+      required this.yAxisExtent,
+      required this.maxScale,
+      required this.todaysIndex});
+
+  int get maxXIndex => bars.length;
 }
 
 class ChartUnspecified extends Chart {}
@@ -280,16 +301,19 @@ class MockDataPage implements DataPage {
 
   MockDataPage() {
     log('MockDataPage: constructed');
-    currentChartScheme = const ChartSchemeUnspecified();
-    currentTicketScheme = const TemporaryTicketSchemeUnspecified();
-    final chartStreamController = StreamController<ChartScheme>();
+    final chartStreamController = StreamController<ChartScheme>.broadcast();
     chartStream = chartStreamController.stream;
     chartSink = chartStreamController.sink;
     final temporaryTicketStreamController =
-        StreamController<TemporaryTicketScheme>();
+        StreamController<TemporaryTicketScheme>.broadcast();
     temporaryTicketStream = temporaryTicketStreamController.stream;
     temporaryTicketSink = temporaryTicketStreamController.sink;
+
+    currentChartScheme = const ChartSchemeUnspecified();
+    currentTicketScheme = const TemporaryTicketSchemeUnspecified();
   }
+
+  Random random = Random();
 
   @override
   Stream<Chart> getChart() {
@@ -306,41 +330,61 @@ class MockDataPage implements DataPage {
       switch (scheme) {
         // provide mock chart based on the scheme.
         case PieChartScheme _:
-          return const PieChart(
-              currencyName: 'JPY',
+          final numberOfChips = 10;
+          double gross = 0;
+          final List<RatioValue> chips = [];
+          for (var i = 1; i <= numberOfChips; i++) {
+            final amount = (numberOfChips - i.toDouble()) * 100000;
+            gross += amount;
+          }
+          for (var i = 1; i <= numberOfChips; i++) {
+            final amount = (numberOfChips - i.toDouble()) * 100000;
+            chips.add(RatioValue(
+                categoryName: 'category $i',
+                amount: amount,
+                ratio: amount / gross));
+          }
+          if (gross == 0) {
+            return PieChart(
+                currencySymbol: 'JPY',
+                analysisRange: OpenPeriod(begins: null, ends: null),
+                gross: 0,
+                chips: []);
+          }
+          return PieChart(
+              currencySymbol: 'JPY',
               analysisRange: OpenPeriod(begins: null, ends: null),
-              chips: [
-                PieChartChip(categoryName: 'category1', amount: 300),
-                PieChartChip(categoryName: 'category2', amount: 400),
-                PieChartChip(categoryName: 'category3', amount: 500)
-              ]);
+              gross: gross,
+              chips: chips);
         case SubtotalChartScheme _:
           return SubtotalChart(
-              currencyName: 'JPY',
+              currencySymbol: 'JPY',
               viewportRange: period,
-              categoryNames: [
-                'category1',
-                'category2',
-                'category3'
-              ],
+              categoryNames: ['category1', 'category2', 'category3'],
               bars: [
-                for (var i = 1; i < 20; i++)
-                  SubtotalBar(
-                      amount: 100,
+                for (var i = 1; i < 50; i++)
+                  SubtotalValue(
+                      amount: 100.0 * random.nextDouble() + 500,
                       date: Date(thisMonth.year, thisMonth.month, i))
-              ]);
+              ],
+              intervalInDays: 7,
+              yAxisExtent: 600,
+              maxScale: 5,
+              todaysIndex: 10);
         case AccumulationChartScheme _:
           return AccumulationChart(
-              currencyName: 'JPY',
+              currencySymbol: 'JPY',
               analysisRange: const OpenPeriod(begins: null, ends: null),
               viewportRange: period,
-              categoryNames: [],
+              categoryNames: ['category1', 'category2', 'category3'],
               bars: [
-                for (var i = 1; i < 20; i++)
-                  AccumulatedBar(
-                      amount: 100,
-                      date: Date(thisMonth.year, thisMonth.month, i))
-              ]);
+                for (var i = 1; i < 50; i++)
+                  AccumulatedValue(
+                      amount: 100.0 * i, date: Date(thisMonth.year, 12, i))
+              ],
+              yAxisExtent: 5000,
+              maxScale: 5,
+              todaysIndex: 10);
         case ChartSchemeUnspecified _:
           return ChartUnspecified();
       }
@@ -441,8 +485,6 @@ class MockDataPage implements DataPage {
   @override
   void dispose() {
     log('MockDataPage: dispose called');
-    chartSink.close();
-    temporaryTicketSink.close();
     mockVault.dispose();
   }
 }
@@ -565,12 +607,9 @@ class MockReceiptLogVault {
       successKeyBox.add(newKey);
     });
 
-    return (recordsBox.toList(), successKeyBox.stream);
+    return (recordsBox.toList(growable: false), successKeyBox.stream);
   }
 
-  void dispose() {
-    receiptLogsSink.close();
-    firstRecordSink.close();
-  }
+  void dispose() {}
 }
 // </mock>

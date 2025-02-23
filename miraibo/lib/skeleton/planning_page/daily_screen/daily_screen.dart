@@ -359,8 +359,6 @@ class MockDailyScreen implements DailyScreen {
   @override
   void dispose() {
     log('DailyScreen is disposed');
-    labelSink.close();
-    ticketSink.close();
   }
 }
 // </mock>

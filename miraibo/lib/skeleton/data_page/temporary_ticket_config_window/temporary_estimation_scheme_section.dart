@@ -110,7 +110,7 @@ class MockTemporaryEstimationSchemeSection
     currentScheme = TemporaryEstimationScheme(
         categories: categoryList
             .where((element) => categoryIds.contains(element.id))
-            .toList(),
+            .toList(growable: false),
         currency: currencyList[currencyId],
         displayOption: displayOption,
         period: period);

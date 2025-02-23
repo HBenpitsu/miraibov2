@@ -51,6 +51,14 @@ class UtilsPage extends StatefulWidget {
 }
 
 class _UtilsPageState extends State<UtilsPage> {
+  late final ScrollController scrollCtl;
+
+  @override
+  void initState() {
+    super.initState();
+    scrollCtl = ScrollController();
+  }
+
   @override
   Widget build(BuildContext context) {
     final mainContent = Column(
@@ -60,34 +68,69 @@ class _UtilsPageState extends State<UtilsPage> {
         _CurrencySection(widget.skeleton),
       ],
     );
+    final bottomBar = SizedBox(
+        height: bottomNavigationBarHeight,
+        child: Row(
+          children: [
+            Expanded(
+                child: IconButton(
+                    onPressed: () {
+                      scrollCtl.animateTo(0,
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.easeInOut);
+                    },
+                    icon: const Icon(Icons.arrow_upward))),
+            Expanded(
+                child: IconButton(
+                    onPressed: () {
+                      scrollCtl.animateTo(scrollCtl.position.maxScrollExtent,
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.easeInOut);
+                    },
+                    icon: const Icon(Icons.arrow_downward))),
+          ],
+        ));
     return Scaffold(
       body: SingleChildScrollView(
+          controller: scrollCtl,
           child: Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: UtilsPage.horizontalPadding),
               child: mainContent)),
-      bottomNavigationBar: const SizedBox(
-        height: bottomNavigationBarHeight,
-      ),
+      bottomNavigationBar: bottomBar,
     );
   }
 
   @override
   void dispose() {
     widget.skeleton.dispose();
+    scrollCtl.dispose();
     super.dispose();
   }
 }
 
-class _CategorySection extends StatelessWidget {
+class _CategorySection extends StatefulWidget {
   final skt.UtilsPage skeleton;
   const _CategorySection(this.skeleton);
 
   @override
+  State<StatefulWidget> createState() => _CategorySectionState();
+}
+
+class _CategorySectionState extends State<_CategorySection>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  FoldingController foldCtl = FoldingController();
+  TextEditingController nameCtl = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final sectionColor = Theme.of(context).colorScheme.surfaceContainer;
     final mainContent = StreamBuilder(
-        stream: skeleton.categorySection(),
+        stream: widget.skeleton.categorySection(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
@@ -105,18 +148,17 @@ class _CategorySection extends StatelessWidget {
                 return categoryItem(context, data[index]);
               });
         });
-    FoldingController controller = FoldingController();
     final container = FoldableSection(
         color: sectionColor,
         header: categoryAddTile(context),
         body: mainContent,
         bodyHeight: UtilsPage.heightOfCagegorySection,
-        controller: controller);
+        controller: foldCtl);
     return Column(
       children: [
         GestureDetector(
             onTap: () {
-              controller.toggle();
+              foldCtl.toggle();
             },
             child: Text('Category',
                 style: Theme.of(context).textTheme.headlineLarge)),
@@ -127,16 +169,15 @@ class _CategorySection extends StatelessWidget {
   }
 
   Widget categoryAddTile(BuildContext context) {
-    final textCtl = TextEditingController();
     final categoryCreateButton = TextButton(
       onPressed: () {
-        if (textCtl.text.isEmpty) {
+        if (nameCtl.text.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Category name cannot be empty')));
           return;
         }
-        skeleton.newCategory(textCtl.text);
-        textCtl.clear();
+        widget.skeleton.newCategory(nameCtl.text);
+        nameCtl.clear();
       },
       style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -144,7 +185,7 @@ class _CategorySection extends StatelessWidget {
       child: const Icon(Icons.add),
     );
     return _Tile([
-      Expanded(child: CustomTextField(controller: textCtl)),
+      Expanded(child: CustomTextField(controller: nameCtl)),
       categoryCreateButton
     ]);
   }
@@ -159,12 +200,12 @@ class _CategorySection extends StatelessWidget {
           return null;
         },
         onEditCompleted: (text) {
-          skeleton.editCategory(category.id, text);
+          widget.skeleton.editCategory(category.id, text);
         });
     final integrateButton = TextButton(
       onPressed: () {
-        openCategoryIntegrateWindow(
-            context, skeleton.openCategoryIntegrationWindow(category.id));
+        openCategoryIntegrateWindow(context,
+            widget.skeleton.openCategoryIntegrationWindow(category.id));
       },
       style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -174,18 +215,32 @@ class _CategorySection extends StatelessWidget {
     return _Tile([Expanded(child: nameField), integrateButton],
         key: ValueKey(category.id));
   }
+
+  @override
+  void dispose() {
+    foldCtl.dispose();
+    nameCtl.dispose();
+    super.dispose();
+  }
 }
 
-class _CurrencySection extends StatelessWidget {
+class _CurrencySection extends StatefulWidget {
   final skt.UtilsPage skeleton;
   const _CurrencySection(this.skeleton);
   static const double currencyRatioFieldWidth = 60;
   static const double currencyFieldSpacing = 5;
 
   @override
+  State<StatefulWidget> createState() => _CurrencySectionState();
+}
+
+class _CurrencySectionState extends State<_CurrencySection> {
+  FoldingController foldCtl = FoldingController();
+
+  @override
   Widget build(BuildContext context) {
     final list = StreamBuilder(
-        stream: skeleton.currencySection(),
+        stream: widget.skeleton.currencySection(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
@@ -203,9 +258,8 @@ class _CurrencySection extends StatelessWidget {
                 return currencyItem(context, data[index]);
               });
         });
-    final foldingController = FoldingController();
     final container = FoldableSection(
-        controller: foldingController,
+        controller: foldCtl,
         header: currencyAddTile(context),
         body: list,
         bodyHeight: UtilsPage.heightOfCurrencySection,
@@ -214,7 +268,7 @@ class _CurrencySection extends StatelessWidget {
       children: [
         GestureDetector(
             onTap: () {
-              foldingController.toggle();
+              foldCtl.toggle();
             },
             child: Text('Currency',
                 style: Theme.of(context).textTheme.headlineLarge)),
@@ -224,15 +278,16 @@ class _CurrencySection extends StatelessWidget {
     );
   }
 
+  TextEditingController symbolCtl = TextEditingController();
+  TextEditingController numberCtl = TextEditingController();
+
   Widget currencyAddTile(BuildContext context) {
-    final textCtl = TextEditingController();
-    final numberCtl = TextEditingController();
-    final symbolField = CustomTextField(controller: textCtl);
+    final symbolField = CustomTextField(controller: symbolCtl);
     final ratioField = CustomTextField(
         keyboardType: TextInputType.number, controller: numberCtl);
     final integrateButton = TextButton(
       onPressed: () {
-        if (textCtl.text.isEmpty) {
+        if (symbolCtl.text.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Currency symbol cannot be empty')));
           return;
@@ -243,8 +298,8 @@ class _CurrencySection extends StatelessWidget {
               const SnackBar(content: Text('Currency ratio must be a number')));
           return;
         }
-        skeleton.newCurrency(textCtl.text, ratio);
-        textCtl.clear();
+        widget.skeleton.newCurrency(symbolCtl.text, ratio);
+        symbolCtl.clear();
         numberCtl.clear();
       },
       style: TextButton.styleFrom(
@@ -255,9 +310,10 @@ class _CurrencySection extends StatelessWidget {
     return _Tile([
       Expanded(child: symbolField),
       const SizedBox(
-        width: currencyFieldSpacing,
+        width: _CurrencySection.currencyFieldSpacing,
       ),
-      SizedBox(width: currencyRatioFieldWidth, child: ratioField),
+      SizedBox(
+          width: _CurrencySection.currencyRatioFieldWidth, child: ratioField),
       integrateButton
     ]);
   }
@@ -272,7 +328,7 @@ class _CurrencySection extends StatelessWidget {
         return null;
       },
       onEditCompleted: (text) {
-        skeleton.editCurrency(currency.id, text, currency.ratio);
+        widget.skeleton.editCurrency(currency.id, text, currency.ratio);
       },
     );
     final ratioField = CustomTextField(
@@ -286,13 +342,13 @@ class _CurrencySection extends StatelessWidget {
       },
       onEditCompleted: (text) {
         final ratio = double.parse(text);
-        skeleton.editCurrency(currency.id, currency.symbol, ratio);
+        widget.skeleton.editCurrency(currency.id, currency.symbol, ratio);
       },
     );
     final integrateButton = TextButton(
       onPressed: () {
-        openCurrencyIntegrateWindow(
-            context, skeleton.openCurrencyIntegrationWindow(currency.id));
+        openCurrencyIntegrateWindow(context,
+            widget.skeleton.openCurrencyIntegrationWindow(currency.id));
       },
       style: TextButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -301,7 +357,7 @@ class _CurrencySection extends StatelessWidget {
     );
     final setDefaultButton = TextButton(
       onPressed: () {
-        skeleton.setDefaultCurrency(currency.id);
+        widget.skeleton.setDefaultCurrency(currency.id);
       },
       style: TextButton.styleFrom(
           backgroundColor: currency.isDefault
@@ -312,14 +368,23 @@ class _CurrencySection extends StatelessWidget {
     return _Tile([
       setDefaultButton,
       const SizedBox(
-        width: currencyFieldSpacing,
+        width: _CurrencySection.currencyFieldSpacing,
       ),
       Expanded(child: symbolField),
       const SizedBox(
-        width: currencyFieldSpacing,
+        width: _CurrencySection.currencyFieldSpacing,
       ),
-      SizedBox(width: currencyRatioFieldWidth, child: ratioField),
+      SizedBox(
+          width: _CurrencySection.currencyRatioFieldWidth, child: ratioField),
       integrateButton
     ], key: ValueKey(currency.id));
+  }
+
+  @override
+  void dispose() {
+    foldCtl.dispose();
+    symbolCtl.dispose();
+    numberCtl.dispose();
+    super.dispose();
   }
 }

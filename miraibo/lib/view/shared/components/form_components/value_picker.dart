@@ -77,8 +77,6 @@ class _NumberPickerState extends State<NumberPicker> {
     ];
   }
 
-  void apply() {}
-
   Widget numberField() {
     return CustomTextField(
         controller: textCtl,
@@ -104,6 +102,12 @@ class _NumberPickerState extends State<NumberPicker> {
     );
     return Padding(
         padding: const EdgeInsets.all(formChipPadding), child: mainContent);
+  }
+
+  @override
+  void dispose() {
+    textCtl.dispose();
+    super.dispose();
   }
 }
 // </NumberPicker>
@@ -238,6 +242,12 @@ class _MoneyPickerState extends State<MoneyPicker> {
     );
     return Padding(
         padding: const EdgeInsets.all(formChipPadding), child: mainContent);
+  }
+
+  @override
+  void dispose() {
+    textCtl.dispose();
+    super.dispose();
   }
 }
 
@@ -421,6 +431,13 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
         keyBoardCache
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    expressionFieldTextCtl.dispose();
+    expressionFieldFocusNode.dispose();
+    super.dispose();
   }
 }
 

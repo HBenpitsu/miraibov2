@@ -3,13 +3,13 @@ import 'package:miraibo/model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
 
 // <getValuesOfPieChart>
-Future<List<PieChartChip>> __getValuesOfPieChart(
+Future<List<RatioValue>> __getValuesOfPieChart(
     (int, OpenPeriod, List<int>) param) {
   return usecase.getValuesOfPieChart(param.$1, param.$2, param.$3);
 }
 
 /// {@macro getValuesOfPieChart}
-Future<List<PieChartChip>> getValuesOfPieChart(
+Future<List<RatioValue>> getValuesOfPieChart(
     int currencyId, OpenPeriod analysisRange, List<int> categoryIds) {
   return compute(
       __getValuesOfPieChart, (currencyId, analysisRange, categoryIds));
@@ -17,14 +17,14 @@ Future<List<PieChartChip>> getValuesOfPieChart(
 // </getValuesOfPieChart>
 
 // <getValuesOfAccumulationChart>
-Future<List<AccumulatedBar>> __getValuesOfAccumulationChart(
+Future<List<AccumulatedValue>> __getValuesOfAccumulationChart(
     (int, OpenPeriod, ClosedPeriod, List<int>, int) param) {
   return usecase.getValuesOfAccumulationChart(
       param.$1, param.$2, param.$3, param.$4, param.$5);
 }
 
 /// {@macro getValuesOfAccumulationChart}
-Future<List<AccumulatedBar>> getValuesOfAccumulationChart(
+Future<List<AccumulatedValue>> getValuesOfAccumulationChart(
     int currencyId,
     OpenPeriod analysisRange,
     ClosedPeriod viewportRange,
@@ -36,14 +36,14 @@ Future<List<AccumulatedBar>> getValuesOfAccumulationChart(
 // </getValuesOfAccumulationChart>
 
 // <getValuesOfSubtotalChart>
-Future<List<SubtotalBar>> __getValuesOfSubtotalChart(
+Future<List<SubtotalValue>> __getValuesOfSubtotalChart(
     (int, ClosedPeriod, List<int>, int) param) {
   return usecase.getValuesOfSubtotalChart(
       param.$1, param.$2, param.$3, param.$4);
 }
 
 /// {@macro getValuesOfSubtotalChart}
-Future<List<SubtotalBar>> getValuesOfSubtotalChart(
+Future<List<SubtotalValue>> getValuesOfSubtotalChart(
     int currencyId,
     ClosedPeriod viewportRange,
     List<int> categoryIds,

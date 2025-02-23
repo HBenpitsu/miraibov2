@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
 
-class Ticket extends StatelessWidget {
+class InteractiveTicket extends StatelessWidget {
   final dto.Ticket data;
   final void Function(dto.Ticket) onTap;
-  const Ticket({required this.data, required this.onTap, super.key});
+  const InteractiveTicket({required this.data, required this.onTap, super.key});
 
   static const double maxTicketWidth = 330;
 
   Widget content(BuildContext context) {
     switch (data) {
       case dto.ReceiptLogTicket data:
-        return LogTicketContent(
+        return LogTicket(
             categories: [data.categoryName],
             description: data.description,
             amount: data.price.amount,
@@ -19,21 +19,21 @@ class Ticket extends StatelessWidget {
             confirmed: data.confirmed,
             timestamp: data.date);
       case dto.PlanTicket data:
-        return PlanTicketContent(
+        return PlanTicket(
             categories: [data.categoryName],
             description: data.description,
             amount: data.price.amount,
             currencySymbol: data.price.symbol,
             schedule: data.schedule);
       case dto.EstimationTicket data:
-        return EstimateTicketContent(
+        return EstimateTicket(
             categories: data.categoryNames,
             amount: data.price.amount,
             currencySymbol: data.price.symbol,
             displayOption: data.displayOption,
             period: data.period);
       case dto.MonitorTicket data:
-        return MonitorTicketContent(
+        return MonitorTicket(
             categories: data.categoryNames,
             amount: data.price.amount,
             currencySymbol: data.price.symbol,
@@ -51,14 +51,14 @@ class Ticket extends StatelessWidget {
   }
 }
 
-class LogTicketContent extends StatelessWidget {
+class LogTicket extends StatelessWidget {
   final List<String> categories;
   final String description;
   final int amount;
   final String currencySymbol;
   final bool confirmed;
   final dto.Date timestamp;
-  const LogTicketContent(
+  const LogTicket(
       {required this.categories,
       required this.description,
       required this.amount,
@@ -73,7 +73,7 @@ class LogTicketContent extends StatelessWidget {
       if (!confirmed) 'unconfirmed',
       if (amount < 0) 'income',
     ];
-    return TicketContentTemplate(
+    return TicketAppearanceTemplate(
       ticketType: 'Log',
       categories: categories,
       amount: amount,
@@ -88,13 +88,13 @@ class LogTicketContent extends StatelessWidget {
   }
 }
 
-class PlanTicketContent extends StatelessWidget {
+class PlanTicket extends StatelessWidget {
   final List<String> categories;
   final String description;
   final int amount;
   final String currencySymbol;
   final dto.Schedule schedule;
-  const PlanTicketContent(
+  const PlanTicket(
       {required this.categories,
       required this.description,
       required this.amount,
@@ -105,7 +105,7 @@ class PlanTicketContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return TicketContentTemplate(
+    return TicketAppearanceTemplate(
       ticketType: 'Plan',
       categories: categories,
       amount: amount,
@@ -120,13 +120,13 @@ class PlanTicketContent extends StatelessWidget {
   }
 }
 
-class EstimateTicketContent extends StatelessWidget {
+class EstimateTicket extends StatelessWidget {
   final List<String> categories;
   final int amount;
   final String currencySymbol;
   final dto.EstimationDisplayOption displayOption;
   final dto.OpenPeriod period;
-  const EstimateTicketContent(
+  const EstimateTicket(
       {required this.categories,
       required this.amount,
       required this.currencySymbol,
@@ -147,7 +147,7 @@ class EstimateTicketContent extends StatelessWidget {
         currencySymbol += '/year';
     }
     final colorScheme = Theme.of(context).colorScheme;
-    return TicketContentTemplate(
+    return TicketAppearanceTemplate(
       ticketType: 'Estimate',
       categories: categories,
       amount: amount,
@@ -164,13 +164,13 @@ class EstimateTicketContent extends StatelessWidget {
   }
 }
 
-class MonitorTicketContent extends StatelessWidget {
+class MonitorTicket extends StatelessWidget {
   final List<String> categories;
   final int amount;
   final String currencySymbol;
   final dto.MonitorDisplayOption displayOption;
   final dto.OpenPeriod period;
-  const MonitorTicketContent(
+  const MonitorTicket(
       {required this.categories,
       required this.amount,
       required this.currencySymbol,
@@ -227,7 +227,7 @@ class MonitorTicketContent extends StatelessWidget {
         currencySymbol += '/month';
       default:
     }
-    return TicketContentTemplate(
+    return TicketAppearanceTemplate(
       ticketType: 'Monitor',
       categories: categories,
       amount: amount,
@@ -238,7 +238,7 @@ class MonitorTicketContent extends StatelessWidget {
   }
 }
 
-class TicketContentTemplate extends StatelessWidget {
+class TicketAppearanceTemplate extends StatelessWidget {
   static const double ticketWidth = 330;
   final String ticketType;
   final List<String> categories;
@@ -256,7 +256,7 @@ class TicketContentTemplate extends StatelessWidget {
   static const double priceSpacing = 10;
   static const double amountFontSize = 40;
   static const double currencyFontSize = 20;
-  const TicketContentTemplate(
+  const TicketAppearanceTemplate(
       {required this.ticketType,
       required this.categories,
       required this.amount,
@@ -276,21 +276,22 @@ class TicketContentTemplate extends StatelessWidget {
     final priceLabel = Container(
       color: priceBackgroundColor ?? colorScheme.primaryContainer,
       width: double.infinity,
-      child: Wrap(alignment: WrapAlignment.center, children: [
-        Text('${amount.abs()}',
-            style: TextStyle(
-                color: priceColor ?? colorScheme.primary,
-                fontSize: amountFontSize,
-                fontWeight: FontWeight.w300,
-                height: 1)),
-        const SizedBox(width: priceSpacing),
-        Text(currencySymbol,
-            style: TextStyle(
-                color: priceColor ?? colorScheme.primary,
-                fontSize: currencyFontSize,
-                fontWeight: FontWeight.w300,
-                height: amountFontSize / currencyFontSize)),
-      ]),
+      child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.end,
+          children: [
+            Text('${amount.abs()}',
+                style: TextStyle(
+                    color: priceColor ?? colorScheme.primary,
+                    fontSize: amountFontSize,
+                    fontWeight: FontWeight.w300)),
+            const SizedBox(width: priceSpacing),
+            Text(currencySymbol,
+                style: TextStyle(
+                    color: priceColor ?? colorScheme.primary,
+                    fontSize: currencyFontSize,
+                    fontWeight: FontWeight.w300)),
+          ]),
     );
     return [
       Align(

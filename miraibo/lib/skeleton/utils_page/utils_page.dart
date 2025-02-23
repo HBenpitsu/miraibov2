@@ -96,10 +96,10 @@ class MockUtilsPage implements UtilsPage {
     final returnStreamController = StreamController<List<Category>>();
     returnStreamController.add(categories.entries
         .map((entry) => Category(id: entry.key, name: entry.value))
-        .toList());
+        .toList(growable: false));
     returnStreamController.addStream(categoryStream.map((data) => data.entries
         .map((entry) => Category(id: entry.key, name: entry.value))
-        .toList()));
+        .toList(growable: false)));
     return returnStreamController.stream;
   }
 
@@ -113,14 +113,14 @@ class MockUtilsPage implements UtilsPage {
             symbol: entry.value.$1,
             ratio: entry.value.$2,
             isDefault: defaultCurrency == entry.key))
-        .toList());
+        .toList(growable: false));
     returnStreamController.addStream(currencyStream.map((data) => data.entries
         .map((entry) => CurrencyInstance(
             id: entry.key,
             symbol: entry.value.$1,
             ratio: entry.value.$2,
             isDefault: defaultCurrency == entry.key))
-        .toList()));
+        .toList(growable: false)));
     return returnStreamController.stream;
   }
 
@@ -175,8 +175,6 @@ class MockUtilsPage implements UtilsPage {
   @override
   void dispose() {
     log('UtilsPage is disposed');
-    categorySink.close();
-    currencySink.close();
   }
 }
 // </mock>

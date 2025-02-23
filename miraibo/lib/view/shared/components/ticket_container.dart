@@ -30,7 +30,7 @@ class TicketContainer extends StatelessWidget {
           return ListView.builder(
               itemCount: tickets.length,
               itemBuilder: (context, index) {
-                return Ticket(data: tickets[index], onTap: onTap);
+                return InteractiveTicket(data: tickets[index], onTap: onTap);
               });
         });
   }

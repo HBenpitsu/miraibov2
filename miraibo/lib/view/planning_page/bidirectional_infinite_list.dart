@@ -115,4 +115,10 @@ class _BiInfiniteFixedSizePageListState
         return widget.pageSizeInPixel / MediaQuery.of(context).size.width;
     }
   }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 }

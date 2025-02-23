@@ -26,7 +26,7 @@ class SingleSelector<T> extends StatefulWidget {
     super.key,
   });
 
-  factory SingleSelector.fromTaple(
+  factory SingleSelector.fromTuple(
       {required int initialIndex,
       required void Function(T) onChanged,
       required Iterable<(String, T)> items}) {
@@ -107,7 +107,7 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
   late List<bool> currentlyVisible;
   late final TextEditingController searchController;
   late final FocusNode searchFocusNode;
-  late final StreamController<List<bool>> visibilityNotifier;
+  StreamController<List<bool>>? visibilityNotifier;
 
   @override
   void initState() {
@@ -115,18 +115,19 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
     currentlyVisible = List.filled(widget.labels.length, true); // all visible
     searchController = TextEditingController();
     searchFocusNode = FocusNode();
-    visibilityNotifier = StreamController<List<bool>>();
   }
 
   @override
   Widget build(BuildContext context) {
+    visibilityNotifier?.close();
+    visibilityNotifier = StreamController<List<bool>>();
     final list = Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: _NotifiableItemList(
             initiallyHighlited: widget.initial,
             labels: widget.labels,
             initiallyVisible: currentlyVisible,
-            visiblityNotifier: visibilityNotifier.stream,
+            visiblityNotifier: visibilityNotifier!.stream,
             overlap: const Color.fromARGB(10, 0, 0, 0),
             onChanged: widget.onChange));
     final searchBar = CustomSearchBar(onSearchWordChanged: (text) {
@@ -134,7 +135,7 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
       currentlyVisible = widget.labels
           .map((elem) => elem.toLowerCase().contains(search))
           .toList();
-      visibilityNotifier.add(currentlyVisible);
+      visibilityNotifier?.add(currentlyVisible);
     });
     final actionButton = Padding(
         padding: const EdgeInsets.all(8),
@@ -162,6 +163,15 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
               searchBar,
               actionButton
             ])));
+  }
+
+  @override
+  void dispose() {
+    visibilityNotifier?.close();
+    visibilityNotifier = null;
+    searchController.dispose();
+    searchFocusNode.dispose();
+    super.dispose();
   }
 }
 

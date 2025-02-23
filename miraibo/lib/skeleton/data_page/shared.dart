@@ -23,6 +23,18 @@ class TemporaryEstimationScheme extends TemporaryTicketScheme {
       required this.currency,
       required this.displayOption,
       required this.categories});
+
+  TemporaryEstimationScheme copyWith(
+      {OpenPeriod? period,
+      Currency? currency,
+      EstimationDisplayOption? displayOption,
+      List<Category>? categories}) {
+    return TemporaryEstimationScheme(
+        period: period ?? this.period,
+        currency: currency ?? this.currency,
+        displayOption: displayOption ?? this.displayOption,
+        categories: categories ?? this.categories);
+  }
 }
 
 class TemporaryMonitorScheme extends TemporaryTicketScheme {
@@ -36,6 +48,18 @@ class TemporaryMonitorScheme extends TemporaryTicketScheme {
       required this.currency,
       required this.displayOption,
       required this.categories});
+
+  TemporaryMonitorScheme copyWith(
+      {OpenPeriod? period,
+      Currency? currency,
+      MonitorDisplayOption? displayOption,
+      List<Category>? categories}) {
+    return TemporaryMonitorScheme(
+        period: period ?? this.period,
+        currency: currency ?? this.currency,
+        displayOption: displayOption ?? this.displayOption,
+        categories: categories ?? this.categories);
+  }
 }
 
 class TemporaryTicketSchemeUnspecified extends TemporaryTicketScheme {
@@ -59,6 +83,16 @@ class PieChartScheme extends ChartScheme {
       {required this.currency,
       required this.analysisRange,
       required this.categories});
+
+  PieChartScheme copyWith(
+      {Currency? currency,
+      OpenPeriod? analysisRange,
+      List<Category>? categories}) {
+    return PieChartScheme(
+        currency: currency ?? this.currency,
+        analysisRange: analysisRange ?? this.analysisRange,
+        categories: categories ?? this.categories);
+  }
 }
 
 class SubtotalChartScheme extends ChartScheme {
@@ -72,6 +106,18 @@ class SubtotalChartScheme extends ChartScheme {
       required this.viewportRange,
       required this.categories,
       required this.intervalInDays});
+
+  SubtotalChartScheme copyWith(
+      {Currency? currency,
+      ClosedPeriod? viewportRange,
+      List<Category>? categories,
+      int? intervalInDays}) {
+    return SubtotalChartScheme(
+        currency: currency ?? this.currency,
+        viewportRange: viewportRange ?? this.viewportRange,
+        categories: categories ?? this.categories,
+        intervalInDays: intervalInDays ?? this.intervalInDays);
+  }
 }
 
 class AccumulationChartScheme extends ChartScheme {
@@ -87,6 +133,20 @@ class AccumulationChartScheme extends ChartScheme {
       required this.viewportRange,
       required this.categories,
       required this.intervalInDays});
+
+  AccumulationChartScheme copyWith(
+      {Currency? currency,
+      OpenPeriod? analysisRange,
+      ClosedPeriod? viewportRange,
+      List<Category>? categories,
+      int? intervalInDays}) {
+    return AccumulationChartScheme(
+        currency: currency ?? this.currency,
+        analysisRange: analysisRange ?? this.analysisRange,
+        viewportRange: viewportRange ?? this.viewportRange,
+        categories: categories ?? this.categories,
+        intervalInDays: intervalInDays ?? this.intervalInDays);
+  }
 }
 
 class ChartSchemeUnspecified extends ChartScheme {

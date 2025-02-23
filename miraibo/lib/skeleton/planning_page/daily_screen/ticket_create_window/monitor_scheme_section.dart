@@ -23,8 +23,8 @@ abstract interface class MonitorSchemeSection {
   /// all of currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  /// for convenience, default currency should be supplied.
-  Future<Currency> getDefaultCurrency();
+  /// initial scheme should be supplied.
+  Future<MonitorScheme> getInitialScheme();
   // </presenters>
 
   // <controllers>
@@ -74,9 +74,13 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
   }
 
   @override
-  Future<Currency> getDefaultCurrency() async {
+  Future<MonitorScheme> getInitialScheme() async {
     log('getDefaultCurrency is called');
-    return currencyList[0];
+    return MonitorScheme(
+        categories: categoryList,
+        currency: currencyList[0],
+        period: const OpenPeriod(begins: null, ends: null),
+        displayOption: MonitorDisplayOption.summation);
   }
 
   @override
@@ -92,8 +96,9 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
         period: period,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
         displayOption: displayOption,
-        categoryNames:
-            categoryIds.map((id) => categoryList[id].name).toList()));
+        categoryNames: categoryIds
+            .map((id) => categoryList[id].name)
+            .toList(growable: false)));
     ticketsStream.add(tickets);
   }
 

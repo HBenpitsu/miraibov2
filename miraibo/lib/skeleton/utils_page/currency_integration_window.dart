@@ -60,7 +60,7 @@ class MockCurrencyIntegrationWindow implements CurrencyIntegrationWindow {
     return _currencies.entries
         .where((entry) => entry.key != replaceeId)
         .map((entry) => Currency(id: entry.key, symbol: entry.value.$1))
-        .toList();
+        .toList(growable: false);
   }
 
   @override

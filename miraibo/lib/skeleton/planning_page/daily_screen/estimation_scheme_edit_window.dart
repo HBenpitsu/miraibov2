@@ -131,7 +131,7 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
         categoryNames: categoryList
             .where((element) => categoryIds.contains(element.id))
             .map((e) => e.name)
-            .toList(),
+            .toList(growable: false),
       ));
     }
     tickets.addAll(newTickets);

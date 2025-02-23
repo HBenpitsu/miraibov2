@@ -125,7 +125,8 @@ class MockAccumulationChartSection implements AccumulationChartSection {
         currency: currencyList[currencyId],
         analysisRange: analysisRange,
         viewportRange: viewportRange,
-        categories: categoryIds.map((id) => categoryList[id]).toList(),
+        categories:
+            categoryIds.map((id) => categoryList[id]).toList(growable: false),
         intervalInDays: intervalInDays);
   }
 

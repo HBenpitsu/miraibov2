@@ -36,10 +36,38 @@ class _TicketCreateWindowState extends State<TicketCreateWindow>
 
   late TabController tabController;
 
+  late final Widget monitorConfigTab;
+  late final Widget planConfigTab;
+  late final Widget estimationConfigTab;
+  late final Widget logConfigTab;
+
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 4, initialIndex: 0, vsync: this);
+
+    monitorConfigTab = Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: TicketCreateWindow.windowHorizontalPadding),
+        child: MonitorConfigTab(
+            skeleton: widget.skeleton.monitorSchemeSection,
+            key: monitorSectionKey));
+    planConfigTab = Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: TicketCreateWindow.windowHorizontalPadding),
+        child: PlanConfigTab(
+            skeleton: widget.skeleton.planSection, key: planSectionKey));
+    estimationConfigTab = Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: TicketCreateWindow.windowHorizontalPadding),
+        child: EstimationConfigTab(
+            skeleton: widget.skeleton.estimationSchemeSection,
+            key: estimationSectionkey));
+    logConfigTab = Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: TicketCreateWindow.windowHorizontalPadding),
+        child: LogConfigTab(
+            skeleton: widget.skeleton.receiptLogSection, key: logSectionKey));
   }
 
   @override
@@ -59,30 +87,10 @@ class _TicketCreateWindowState extends State<TicketCreateWindow>
         body: TabBarView(
           controller: tabController,
           children: [
-            Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: TicketCreateWindow.windowHorizontalPadding),
-                child: MonitorConfigTab(
-                    skeleton: widget.skeleton.monitorSchemeSection,
-                    key: monitorSectionKey)),
-            Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: TicketCreateWindow.windowHorizontalPadding),
-                child: PlanConfigTab(
-                    skeleton: widget.skeleton.planSection,
-                    key: planSectionKey)),
-            Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: TicketCreateWindow.windowHorizontalPadding),
-                child: EstimationConfigTab(
-                    skeleton: widget.skeleton.estimationSchemeSection,
-                    key: estimationSectionkey)),
-            Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: TicketCreateWindow.windowHorizontalPadding),
-                child: LogConfigTab(
-                    skeleton: widget.skeleton.receiptLogSection,
-                    key: logSectionKey)),
+            monitorConfigTab,
+            planConfigTab,
+            estimationConfigTab,
+            logConfigTab,
           ],
         ),
         bottomNavigationBar: SizedBox(
@@ -124,6 +132,13 @@ class _TicketCreateWindowState extends State<TicketCreateWindow>
       ),
     );
   }
+
+  @override
+  void dispose() {
+    widget.skeleton.dispose();
+    tabController.dispose();
+    super.dispose();
+  }
 }
 
 class MonitorConfigTab extends StatefulWidget {
@@ -137,11 +152,12 @@ class MonitorConfigTab extends StatefulWidget {
 class _MonitorConfigTabState extends State<MonitorConfigTab> {
   dto.MonitorScheme? currentScheme;
 
-  Future<(List<dto.Category>, List<dto.Currency>, dto.Currency)> data() async {
+  Future<(List<dto.Category>, List<dto.Currency>, dto.MonitorScheme)>
+      data() async {
     return (
       await widget.skeleton.getCategoryOptions(),
       await widget.skeleton.getCurrencyOptions(),
-      await widget.skeleton.getDefaultCurrency()
+      await widget.skeleton.getInitialScheme()
     );
   }
 
@@ -185,21 +201,16 @@ class _MonitorConfigTabState extends State<MonitorConfigTab> {
           }
           final categoryOptions = snapshot.data!.$1;
           final currencyOptions = snapshot.data!.$2;
-          final defaultCurrency = snapshot.data!.$3;
-
-          final initialScheme = dto.MonitorScheme(
-              period: const dto.OpenPeriod(begins: null, ends: null),
-              currency: defaultCurrency,
-              displayOption: dto.MonitorDisplayOption.summation,
-              categories: []);
+          final initialScheme = snapshot.data!.$3;
 
           currentScheme ??= initialScheme;
 
-          return SingleChildScrollView(
-              child: Column(
-            mainAxisSize: MainAxisSize.min,
+          return ListView(
+            shrinkWrap: true,
             children: [
-              Text('Monitor', style: Theme.of(context).textTheme.displaySmall),
+              Center(
+                  child: Text('Monitor',
+                      style: Theme.of(context).textTheme.displaySmall)),
               MonitorConfigSection(
                   categoryOptions: categoryOptions,
                   currencyOptions: currencyOptions,
@@ -208,14 +219,14 @@ class _MonitorConfigTabState extends State<MonitorConfigTab> {
                     currentScheme = scheme;
                   }),
             ],
-          ));
+          );
         });
   }
 
   @override
   void dispose() {
-    super.dispose();
     widget.skeleton.dispose();
+    super.dispose();
   }
 }
 
@@ -230,11 +241,12 @@ class PlanConfigTab extends StatefulWidget {
 class _PlanConfigTabState extends State<PlanConfigTab> {
   dto.PlanScheme? currentScheme;
 
-  Future<(List<dto.Category>, List<dto.Currency>, dto.Currency)> data() async {
+  Future<(List<dto.Category>, List<dto.Currency>, dto.PlanScheme)>
+      data() async {
     return (
       await widget.skeleton.getCategoryOptions(),
       await widget.skeleton.getCurrencyOptions(),
-      await widget.skeleton.getDefaultCurrency()
+      await widget.skeleton.getInitialScheme()
     );
   }
 
@@ -288,40 +300,29 @@ class _PlanConfigTabState extends State<PlanConfigTab> {
           }
           final categoryOptions = snapshot.data!.$1;
           final currencyOptions = snapshot.data!.$2;
-          final defaultCurrency = snapshot.data!.$3;
-
-          final initialScheme = dto.PlanScheme(
-              category: categoryOptions.first,
-              description: '',
-              price: dto.ConfigureblePrice(
-                  amount: 0,
-                  currencyId: defaultCurrency.id,
-                  currencySymbol: defaultCurrency.symbol),
-              schedule: dto.OneshotSchedule(date: DateTime.now().cutOffTime()));
+          final initialScheme = snapshot.data!.$3;
 
           currentScheme ??= initialScheme;
 
-          return SingleChildScrollView(
-              child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Plan', style: Theme.of(context).textTheme.displaySmall),
-              PlanConfigSection(
-                  categoryOptions: categoryOptions,
-                  currencyOptions: currencyOptions,
-                  initial: initialScheme,
-                  onChanged: (scheme) {
-                    currentScheme = scheme;
-                  })
-            ],
-          ));
+          return ListView(shrinkWrap: true, children: [
+            Center(
+                child: Text('Plan',
+                    style: Theme.of(context).textTheme.displaySmall)),
+            PlanConfigSection(
+                categoryOptions: categoryOptions,
+                currencyOptions: currencyOptions,
+                initial: initialScheme,
+                onChanged: (scheme) {
+                  currentScheme = scheme;
+                })
+          ]);
         });
   }
 
   @override
   void dispose() {
-    super.dispose();
     widget.skeleton.dispose();
+    super.dispose();
   }
 }
 
@@ -336,11 +337,12 @@ class EstimationConfigTab extends StatefulWidget {
 class _EstimationConfigTabState extends State<EstimationConfigTab> {
   dto.EstimationScheme? currentScheme;
 
-  Future<(List<dto.Category>, List<dto.Currency>, dto.Currency)> data() async {
+  Future<(List<dto.Category>, List<dto.Currency>, dto.EstimationScheme)>
+      data() async {
     return (
       await widget.skeleton.getCategoryOptions(),
       await widget.skeleton.getCurrencyOptions(),
-      await widget.skeleton.getDefaultCurrency()
+      await widget.skeleton.getInitialScheme()
     );
   }
 
@@ -384,22 +386,16 @@ class _EstimationConfigTabState extends State<EstimationConfigTab> {
           }
           final categoryOptions = snapshot.data!.$1;
           final currencyOptions = snapshot.data!.$2;
-          final defaultCurrency = snapshot.data!.$3;
-
-          final initialScheme = dto.EstimationScheme(
-              period: const dto.OpenPeriod(begins: null, ends: null),
-              currency: defaultCurrency,
-              displayOption: dto.EstimationDisplayOption.perDay,
-              categories: []);
+          final initialScheme = snapshot.data!.$3;
 
           currentScheme ??= initialScheme;
 
-          return SingleChildScrollView(
-              child: Column(
-            mainAxisSize: MainAxisSize.min,
+          return ListView(
+            shrinkWrap: true,
             children: [
-              Text('Estimation',
-                  style: Theme.of(context).textTheme.displaySmall),
+              Center(
+                  child: Text('Estimation',
+                      style: Theme.of(context).textTheme.displaySmall)),
               EstimationConfigSection(
                   categoryOptions: categoryOptions,
                   currencyOptions: currencyOptions,
@@ -408,14 +404,14 @@ class _EstimationConfigTabState extends State<EstimationConfigTab> {
                     currentScheme = scheme;
                   })
             ],
-          ));
+          );
         });
   }
 
   @override
   void dispose() {
-    super.dispose();
     widget.skeleton.dispose();
+    super.dispose();
   }
 }
 
@@ -435,13 +431,13 @@ class _LogConfigTabState extends State<LogConfigTab> {
         List<dto.ReceiptLogSchemePreset>,
         List<dto.Category>,
         List<dto.Currency>,
-        dto.Currency
+        dto.ReceiptLogScheme
       )> data() async {
     return (
       await widget.skeleton.getPresets(),
       await widget.skeleton.getCategoryOptions(),
       await widget.skeleton.getCurrencyOptions(),
-      await widget.skeleton.getDefaultCurrency()
+      await widget.skeleton.getInitialScheme()
     );
   }
 
@@ -481,25 +477,16 @@ class _LogConfigTabState extends State<LogConfigTab> {
           final presets = snapshot.data!.$1;
           final categoryOptions = snapshot.data!.$2;
           final currencyOptions = snapshot.data!.$3;
-          final defaultCurrency = snapshot.data!.$4;
-
-          final initialScheme = dto.ReceiptLogScheme(
-              category: categoryOptions.first,
-              description: '',
-              price: dto.ConfigureblePrice(
-                  amount: 0,
-                  currencyId: defaultCurrency.id,
-                  currencySymbol: defaultCurrency.symbol),
-              date: DateTime.now().cutOffTime(),
-              confirmed: true);
+          final initialScheme = snapshot.data!.$4;
 
           currentScheme ??= initialScheme;
 
-          return SingleChildScrollView(
-              child: Column(
-            mainAxisSize: MainAxisSize.min,
+          return ListView(
+            shrinkWrap: true,
             children: [
-              Text('Log', style: Theme.of(context).textTheme.displaySmall),
+              Center(
+                  child: Text('Log',
+                      style: Theme.of(context).textTheme.displaySmall)),
               ReceiptLogConfigSectionWithPresets(
                   presets: presets,
                   categoryOptions: categoryOptions,
@@ -509,13 +496,13 @@ class _LogConfigTabState extends State<LogConfigTab> {
                     currentScheme = scheme;
                   })
             ],
-          ));
+          );
         });
   }
 
   @override
   void dispose() {
-    super.dispose();
     widget.skeleton.dispose();
+    super.dispose();
   }
 }

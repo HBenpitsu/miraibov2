@@ -12,7 +12,7 @@ import 'package:miraibo/dto/dto.dart';
 /// If it is not empty, only records whose category is in the given list are counted.
 /// If it is empty, all categories are counted.
 /// {@endtemplate}
-Future<List<PieChartChip>> getValuesOfPieChart(
+Future<List<RatioValue>> getValuesOfPieChart(
     int currencyId, OpenPeriod analysisRange, List<int> categoryIds) async {
   throw UnimplementedError();
 }
@@ -47,7 +47,7 @@ Future<List<PieChartChip>> getValuesOfPieChart(
 ///
 /// The end of the chart is often more important than the beginning. So, the end of the chart is always the end of [viewportRange].
 /// {@endtemplate}
-Future<List<AccumulatedBar>> getValuesOfAccumulationChart(
+Future<List<AccumulatedValue>> getValuesOfAccumulationChart(
     int currencyId,
     OpenPeriod analysisRange,
     ClosedPeriod viewportRange,
@@ -82,7 +82,7 @@ Future<List<AccumulatedBar>> getValuesOfAccumulationChart(
 ///
 /// The end of the chart is often more important than the beginning. So, the end of the chart is always the end of [viewportRange].
 /// {@endtemplate}
-Future<List<SubtotalBar>> getValuesOfSubtotalChart(
+Future<List<SubtotalValue>> getValuesOfSubtotalChart(
     int currencyId,
     ClosedPeriod viewportRange,
     List<int> categoryIds,

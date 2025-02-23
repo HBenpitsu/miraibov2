@@ -105,7 +105,8 @@ class MockPieChartSection implements PieChartSection {
     currentScheme = PieChartScheme(
         currency: currencyList[currencyId],
         analysisRange: period,
-        categories: categoryIds.map((id) => categoryList[id]).toList());
+        categories:
+            categoryIds.map((id) => categoryList[id]).toList(growable: false));
   }
 
   @override

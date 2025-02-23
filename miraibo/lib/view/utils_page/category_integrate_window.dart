@@ -38,7 +38,7 @@ class _CategoryIntegrationWindowState
 
             // create SingleSelector
             final options = snapshot.data!;
-            return SingleSelector<int>.fromTaple(
+            return SingleSelector<int>.fromTuple(
                 initialIndex: 0,
                 items: options.map((e) => (e.name, e.id)),
                 onChanged: (id) {

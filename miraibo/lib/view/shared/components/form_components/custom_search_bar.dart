@@ -55,4 +55,12 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           ],
         ));
   }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      searchController.dispose();
+    }
+    super.dispose();
+  }
 }

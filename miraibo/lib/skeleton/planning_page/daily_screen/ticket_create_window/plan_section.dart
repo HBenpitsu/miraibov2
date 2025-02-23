@@ -23,8 +23,8 @@ abstract interface class PlanSection {
   /// all of currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  /// for convenience, default currency should be supplied.
-  Future<Currency> getDefaultCurrency();
+  /// initial scheme should be supplied.
+  Future<PlanScheme> getInitialScheme();
   // </presenters>
 
   // <controllers>
@@ -75,9 +75,14 @@ class MockPlanSection implements PlanSection {
   }
 
   @override
-  Future<Currency> getDefaultCurrency() async {
-    log('getDefaultCurrency is called');
-    return currencyList[0];
+  Future<PlanScheme> getInitialScheme() async {
+    log('getInitialScheme is called');
+    return PlanScheme(
+        schedule: OneshotSchedule(date: DateTime.now().cutOffTime()),
+        price: ConfigureblePrice(
+            amount: 0, currencyId: 0, currencySymbol: currencyList[0].symbol),
+        description: '',
+        category: categoryList[0]);
   }
 
   @override
@@ -100,7 +105,7 @@ class MockPlanSection implements PlanSection {
 
   @override
   void dispose() {
-    log('dispose is called');
+    log('MockPlanSection: dispose called');
   }
 }
 // </mock>

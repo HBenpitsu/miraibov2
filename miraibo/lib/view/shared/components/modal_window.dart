@@ -80,9 +80,13 @@ class _ModalWindowContainerState extends State<ModalWindowContainer> {
     final Widget window;
     if (widget.shrink) {
       window = Container(
-          width: windowWidth, decoration: windowStyle, child: widget.child);
+          clipBehavior: Clip.antiAlias,
+          width: windowWidth,
+          decoration: windowStyle,
+          child: widget.child);
     } else {
       window = AnimatedContainer(
+          clipBehavior: Clip.antiAlias,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
           height: windowHeight,

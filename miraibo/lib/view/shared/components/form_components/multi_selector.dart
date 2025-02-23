@@ -55,19 +55,18 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
   List<bool> get currentlySelected => _currentlySelected;
   set currentlySelected(List<bool> value) {
     _currentlySelected = value;
-    selectionNotifier.add(value);
+    selectionNotifier?.add(value);
     widget.onChanged(getSelectedValues());
   }
 
   late bool expanded;
-  late StreamController<List<bool>> selectionNotifier;
+  StreamController<List<bool>>? selectionNotifier;
 
   @override
   void initState() {
     super.initState();
     expanded = false;
     _currentlySelected = widget.initial;
-    selectionNotifier = StreamController<List<bool>>();
   }
   // </init>
 
@@ -116,16 +115,18 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
   }
 
   Widget body() {
+    selectionNotifier?.close();
+    selectionNotifier = StreamController<List<bool>>();
     final list = _NotifiableItemList(
         initiallyVisible: _currentlySelected,
         labels: widget.labels,
-        visiblityNotifier: selectionNotifier.stream,
+        visiblityNotifier: selectionNotifier!.stream,
         heightOfTopDummy: MultiSelector._heightOfUpperVale,
         overlap: const Color.fromARGB(10, 255, 0, 0),
         vale: Theme.of(context).colorScheme.surfaceContainer,
         onTap: (index) {
           _currentlySelected[index] = false;
-          selectionNotifier.add(_currentlySelected);
+          selectionNotifier?.add(_currentlySelected);
           widget.onChanged(getSelectedValues());
         });
     return Container(
@@ -142,6 +143,13 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
             header: header(),
             bodyHeight: MultiSelector._heightOfItemDisplay,
             body: body()));
+  }
+
+  @override
+  void dispose() {
+    selectionNotifier?.close();
+    selectionNotifier = null;
+    super.dispose();
   }
 }
 
@@ -161,8 +169,8 @@ class _ItemPickerWindow<T> extends StatefulWidget {
 class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
   late List<bool> currentlySelected;
   late List<bool> currentlyVisible;
-  late final StreamController<List<bool>> visibilityNotifier;
-  late final StreamController<List<bool>> highliteNotifier;
+  StreamController<List<bool>>? visibilityNotifier;
+  StreamController<List<bool>>? highliteNotifier;
 
   @override
   void initState() {
@@ -170,22 +178,20 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
     currentlySelected = widget.initial;
     currentlyVisible =
         List.filled(currentlySelected.length, true); // all visible
-    visibilityNotifier = StreamController<List<bool>>();
-    highliteNotifier = StreamController<List<bool>>();
   }
 
   Widget actionButtons() {
     final selectAllButton = TextButton(
         onPressed: () {
           currentlySelected = List.filled(currentlySelected.length, true);
-          highliteNotifier.add(currentlySelected);
+          highliteNotifier?.add(currentlySelected);
           widget.onChange(currentlySelected);
         },
         child: const Text('Select All'));
     final releaseAllButton = TextButton(
         onPressed: () {
           currentlySelected = List.filled(currentlySelected.length, false);
-          highliteNotifier.add(currentlySelected);
+          highliteNotifier?.add(currentlySelected);
           widget.onChange(currentlySelected);
         },
         child: const Text('Release All'));
@@ -211,6 +217,11 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
 
   @override
   Widget build(BuildContext context) {
+    visibilityNotifier?.close();
+    visibilityNotifier = StreamController<List<bool>>();
+    highliteNotifier?.close();
+    highliteNotifier = StreamController<List<bool>>();
+
     final serachBar = Padding(
         padding: const EdgeInsets.symmetric(
             horizontal: MultiSelector._widthOfHorizontalPadding),
@@ -219,20 +230,20 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
           currentlyVisible = widget.labels
               .map((elem) => elem.toLowerCase().contains(search))
               .toList();
-          visibilityNotifier.add(currentlyVisible);
+          visibilityNotifier?.add(currentlyVisible);
         }));
     final list = _NotifiableItemList(
         initiallyVisible: currentlyVisible,
         initiallyHighlited: currentlySelected,
         labels: widget.labels,
-        visiblityNotifier: visibilityNotifier.stream,
-        highliteNotifier: highliteNotifier.stream,
+        visiblityNotifier: visibilityNotifier!.stream,
+        highliteNotifier: highliteNotifier!.stream,
         overlap: const Color.fromARGB(10, 0, 0, 0),
         heightOfTopDummy: MultiSelector._heightOfItem,
         vale: Theme.of(context).colorScheme.surface,
         onTap: (index) {
           currentlySelected[index] = !currentlySelected[index];
-          highliteNotifier.add(currentlySelected);
+          highliteNotifier?.add(currentlySelected);
           widget.onChange(currentlySelected);
         });
     return ModalWindowContainer(
@@ -247,6 +258,15 @@ class _ItemPickerWindowState<T> extends State<_ItemPickerWindow<T>> {
       serachBar,
       actionButtons(),
     ]));
+  }
+
+  @override
+  void dispose() {
+    visibilityNotifier?.close();
+    visibilityNotifier = null;
+    highliteNotifier?.close();
+    highliteNotifier = null;
+    super.dispose();
   }
 }
 

@@ -21,6 +21,10 @@ class FoldingController {
     _folded = false;
     _actionListener?.call();
   }
+
+  void dispose() {
+    _actionListener = null;
+  }
 }
 
 class FoldableSection extends StatefulWidget {
@@ -120,5 +124,13 @@ class _FoldableSectionState extends State<FoldableSection> {
       ),
       footerContainer(widget.footer ?? defaultFooter())
     ]);
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 }

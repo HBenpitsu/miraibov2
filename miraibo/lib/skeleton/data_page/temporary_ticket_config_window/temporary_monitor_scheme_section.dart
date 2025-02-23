@@ -106,7 +106,8 @@ class MockTemporaryMonitorSchemeSection
     log('applyMonitorScheme is called');
     // cast bunch of parameters to the temporary monitor scheme
     currentScheme = TemporaryMonitorScheme(
-        categories: categoryIds.map((id) => categoryList[id]).toList(),
+        categories:
+            categoryIds.map((id) => categoryList[id]).toList(growable: false),
         period: period,
         displayOption: displayOption,
         currency: currencyList[currencyId]);

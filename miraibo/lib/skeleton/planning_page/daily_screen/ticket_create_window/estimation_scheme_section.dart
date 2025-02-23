@@ -22,8 +22,8 @@ abstract interface class EstimationSchemeSection {
   /// all of currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  /// for convenience, default currency should be supplied.
-  Future<Currency> getDefaultCurrency();
+  /// initial scheme should be supplied.
+  Future<EstimationScheme> getInitialScheme();
   // </presenters>
 
   // <controllers>
@@ -73,9 +73,13 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
   }
 
   @override
-  Future<Currency> getDefaultCurrency() async {
-    log('getDefaultCurrency is called');
-    return currencyList[0];
+  Future<EstimationScheme> getInitialScheme() async {
+    log('getEstimationScheme is called');
+    return EstimationScheme(
+        period: OpenPeriod(begins: null, ends: null),
+        currency: currencyList[0],
+        displayOption: EstimationDisplayOption.perDay,
+        categories: categoryList);
   }
 
   @override
@@ -91,8 +95,9 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
         period: period,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
         displayOption: displayOption,
-        categoryNames:
-            categoryIds.map((id) => categoryList[id].name).toList()));
+        categoryNames: categoryIds
+            .map((id) => categoryList[id].name)
+            .toList(growable: false)));
     ticketsStream.add(tickets);
   }
 

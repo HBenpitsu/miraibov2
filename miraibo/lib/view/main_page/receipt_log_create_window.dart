@@ -31,13 +31,13 @@ class _ReceiptLogCreateWindowState extends State<ReceiptLogCreateWindow> {
         List<dto.ReceiptLogSchemePreset>,
         List<dto.Category>,
         List<dto.Currency>,
-        dto.Currency
+        dto.ReceiptLogScheme
       )> data() async {
     return (
       await widget.skeleton.getPresets(),
       await widget.skeleton.getCategoryOptions(),
       await widget.skeleton.getCurrencyOptions(),
-      await widget.skeleton.getDefaultCurrency()
+      await widget.skeleton.getInitialScheme()
     );
   }
 
@@ -55,17 +55,7 @@ class _ReceiptLogCreateWindowState extends State<ReceiptLogCreateWindow> {
           final presets = snapshot.data!.$1;
           final categoryOptions = snapshot.data!.$2;
           final currencyOptions = snapshot.data!.$3;
-          final defaultCurrency = snapshot.data!.$4;
-
-          final initialScheme = dto.ReceiptLogScheme(
-              category: categoryOptions.first,
-              description: '',
-              price: dto.ConfigureblePrice(
-                  amount: 0,
-                  currencyId: defaultCurrency.id,
-                  currencySymbol: defaultCurrency.symbol),
-              date: DateTime.now().cutOffTime(),
-              confirmed: true);
+          final initialScheme = snapshot.data!.$4;
 
           currentScheme ??= initialScheme;
 

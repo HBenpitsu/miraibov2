@@ -26,8 +26,8 @@ abstract interface class ReceiptLogSection {
   /// all of currencies are shown as options.
   Future<List<Currency>> getCurrencyOptions();
 
-  /// for convenience, default currency should be supplied.
-  Future<Currency> getDefaultCurrency();
+  /// initial scheme should be supplied.
+  Future<ReceiptLogScheme> getInitialScheme();
 
   /// for convenience, presets for the receipt log should be supplied.
   Future<List<ReceiptLogSchemePreset>> getPresets();
@@ -81,9 +81,15 @@ class MockReceiptLogSection implements ReceiptLogSection {
   }
 
   @override
-  Future<Currency> getDefaultCurrency() async {
+  Future<ReceiptLogScheme> getInitialScheme() async {
     log('getDefaultCurrency is called');
-    return currencyList[0];
+    return ReceiptLogScheme(
+        date: DateTime.now().cutOffTime(),
+        price: ConfigureblePrice(
+            amount: 0, currencyId: 0, currencySymbol: currencyList[0].symbol),
+        description: '',
+        category: categoryList[0],
+        confirmed: true);
   }
 
   @override

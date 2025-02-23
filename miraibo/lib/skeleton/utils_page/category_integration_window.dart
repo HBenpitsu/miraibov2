@@ -59,7 +59,7 @@ class MockCategoryIntegrationWindow implements CategoryIntegrationWindow {
     return _categories.entries
         .where((entry) => entry.key != replaceeId)
         .map((entry) => Category(id: entry.key, name: entry.value))
-        .toList();
+        .toList(growable: false);
   }
 
   @override

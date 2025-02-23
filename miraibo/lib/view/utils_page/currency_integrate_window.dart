@@ -35,7 +35,7 @@ class _CurrencyIntegrateWindowState
 
             // create SingleSelector
             final options = snapshot.data!;
-            return SingleSelector<int>.fromTaple(
+            return SingleSelector<int>.fromTuple(
                 initialIndex: 0,
                 items: options.map((e) => (e.symbol, e.id)),
                 onChanged: (id) {

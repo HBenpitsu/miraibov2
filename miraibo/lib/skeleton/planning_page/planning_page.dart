@@ -32,7 +32,7 @@ class MockPlanningPage implements PlanningPage {
 
   @override
   void dispose() {
-    log('dispose is called');
+    log('MockPlanningPage: dispose called');
   }
 }
 // </mock>

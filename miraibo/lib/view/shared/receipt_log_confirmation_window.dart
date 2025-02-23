@@ -44,7 +44,7 @@ class _ReceiptLogConfirmationWindowState
         future: widget.skeleton.getLogContent(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Ticket(data: snapshot.data!, onTap: (_) {});
+            return InteractiveTicket(data: snapshot.data!, onTap: (_) {});
           }
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
