@@ -214,7 +214,9 @@ class AccumulationChart extends Chart {
   int get maxXIndex => bars.length;
 }
 
-class ChartUnspecified extends Chart {}
+class ChartUnspecified extends Chart {
+  const ChartUnspecified();
+}
 
 /// TemporaryTicket is a view model that represents a temporary ticket.
 /// It contains the all data to show the ticket.

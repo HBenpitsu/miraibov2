@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:miraibo/skeleton/data_page/data_page.dart' as skt;
-import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/ticket.dart';
+import 'package:miraibo/view/data_page/temporary_ticket_config_window.dart';
 
 class TemporaryTicketSection extends StatefulWidget {
   final skt.DataPage skeleton;
@@ -29,45 +29,39 @@ class _TemporaryTicketSectionState extends State<TemporaryTicketSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: switch (ticket) {
-        skt.TemporaryTicketUnspecified _ => TicketAppearanceTemplate(
-            ticketType: 'unconfigured',
-            categories: [''],
-            amount: 0,
-            currencySymbol: '',
-            description: 'Tap to configure',
-            timeInfo: ''),
-        skt.TemporaryMonitorTicket ticket => Text('Temporary Ticket: $ticket'),
-        skt.TemporaryEstimationTicket ticket =>
-          Text('Temporary Ticket: $ticket'),
-      },
-    );
+    return GestureDetector(
+        onTap: () {
+          openTemporaryTicketConfigWindow(
+              context, widget.skeleton.openTemporaryTicketConfigWindow());
+        },
+        child: Center(
+          child: switch (ticket) {
+            skt.TemporaryTicketUnspecified _ => TicketAppearanceTemplate(
+                ticketType: 'unconfigured',
+                categories: [''],
+                amount: 0,
+                currencySymbol: '',
+                description: 'Tap to configure',
+                timeInfo: ''),
+            skt.TemporaryMonitorTicket ticket => MonitorTicket(
+                categories: ticket.categoryNames,
+                amount: ticket.price.amount,
+                currencySymbol: ticket.price.symbol,
+                displayOption: ticket.displayOption,
+                period: ticket.period),
+            skt.TemporaryEstimationTicket ticket => EstimateTicket(
+                categories: ticket.categoryNames,
+                amount: ticket.price.amount,
+                currencySymbol: ticket.price.symbol,
+                displayOption: ticket.displayOption,
+                period: ticket.period),
+          },
+        ));
   }
 
   @override
   void dispose() {
     ticketSubscription.cancel();
     super.dispose();
-  }
-}
-
-class Ticket extends StatelessWidget {
-  final dto.Ticket data;
-  final void Function(dto.Ticket) onTap;
-  const Ticket({required this.data, required this.onTap, super.key});
-
-  static const double maxTicketWidth = 330;
-
-  Widget content(BuildContext context) {
-    return Container();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onTap(data),
-      child: content(context),
-    );
   }
 }

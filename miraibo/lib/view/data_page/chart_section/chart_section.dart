@@ -7,25 +7,42 @@ import 'package:miraibo/view/data_page/chart_section/accumulation_chart.dart';
 import 'package:miraibo/view/data_page/chart_section/pie_chart.dart';
 import 'package:miraibo/view/data_page/chart_section/subtotal_chart.dart';
 
-class ChartSection extends StatefulWidget {
+class ChartSection extends StatelessWidget {
   final skt.DataPage skeleton;
   const ChartSection(this.skeleton, {super.key});
 
   @override
-  State<ChartSection> createState() => _ChartSectionState();
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _Chart(skeleton),
+        _Controller(skeleton),
+      ],
+    );
+  }
 }
 
-class _ChartSectionState extends State<ChartSection> {
+class _Chart extends StatefulWidget {
+  final skt.DataPage skeleton;
+  const _Chart(this.skeleton);
+
+  @override
+  State<StatefulWidget> createState() => _ChartState();
+}
+
+class _ChartState extends State<_Chart> {
   late skt.Chart chart;
   late final StreamSubscription<skt.Chart> chartSubscription;
 
   @override
   void initState() {
     super.initState();
-    chart = skt.ChartUnspecified();
-    chartSubscription = widget.skeleton.getChart().listen((chart) {
+    chart = const skt.ChartUnspecified();
+    chartSubscription = widget.skeleton.getChart().listen((newChart) {
+      if (!mounted) return;
       setState(() {
-        this.chart = chart;
+        chart = newChart;
       });
     });
   }
@@ -46,36 +63,38 @@ class _ChartSectionState extends State<ChartSection> {
 
   @override
   Widget build(BuildContext context) {
-    final buttonStyle = TextButton.styleFrom(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-    );
-    final controller = Center(
-        child: Row(
-      children: [
-        const Spacer(),
-        Expanded(
-            child: TextButton(
-                onPressed: () {
-                  openChartConfigureWindow(
-                      context, widget.skeleton.openChartConfigurationWindow());
-                },
-                style: buttonStyle,
-                child: const Text('Configure Chart'))),
-        const Spacer(),
-      ],
-    ));
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        LayoutBuilder(builder: content),
-        controller,
-      ],
-    );
+    return LayoutBuilder(builder: content);
   }
 
   @override
   void dispose() {
     chartSubscription.cancel();
     super.dispose();
+  }
+}
+
+class _Controller extends StatelessWidget {
+  final skt.DataPage skeleton;
+  const _Controller(this.skeleton);
+
+  @override
+  Widget build(BuildContext context) {
+    final configureButton = TextButton(
+        onPressed: () {
+          openChartConfigureWindow(
+              context, skeleton.openChartConfigurationWindow());
+        },
+        style: TextButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        ),
+        child: const Text('Configure Chart'));
+    return Center(
+        child: Row(
+      children: [
+        const Spacer(),
+        configureButton,
+        const Spacer(),
+      ],
+    ));
   }
 }

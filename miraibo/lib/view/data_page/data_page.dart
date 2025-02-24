@@ -4,9 +4,7 @@ import 'package:miraibo/view/shared/constants.dart';
 import 'package:miraibo/view/data_page/temporary_ticket_section.dart';
 import 'package:miraibo/view/data_page/chart_section/chart_section.dart';
 
-const sectorMargin = SizedBox(
-  height: 20,
-);
+const sectorMargin = SizedBox(height: 20);
 
 class DataPage extends StatefulWidget {
   final skt.DataPage skeleton;
@@ -39,7 +37,6 @@ class _DataPageState extends State<DataPage>
 
   Widget get bottomBar {
     final screenHeight = MediaQuery.of(context).size.height;
-    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
         height: bottomNavigationBarHeight,
         child: Row(
@@ -54,22 +51,22 @@ class _DataPageState extends State<DataPage>
                     },
                     icon: const Icon(Icons.arrow_upward))),
             Expanded(
-                child: TextButton(
-                    style: TextButton.styleFrom(
-                        backgroundColor: scrollLock
-                            ? colorScheme.primaryContainer
-                            : colorScheme.surfaceContainer),
-                    onPressed: () {
-                      setState(() {
-                        scrollLock = !scrollLock;
-                        if (scrollLock) {
-                          widget.scrollLock();
-                        } else {
-                          widget.scrollUnlock();
-                        }
-                      });
-                    },
-                    child: const Text('Scroll Lock'))),
+                child: _ScrollLockButton(
+              scrollLock: () {
+                widget.scrollLock();
+                if (!mounted) return;
+                setState(() {
+                  scrollLock = true;
+                });
+              },
+              scrollUnlock: () {
+                widget.scrollUnlock();
+                if (!mounted) return;
+                setState(() {
+                  scrollLock = false;
+                });
+              },
+            )),
             Expanded(
                 child: IconButton(
                     onPressed: () {
@@ -103,15 +100,50 @@ class _DataPageState extends State<DataPage>
   }
 }
 
-class _DataPageContent extends StatefulWidget {
+class _ScrollLockButton extends StatefulWidget {
+  final void Function() scrollLock;
+  final void Function() scrollUnlock;
+  const _ScrollLockButton(
+      {required this.scrollLock, required this.scrollUnlock});
+
+  @override
+  State<StatefulWidget> createState() => _ScrollLockButtonState();
+}
+
+class _ScrollLockButtonState extends State<_ScrollLockButton> {
+  bool isLocked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = SizedBox(
+        width: 100,
+        child: Center(child: Text(isLocked ? 'Unlock Scroll' : 'Lock Scroll')));
+    final themeColor = Theme.of(context).colorScheme;
+    final button = TextButton(
+        onPressed: () {
+          setState(() {
+            isLocked = !isLocked;
+            if (isLocked) {
+              widget.scrollLock();
+            } else {
+              widget.scrollUnlock();
+            }
+          });
+        },
+        style: TextButton.styleFrom(
+          backgroundColor: isLocked
+              ? themeColor.primaryContainer
+              : themeColor.surfaceContainer,
+        ),
+        child: text);
+    return Padding(padding: EdgeInsets.all(actionButtonPadding), child: button);
+  }
+}
+
+class _DataPageContent extends StatelessWidget {
   final skt.DataPage skeleton;
   const _DataPageContent(this.skeleton);
 
-  @override
-  State<_DataPageContent> createState() => _DataPageContentState();
-}
-
-class _DataPageContentState extends State<_DataPageContent> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -119,10 +151,10 @@ class _DataPageContentState extends State<_DataPageContent> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text('Chart', style: textTheme.headlineLarge),
-        ChartSection(widget.skeleton),
+        ChartSection(skeleton),
         sectorMargin,
         Text('Temporary Ticket', style: textTheme.headlineLarge),
-        TemporaryTicketSection(widget.skeleton),
+        TemporaryTicketSection(skeleton),
         sectorMargin,
         Text('Operation Section'),
         sectorMargin,

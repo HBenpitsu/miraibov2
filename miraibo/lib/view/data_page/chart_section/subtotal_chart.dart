@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:miraibo/skeleton/data_page/data_page.dart' as skt;
@@ -13,13 +12,6 @@ class SubtotalChart extends StatefulWidget {
 }
 
 class _SubtotalChartState extends State<SubtotalChart> {
-  @override
-  void initState() {
-    super.initState();
-    // this is a field for dragEventConsumer
-    speedQueueForInertialAnimation = List.filled(sizeOfAnimationQueue, 0.0);
-  }
-
   // <chart configuration>
   final TransformationController transformationController =
       TransformationController();
@@ -138,7 +130,6 @@ class _SubtotalChartState extends State<SubtotalChart> {
   LineTouchData getLineTouchConfiguration(int indexOfAllSpotsLine) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return LineTouchData(
-        touchSpotThreshold: double.infinity,
         getTouchedSpotIndicator: touchedSpotIndicatorBuilder,
         touchTooltipData: LineTouchTooltipData(
           fitInsideHorizontally: true,
@@ -177,80 +168,6 @@ class _SubtotalChartState extends State<SubtotalChart> {
   }
   // </decorations>
 
-  // <drag event imitation>
-  void shiftChart(double dx) {
-    // get rendered chart rect
-    final renderer = rendererKey.currentContext!.findRenderObject();
-    if (renderer == null) return;
-
-    // based on the chart rect, calculate the translation
-    final transformMatrix = transformationController.value.clone();
-    // first, translate the matrix
-    transformMatrix.leftTranslate(dx);
-    // then validate the translation
-    final hidenAreaRatio = (transformMatrix.getMaxScaleOnAxis() - 1);
-    final hidenAreaWidth = hidenAreaRatio * renderer.paintBounds.width;
-    final translation = transformMatrix.getTranslation();
-    // 0: shows the left edge of the chart
-    // -hidenAreaWidth: shows the right edge of the chart
-    translation.x = translation.x.clamp(-hidenAreaWidth, 0);
-    transformMatrix.setTranslation(translation);
-
-    // apply the translation
-    transformationController.value = transformMatrix;
-  }
-
-  // <fields for inertial animation>
-  // animation is implemented in [dragEventConsumer]
-  static const sizeOfAnimationQueue = 3;
-  late final List<double> speedQueueForInertialAnimation;
-  int _queueIndexForInertialAnimation = 0;
-  Timer? inertialAnimation;
-
-  /// is index of [speedQueueForInertialAnimation].
-  int get queue => _queueIndexForInertialAnimation;
-  set queue(int value) {
-    _queueIndexForInertialAnimation = value % sizeOfAnimationQueue;
-  }
-  // </fields for inertial animation>
-
-  /// Event consumer should 'emulate' the method of LineChart for handling drag event
-  /// so that the chart can be dragged.
-  /// Better solution does not emulate something, but I could not find the way.
-  void dragEventConsumer(DragUpdateDetails details) {
-    inertialAnimation?.cancel();
-    inertialAnimation = null;
-
-    // push to the queue
-    speedQueueForInertialAnimation[queue] = details.delta.dx;
-    queue++;
-
-    // take the average of the queue
-    // so that the motion is unsusceptible to the fluctuation of the speed
-    double speed = 0.0;
-    for (var i = 0; i < sizeOfAnimationQueue; i++) {
-      speed += speedQueueForInertialAnimation[i];
-    }
-    speed /= sizeOfAnimationQueue;
-
-    // shift the chart once for sure
-    // otherwise, the motion is not smooth
-    shiftChart(speed);
-
-    // dispatch the inertial animation
-    // inertialAnimation is memorized to cancel it when the user drag again.
-    // otherwise, the motion will be acselerated too much.
-    inertialAnimation =
-        Timer.periodic(Duration(milliseconds: (1000 / 30).toInt()), (timer) {
-      speed *= 0.9;
-      shiftChart(speed);
-      if (speed.abs() < 1) {
-        timer.cancel();
-      }
-    });
-  }
-  // </drag event imitation>
-
   Widget get chart {
     final actualLine = getActualLine();
     final predictionLine = getPredictionLine();
@@ -277,42 +194,40 @@ class _SubtotalChartState extends State<SubtotalChart> {
     // To solve this problem, I added GestureDetector to consume the drag event
     // and prevent tab-switching.
 
-    return GestureDetector(
-        onHorizontalDragUpdate: dragEventConsumer,
-        onVerticalDragStart: (details) {
-          // consume the vertical drag event
-          // and prevent the parent widget from scrolling
-        },
-        child: LineChart(data,
-            chartRendererKey: rendererKey,
-            transformationConfig: FlTransformationConfig(
-                transformationController: transformationController,
-                maxScale: widget.chart.maxScale,
-                scaleAxis: FlScaleAxis.horizontal)));
+    return LineChart(data,
+        chartRendererKey: rendererKey,
+        transformationConfig: FlTransformationConfig(
+            transformationController: transformationController,
+            maxScale: widget.chart.maxScale,
+            scaleAxis: FlScaleAxis.horizontal));
   }
   // </chart configuration>
 
-  static const Widget operationExplanation = Padding(
-      padding: explanationPadding,
-      child: Column(
-        children: [
-          Row(children: [
-            Icon(Icons.pinch),
-            Icon(Icons.zoom_in),
-            Text(': Pan/Pitch vertically to Zoom')
-          ]),
-          Row(children: [
-            Icon(Icons.swipe),
-            Icon(Icons.compare_arrows),
-            Text(': Swipe horizontally to Shift')
-          ]),
-          Row(children: [
-            Icon(Icons.touch_app),
-            Icon(Icons.comment),
-            Text(': Long tap/drag to Show spot information')
-          ])
-        ],
-      ));
+  static const Widget operationExplanation = Row(children: [
+    Spacer(),
+    Padding(
+        padding: explanationPadding,
+        child: Column(
+          children: [
+            Row(children: [
+              Icon(Icons.pinch),
+              Icon(Icons.zoom_in),
+              Text(': Pan/Pitch vertically to Zoom')
+            ]),
+            Row(children: [
+              Icon(Icons.swipe),
+              Icon(Icons.compare_arrows),
+              Text(': Swipe horizontally to Shift')
+            ]),
+            Row(children: [
+              Icon(Icons.touch_app),
+              Icon(Icons.comment),
+              Text(': Long tap/drag to Show spot information')
+            ])
+          ],
+        )),
+    Spacer(),
+  ]);
 
   @override
   Widget build(BuildContext context) {
@@ -341,8 +256,6 @@ class _SubtotalChartState extends State<SubtotalChart> {
 
   @override
   void dispose() {
-    inertialAnimation?.cancel();
-    inertialAnimation = null;
     transformationController.dispose();
     super.dispose();
   }

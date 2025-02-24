@@ -129,8 +129,10 @@ class _PieChartState extends State<PieChart> {
       padding: explanationPadding,
       child: Row(
         children: [
+          Spacer(),
           Icon(Icons.touch_app),
           Text('Touch a section to see a detail'),
+          Spacer(),
         ],
       ));
 
