@@ -1,6 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/shared/receipt_log_edit_window.dart';
-import 'dart:developer' show log;
 
 // <interface>
 /// The window shows the receipt log and the buttons to confirm/edit the receipt log.
@@ -37,59 +36,4 @@ abstract interface class ReceiptLogConfirmationWindow {
 // </interface>
 
 // <mock>
-class MockReceiptLogConfirmationWindow implements ReceiptLogConfirmationWindow {
-  @override
-  final int targetReceiptLogId;
-  final List<Ticket> tickets;
-  final Sink<List<Ticket>> ticketsStream;
-  MockReceiptLogConfirmationWindow(
-      this.targetReceiptLogId, this.tickets, this.ticketsStream);
-
-  @override
-  Future<ReceiptLogTicket> getLogContent() async {
-    log('getLogContent is called with targetReceiptLogId: $targetReceiptLogId');
-    for (final ticket in tickets) {
-      if (ticket is! ReceiptLogTicket) continue;
-      if (ticket.id == targetReceiptLogId) return ticket;
-    }
-    throw Exception('ticket not found');
-  }
-
-  @override
-  ReceiptLogEditWindow openReceiptLogEditWindow() {
-    log('openReceiptLogEditWindow is called with targetReceiptLogId: $targetReceiptLogId');
-    return MockReceiptLogEditWindow(targetReceiptLogId, ticketsStream, tickets);
-  }
-
-  @override
-  Future<void> confirmReceiptLog() async {
-    log('confirmReceiptLog is called with targetReceiptLogId: $targetReceiptLogId');
-    List<Ticket> newTickets = [];
-    while (tickets.isNotEmpty) {
-      final ticket = tickets.removeAt(0);
-      if (ticket is! ReceiptLogTicket) {
-        newTickets.add(ticket);
-        continue;
-      }
-      if (ticket.id != targetReceiptLogId) {
-        newTickets.add(ticket);
-        continue;
-      }
-      newTickets.add(ReceiptLogTicket(
-          id: ticket.id,
-          price: ticket.price,
-          date: ticket.date,
-          description: ticket.description,
-          categoryName: ticket.categoryName,
-          confirmed: true));
-    }
-    tickets.addAll(newTickets);
-    ticketsStream.add(tickets);
-  }
-
-  @override
-  void dispose() {
-    log('ReceiptLogConfirmationWindow is disposed');
-  }
-}
 // </mock>

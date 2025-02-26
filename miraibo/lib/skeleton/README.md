@@ -30,3 +30,7 @@ export 'package:miraibo/skeleton/shared/xxx.dart';
 
 Only exactly same ones are extracted.
 Although there are some similar ones, they are separated as usual.
+
+# mock implementations
+
+mocks for skeleton is implemented in `mock.dart`.

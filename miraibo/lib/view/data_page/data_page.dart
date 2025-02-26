@@ -78,6 +78,7 @@ class _DataPageState extends State<DataPage>
                 child: IconButton(
                     onPressed: goUp, icon: const Icon(Icons.autorenew))),
             Expanded(
+                flex: 2,
                 child: _ScrollLockButton(
                     scrollLockNotifier: scrollLockEventNotifier)),
             Expanded(
@@ -143,8 +144,9 @@ class _ScrollLockButtonState extends State<_ScrollLockButton> {
   @override
   Widget build(BuildContext context) {
     final text = SizedBox(
-        width: 100,
-        child: Center(child: Text(isLocked ? 'Unlock Scroll' : 'Lock Scroll')));
+        width: 150,
+        child: Center(
+            child: Text(isLocked ? 'Unlock Page Scroll' : 'Lock Page Scroll')));
     final themeColor = Theme.of(context).colorScheme;
     final button = TextButton(
         onPressed: () {

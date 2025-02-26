@@ -1,6 +1,3 @@
-import 'dart:developer' show log;
-import 'dart:math' show Random;
-
 // following skeleton classes are so small, so they are merged into this single file.
 
 // <interface>
@@ -77,70 +74,3 @@ abstract interface class RestoreWindow {
   // </navigators>
 }
 // </interface>
-
-// <mock>
-class MockExportationWindow implements ExportationWindow {
-  @override
-  Future<bool> exportDataTo(String path) async {
-    log('MockExportationWindow: exportDataTo called with path: $path');
-    return Random().nextBool();
-  }
-
-  @override
-  void dispose() {
-    log('MockExportationWindow: dispose called');
-  }
-}
-
-class MockOverwriteWindow implements OverwriteWindow {
-  @override
-  Future<bool> overwriteDataWith(String path) async {
-    log('MockOverwriteWindow: overwriteDataWith called with path: $path');
-    return Random().nextBool();
-  }
-
-  @override
-  void dispose() {
-    log('MockOverwriteWindow: dispose called');
-  }
-}
-
-class MockImportationWindow implements ImportationWindow {
-  @override
-  Future<bool> importDataFrom(String path) async {
-    log('MockImportationWindow: importDataFrom called with path: $path');
-    return Random().nextBool();
-  }
-
-  @override
-  void dispose() {
-    log('MockImportationWindow: dispose called');
-  }
-}
-
-class MockBackupWindow implements BackupWindow {
-  @override
-  Future<bool> backupDataTo(String path) async {
-    log('MockBackupWindow: backupDataTo called with path: $path');
-    return Random().nextBool();
-  }
-
-  @override
-  void dispose() {
-    log('MockBackupWindow: dispose called');
-  }
-}
-
-class MockRestoreWindow implements RestoreWindow {
-  @override
-  Future<bool> restoreDataFrom(String path) async {
-    log('MockRestoreWindow: restoreDataFrom called with path: $path');
-    return Random().nextBool();
-  }
-
-  @override
-  void dispose() {
-    log('MockRestoreWindow: dispose called');
-  }
-}
-// </mock>

@@ -347,6 +347,11 @@ class _CurrencySectionState extends State<_CurrencySection> {
     );
     final integrateButton = TextButton(
       onPressed: () {
+        if (currency.isDefault) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Default currency cannot be deleted')));
+          return;
+        }
         openCurrencyIntegrateWindow(context,
             widget.skeleton.openCurrencyIntegrationWindow(currency.id));
       },

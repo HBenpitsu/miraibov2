@@ -33,8 +33,11 @@ class _CurrencyIntegrateWindowState
         future: widget.skeleton.getOptions(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
+              return const Center(child: Text('There is no option'));
+            }
             // initialize replacerId
-            replacerId ??= snapshot.data?.first.id;
+            replacerId ??= snapshot.data!.first.id;
 
             // create SingleSelector
             final options = snapshot.data!;

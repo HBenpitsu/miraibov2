@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer' show log;
-
 import 'package:miraibo/dto/dto.dart';
 
 // <interface>
@@ -35,43 +33,3 @@ abstract interface class CategoryIntegrationWindow {
   // </navigators>
 }
 // </interface>
-
-// <mock>
-typedef MockCategoryMap = Map<int, String>;
-
-class MockCategoryIntegrationWindow implements CategoryIntegrationWindow {
-  @override
-  final int replaceeId;
-  final Sink<MockCategoryMap> _categoryStream;
-  final MockCategoryMap _categories;
-  const MockCategoryIntegrationWindow(
-      this.replaceeId, this._categoryStream, this._categories);
-
-  @override
-  Future<Category> getReplacee() async {
-    log('getReplacee is called with replaceeId: $replaceeId');
-    return Category(name: _categories[replaceeId] ?? '', id: replaceeId);
-  }
-
-  @override
-  Future<List<Category>> getOptions() async {
-    log('getOptions is called');
-    return _categories.entries
-        .where((entry) => entry.key != replaceeId)
-        .map((entry) => Category(id: entry.key, name: entry.value))
-        .toList(growable: false);
-  }
-
-  @override
-  Future<void> integrateCategory(int replacerId) async {
-    log('integrateCategory is called with replacerId: $replacerId');
-    _categories.remove(replaceeId);
-    _categoryStream.add(_categories);
-  }
-
-  @override
-  void dispose() {
-    log('CategoryIntegrationWindow is disposed');
-  }
-}
-// </mock>

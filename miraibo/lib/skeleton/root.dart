@@ -7,8 +7,6 @@ export 'package:miraibo/skeleton/planning_page/planning_page.dart';
 import 'package:miraibo/skeleton/utils_page/utils_page.dart';
 export 'package:miraibo/skeleton/utils_page/utils_page.dart';
 
-import 'dart:developer' show log;
-
 // <interface>
 /// root consists of four pages: planning page, main page, data page, and utils page.
 abstract interface class Root {
@@ -30,28 +28,3 @@ abstract interface class Root {
   //</navigators>
 }
 // </interface>
-
-// <mock>
-class MockRoot implements Root {
-  @override
-  PlanningPage get planningPage => MockPlanningPage();
-
-  @override
-  MainPage get mainPage => MockMainPage();
-
-  @override
-  DataPage get dataPage => MockDataPage();
-
-  @override
-  UtilsPage get utilsPage => MockUtilsPage();
-
-  @override
-  void dispose() {
-    planningPage.dispose();
-    mainPage.dispose();
-    dataPage.dispose();
-    utilsPage.dispose();
-    log('MockRoot disposed');
-  }
-}
-// </mock>

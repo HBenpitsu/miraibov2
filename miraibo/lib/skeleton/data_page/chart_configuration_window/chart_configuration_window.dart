@@ -7,8 +7,6 @@ export 'package:miraibo/skeleton/data_page/chart_configuration_window/pie_chart_
 import 'package:miraibo/skeleton/data_page/chart_configuration_window/subtotal_chart_section.dart';
 export 'package:miraibo/skeleton/data_page/chart_configuration_window/subtotal_chart_section.dart';
 
-import 'dart:developer' show log;
-
 // <interface>
 /// There are three types of charts: accumulation, pie, and subtotal.
 /// This window is shown when user wants to configure the chart.
@@ -43,44 +41,3 @@ abstract interface class ChartConfigurationWindow {
   // </navigators>
 }
 // </interface>
-
-// <mock>
-class MockChartConfigurationWindow implements ChartConfigurationWindow {
-  @override
-  final ChartScheme initialScheme;
-  final Function(ChartScheme) schemeSetter;
-  @override
-  set currentScheme(ChartScheme value) => schemeSetter(value);
-
-  @override
-  late final AccumulationChartSection accumulationChartSection;
-
-  @override
-  late final PieChartSection pieChartSection;
-
-  @override
-  late final SubtotalChartSection subtotalChartSection;
-
-  MockChartConfigurationWindow(this.initialScheme, this.schemeSetter) {
-    log('MockChartConfigurationWindow: constructed');
-    accumulationChartSection =
-        MockAccumulationChartSection(initialScheme, schemeSetter);
-    pieChartSection = MockPieChartSection(initialScheme, schemeSetter);
-    subtotalChartSection =
-        MockSubtotalChartSection(initialScheme, schemeSetter);
-  }
-
-  @override
-  Future<ChartScheme> getInitialScheme() async {
-    return initialScheme;
-  }
-
-  @override
-  void dispose() {
-    log('MockChartConfigurationWindow: dispose called');
-    accumulationChartSection.dispose();
-    pieChartSection.dispose();
-    subtotalChartSection.dispose();
-  }
-}
-// </mock>

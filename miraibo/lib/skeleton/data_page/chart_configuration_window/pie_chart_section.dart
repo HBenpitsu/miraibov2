@@ -1,8 +1,6 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
-import 'dart:developer' show log;
-
 // <interface>
 
 /// PieChartSection is a section to configure a pie chart.
@@ -40,78 +38,3 @@ abstract interface class PieChartSection {
   // </navigators>
 }
 // </interface>
-
-// <mock>
-class MockPieChartSection implements PieChartSection {
-  @override
-  final ChartScheme initialScheme;
-
-  /// setter to implement set [currentScheme]
-  final Function(ChartScheme) schemeSetter;
-  @override
-  set currentScheme(ChartScheme value) => schemeSetter(value);
-
-  /// list of predefined currencies
-  static const List<Currency> currencyList = [
-    Currency(id: 0, symbol: 'JPY'),
-    Currency(id: 1, symbol: 'USD'),
-    Currency(id: 2, symbol: 'EUR')
-  ];
-
-  /// list of predefined categories
-  static List<Category> categoryList = [
-    for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
-  ];
-
-  MockPieChartSection(this.initialScheme, this.schemeSetter);
-
-  @override
-  Future<List<Category>> getCategoryOptions() async {
-    log('getCategoryOptions is called');
-    return categoryList;
-  }
-
-  @override
-  Future<List<Currency>> getCurrencyOptions() async {
-    log('getCurrencyOptions is called');
-    return currencyList;
-  }
-
-  @override
-  Future<PieChartScheme> getInitialScheme() async {
-    log('getInitialScheme is called');
-    if (initialScheme is PieChartScheme) {
-      return initialScheme as PieChartScheme;
-    }
-    // make mock-default scheme
-    // <prepare parameters>
-    final now = DateTime.now();
-    final twoWeeksAgo = now.subtract(const Duration(days: 14));
-    final twoWeeksLater = now.add(const Duration(days: 14));
-    final period = OpenPeriod(
-        begins: twoWeeksAgo.cutOffTime(), ends: twoWeeksLater.cutOffTime());
-    // </prepare parameters>
-    return PieChartScheme(
-        currency: currencyList[0],
-        analysisRange: period,
-        categories: categoryList);
-  }
-
-  @override
-  Future<void> applyScheme(
-      int currencyId, OpenPeriod period, List<int> categoryIds) async {
-    log('applyScheme is called');
-    // cast bunch of parameters to PieChartScheme and set it to currentScheme
-    currentScheme = PieChartScheme(
-        currency: currencyList[currencyId],
-        analysisRange: period,
-        categories:
-            categoryIds.map((id) => categoryList[id]).toList(growable: false));
-  }
-
-  @override
-  void dispose() {
-    log('MockPieChartSection is disposed');
-  }
-}
-// </mock>

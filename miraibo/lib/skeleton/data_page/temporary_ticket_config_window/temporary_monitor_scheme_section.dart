@@ -1,8 +1,6 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
-import 'dart:developer' show log;
-
 // <interface>
 /// MonitorSchemeSection is a section to create a monitor scheme.
 /// A monitor scheme consists of the following information:
@@ -50,72 +48,3 @@ abstract interface class TemporaryMonitorSchemeSection {
   // </navigators>
 }
 // </interface>
-
-// <mock>
-class MockTemporaryMonitorSchemeSection
-    implements TemporaryMonitorSchemeSection {
-  @override
-  final TemporaryTicketScheme initialScheme;
-  final Function(TemporaryTicketScheme) schemeSetter;
-  @override
-  set currentScheme(TemporaryTicketScheme value) => schemeSetter(value);
-
-  // List of predefined currencies
-  static const List<Currency> currencyList = [
-    Currency(id: 0, symbol: 'JPY'),
-    Currency(id: 1, symbol: 'USD'),
-    Currency(id: 2, symbol: 'EUR')
-  ];
-
-  // List of predefined categories
-  static List<Category> categoryList = [
-    for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
-  ];
-
-  MockTemporaryMonitorSchemeSection(this.initialScheme, this.schemeSetter);
-
-  @override
-  Future<List<Category>> getCategoryOptions() async {
-    log('getCategoryOptions is called');
-    return categoryList;
-  }
-
-  @override
-  Future<List<Currency>> getCurrencyOptions() async {
-    log('getCurrencyOptions is called');
-    return currencyList;
-  }
-
-  @override
-  Future<TemporaryMonitorScheme> getInitialScheme() async {
-    log('getInitialScheme is called');
-    if (initialScheme is TemporaryMonitorScheme) {
-      return initialScheme as TemporaryMonitorScheme;
-    }
-    // provide a default scheme
-    return TemporaryMonitorScheme(
-        categories: categoryList,
-        period: const OpenPeriod(begins: null, ends: null),
-        displayOption: MonitorDisplayOption.meanInDays,
-        currency: currencyList[0]);
-  }
-
-  @override
-  Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayOption displayOption, int currencyId) async {
-    log('applyMonitorScheme is called');
-    // cast bunch of parameters to the temporary monitor scheme
-    currentScheme = TemporaryMonitorScheme(
-        categories:
-            categoryIds.map((id) => categoryList[id]).toList(growable: false),
-        period: period,
-        displayOption: displayOption,
-        currency: currencyList[currencyId]);
-  }
-
-  @override
-  void dispose() {
-    log('MockTemporaryMonitorSchemeSection is disposed');
-  }
-}
-// </mock>

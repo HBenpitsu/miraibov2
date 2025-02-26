@@ -1,8 +1,6 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/dto/dto.dart';
 
-import 'dart:developer' show log;
-
 // <interface>
 /// EstimationSchemeSection is a section to create an estimation scheme.
 /// An estimation scheme consists of the following information:
@@ -50,75 +48,3 @@ abstract interface class TemporaryEstimationSchemeSection {
   // </navigators>
 }
 // </interface>
-
-// <mock>
-class MockTemporaryEstimationSchemeSection
-    implements TemporaryEstimationSchemeSection {
-  @override
-  final TemporaryTicketScheme initialScheme;
-
-  /// setter to implement set [currentScheme]
-  final Function(TemporaryTicketScheme) schemeSetter;
-  @override
-  set currentScheme(TemporaryTicketScheme value) => schemeSetter(value);
-
-  /// list of predefined currencies
-  static const List<Currency> currencyList = [
-    Currency(id: 0, symbol: 'JPY'),
-    Currency(id: 1, symbol: 'USD'),
-    Currency(id: 2, symbol: 'EUR')
-  ];
-
-  /// list of predefined categories
-  static List<Category> categoryList = [
-    for (int i = 0; i < 20; i++) Category(id: i, name: 'category$i')
-  ];
-
-  MockTemporaryEstimationSchemeSection(this.initialScheme, this.schemeSetter);
-
-  @override
-  Future<List<Category>> getCategoryOptions() async {
-    log('getCategoryOptions is called');
-    return categoryList;
-  }
-
-  @override
-  Future<List<Currency>> getCurrencyOptions() async {
-    log('getCurrencyOptions is called');
-    return currencyList;
-  }
-
-  @override
-  Future<TemporaryEstimationScheme> getInitialScheme() async {
-    log('getInitialScheme is called');
-    if (initialScheme is TemporaryEstimationScheme) {
-      return initialScheme as TemporaryEstimationScheme;
-    }
-    // provide a mock-default scheme
-    return TemporaryEstimationScheme(
-        categories: categoryList,
-        currency: currencyList[0],
-        displayOption: EstimationDisplayOption.perMonth,
-        period: const OpenPeriod(begins: null, ends: null));
-  }
-
-  @override
-  Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      EstimationDisplayOption displayOption, int currencyId) async {
-    log('applyMonitorScheme is called');
-    // cast bunch of parameters to the temporary estimation scheme
-    currentScheme = TemporaryEstimationScheme(
-        categories: categoryList
-            .where((element) => categoryIds.contains(element.id))
-            .toList(growable: false),
-        currency: currencyList[currencyId],
-        displayOption: displayOption,
-        period: period);
-  }
-
-  @override
-  void dispose() {
-    log('MockTemporaryEstimationSchemeSection is disposed');
-  }
-}
-// </mock>

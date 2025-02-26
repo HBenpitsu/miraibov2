@@ -1,5 +1,3 @@
-import 'package:miraibo/dto/dto.dart';
-
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/estimation_scheme_section.dart';
 export 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/estimation_scheme_section.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/monitor_scheme_section.dart';
@@ -8,8 +6,6 @@ import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window
 export 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/receipt_log_section.dart';
 import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/plan_section.dart';
 export 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/plan_section.dart';
-
-import 'dart:developer' show log;
 
 // <interface>
 /// ticket create window is shown when user wants to create a new ticket.
@@ -40,35 +36,3 @@ abstract interface class TicketCreateWindow {
 }
 
 // </interface>
-
-// <mock>
-class MockTicketCreateWindow implements TicketCreateWindow {
-  @override
-  late final PlanSection planSection;
-  @override
-  late final EstimationSchemeSection estimationSchemeSection;
-  @override
-  late final MonitorSchemeSection monitorSchemeSection;
-  @override
-  late final ReceiptLogSection receiptLogSection;
-
-  MockTicketCreateWindow(
-      List<Ticket> tickets, Sink<List<Ticket>> ticketsStream) {
-    log('MockTicketCreateWindow is constructed');
-    planSection = MockPlanSection(tickets, ticketsStream);
-    estimationSchemeSection =
-        MockEstimationSchemeSection(tickets, ticketsStream);
-    monitorSchemeSection = MockMonitorSchemeSection(tickets, ticketsStream);
-    receiptLogSection = MockReceiptLogSection(tickets, ticketsStream);
-  }
-
-  @override
-  void dispose() {
-    log('MockTicketCreateWindow is disposed');
-    planSection.dispose();
-    estimationSchemeSection.dispose();
-    monitorSchemeSection.dispose();
-    receiptLogSection.dispose();
-  }
-}
-// </mock>
