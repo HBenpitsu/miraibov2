@@ -4,8 +4,8 @@ import 'package:miraibo/skeleton/main_page/main_page.dart';
 export 'package:miraibo/skeleton/main_page/main_page.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart';
 export 'package:miraibo/skeleton/planning_page/planning_page.dart';
-import 'package:miraibo/skeleton/utils_page/utils_page.dart';
-export 'package:miraibo/skeleton/utils_page/utils_page.dart';
+import 'package:miraibo/skeleton/utils_page.dart';
+export 'package:miraibo/skeleton/utils_page.dart';
 
 // <interface>
 /// root consists of four pages: planning page, main page, data page, and utils page.

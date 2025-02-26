@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/skeleton/utils_page/currency_integration_window.dart'
-    as skt;
+import 'package:miraibo/skeleton/utils_page.dart' as skt;
 import 'package:miraibo/view/shared/components/form_components/form_components.dart';
 import 'package:miraibo/view/utils_page/integrate_window_pre_state.dart';
 

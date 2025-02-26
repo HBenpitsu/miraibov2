@@ -3,7 +3,7 @@ import 'package:miraibo/view/shared/components/foldable_section.dart';
 import 'package:miraibo/view/shared/components/form_components/custom_text_field.dart';
 import 'package:miraibo/view/shared/components/valed_container.dart';
 import 'package:miraibo/view/shared/constants.dart';
-import 'package:miraibo/skeleton/utils_page/utils_page.dart' as skt;
+import 'package:miraibo/skeleton/utils_page.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/utils_page/category_integrate_window.dart';
 import 'package:miraibo/view/utils_page/currency_integrate_window.dart';

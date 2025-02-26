@@ -34,6 +34,3 @@ abstract interface class ReceiptLogConfirmationWindow {
   // </navigators>
 }
 // </interface>
-
-// <mock>
-// </mock>
