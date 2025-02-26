@@ -73,6 +73,8 @@ abstract class IntegrateWindowPreState<T extends StatefulWidget>
         ]));
   }
 
+  String get windowTitle;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -82,7 +84,7 @@ abstract class IntegrateWindowPreState<T extends StatefulWidget>
           padding: windowPadding,
           child: Column(
             children: [
-              Text('Integrate Category', style: textTheme.headlineMedium),
+              Text(windowTitle, style: textTheme.headlineMedium),
               const Divider(),
               const Text('CAUTION: This action is irreversible.',
                   style: TextStyle(color: Colors.redAccent, fontSize: 20)),

@@ -111,13 +111,13 @@ class _PieChartState extends State<PieChart> {
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Text(
-            selected == null ? '' : '${selected!.amount}, ',
+            selected == null ? '' : '${selected!.amount} ',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Text(
             selected == null
                 ? ''
-                : '${(selected!.ratio * 100).toStringAsFixed(1)}%',
+                : '(${(selected!.ratio * 100).toStringAsFixed(1)}%)',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ]),
@@ -185,13 +185,13 @@ extension OpenPeriodStringify on dto.OpenPeriod {
   String asString() {
     switch ((begins, ends)) {
       case (null, null):
-        return 'All';
+        return 'Entire Period';
       case (null, dto.Date end):
         return 'Until ${end.asString()}';
       case (dto.Date begin, null):
         return 'From ${begin.asString()}';
       case (dto.Date begin, dto.Date end):
-        return 'From ${begin.asString()} to ${end.asString()}';
+        return 'From ${begin.asString()} To ${end.asString()}';
     }
     throw Exception('Bad state');
   }

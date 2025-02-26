@@ -72,6 +72,11 @@ class _PlanEditWindowState extends EditWindowState<PlanEditWindow> {
   }
 
   @override
+  void onDelete() {
+    widget.skeleton.deletePlan();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     widget.skeleton.dispose();
@@ -135,6 +140,11 @@ class _EstimationSchemeEditWindowState
         period: currentScheme.period,
         displayOption: currentScheme.displayOption,
         currencyId: currentScheme.currency.id);
+  }
+
+  @override
+  void onDelete() {
+    widget.skeleton.deleteEstimationScheme();
   }
 
   @override

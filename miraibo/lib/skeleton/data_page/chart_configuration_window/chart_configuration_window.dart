@@ -24,9 +24,9 @@ abstract interface class ChartConfigurationWindow {
   set currentScheme(ChartScheme value);
   // </states>
 
-  // <presenters>
+  // <presenter>
   Future<ChartScheme> getInitialScheme();
-  // </presenters>
+  // </presenter>
 
   // <navigators>
   /// A tab of the window.

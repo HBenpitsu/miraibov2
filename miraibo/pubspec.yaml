@@ -38,6 +38,8 @@ dependencies:
   function_tree: ^0.9.1
   async: ^2.11.0
   fl_chart: ^0.70.2
+  file_picker: ^9.0.0
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:

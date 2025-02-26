@@ -51,6 +51,11 @@ class _ReceiptLogEditWindowState extends EditWindowState<ReceiptLogEditWindow> {
   }
 
   @override
+  void onDelete() {
+    widget.skeleton.deleteReceiptLog();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     widget.skeleton.dispose();

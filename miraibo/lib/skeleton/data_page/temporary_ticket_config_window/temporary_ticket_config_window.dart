@@ -1,4 +1,5 @@
 import 'package:miraibo/skeleton/data_page/shared.dart';
+export 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_estimation_scheme_section.dart';
 export 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_estimation_scheme_section.dart';
 import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_monitor_scheme_section.dart';
@@ -22,6 +23,10 @@ abstract interface class TemporaryTicketConfigWindow {
   /// This will be changed on the end of the window-lifecycle.
   set currentScheme(TemporaryTicketScheme value);
   // </states>
+
+  // <presenters>
+  Future<TemporaryTicketScheme> getInitialScheme();
+  // </presenters>
 
   // <navigators>
   /// A tab of the window.
@@ -56,6 +61,11 @@ class MockTemporaryTicketConfigWindow implements TemporaryTicketConfigWindow {
         MockTemporaryEstimationSchemeSection(initialScheme, schemeSetter);
     monitorSchemeSection =
         MockTemporaryMonitorSchemeSection(initialScheme, schemeSetter);
+  }
+
+  @override
+  Future<TemporaryTicketScheme> getInitialScheme() async {
+    return initialScheme;
   }
 
   @override

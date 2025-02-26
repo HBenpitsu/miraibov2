@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' show log;
 import 'dart:math' show Random;
 
+import 'package:collection/collection.dart';
 import 'package:miraibo/dto/dto.dart';
 // import 'package:miraibo/skeleton/data_page/shared.dart';
 export 'package:miraibo/skeleton/data_page/shared.dart';
@@ -46,15 +47,9 @@ abstract interface class DataPage {
   Stream<Chart> getChart();
   Stream<TemporaryTicket> getTemporaryTicket();
 
-  /// the first key is provided from the stream.
-  /// if new key is provided from the stream, insert the 1 record segment in front of the table.
-  /// 1 record segment can be fetched by calling [getTableSegment] with [limit]=1
-  Stream<int?> generateFirstKey();
-
-  /// to get the first segment, call [generateFirstKey] and pass the generated [key] to [getTableSegment].
-  /// the limit is the number of records in the segment.
-  /// the [key] of the next segment is provided from the stream of the segment.
-  Future<TableSegment> getTableSegment(int key, int limit);
+  // table section
+  Stream<ReceiptLogSchemeInstance?> getReceiptLog(int index);
+  Stream<int> getTableSize();
   // </presenters>
 
   // <navigators>
@@ -79,6 +74,7 @@ abstract interface class DataPage {
 
   /// on tapping the restore button, open the restore window.
   RestoreWindow openRestoreWindow();
+
   // table section
   /// on tapping a row of the table, open the receipt log edit window
   /// that edits the receipt log of the row.
@@ -92,62 +88,6 @@ abstract interface class DataPage {
 // </interface>
 
 // <view model>
-typedef TableRecord = Stream<ReceiptLogSchemeInstance?>;
-
-/// Table segment is a set of table rows.
-/// It provides some features to show the table efficiently.
-class TableSegment {
-  /// success key is provided from stream. It represents the key of the next segment.
-  /// if there is no segment to fetch, the success key is null.
-  final Stream<int?> successKey;
-
-  /// record is a stream of receipt log configs.
-  /// it reflects the mutation of the receipt logs.
-  /// the stream for each record emits null the receipt log is no longer exists.
-  /// the stream for bunch of records emits null when all of the records are no longer exists.
-  late final Stream<List<TableRecord>?> records;
-  late int numberOfRecords;
-
-  /// when records get null, the [nullCount] is incremented.
-  /// when [nullCount] gets equal to the length of the [numberOfRecords],
-  /// there is no meaning for the segment to exist any more.
-  int nullCount = 0;
-
-  TableSegment(List<TableRecord> records, this.successKey) {
-    // make a stream that emits null (that is [this.records]) when all of the records are null.
-
-    // to make that complex stream, we need:
-    // - to count up the number of null records.
-    // - compare the number of null records with the number of records on each record update.
-    // - emit null on the check if the condition is satisfied.
-    // this can be achieved by using StreamController.
-    StreamController<List<TableRecord>?> recordsStream =
-        StreamController.broadcast();
-    numberOfRecords = records.length;
-    for (var record in records) {
-      // listen to every record update.
-      record.listen((record) {
-        if (record != null) return;
-        // count up the number of null records.
-        nullCount++;
-        if (nullCount >= numberOfRecords) {
-          // emit null when all of the records are null.
-          recordsStream.add(null);
-        }
-      });
-    }
-    // we could implement 'null emitting'.
-
-    // also, [this.records] should orovide the stream of the records
-    // if there is some non-null records.
-    // initially, it is expected that all of the records are non-null.
-    recordsStream.add(records);
-
-    // after initialization above, we can provide the stream of the records.
-    this.records = recordsStream.stream;
-  }
-}
-
 /// Chart is a view model that represents a chart.
 /// It contains the all data to draw the chart.
 /// It does not contain any data not to draw the chart.
@@ -306,12 +246,14 @@ class MockDataPage implements DataPage {
     final chartStreamController = StreamController<ChartScheme>.broadcast();
     chartStream = chartStreamController.stream;
     chartSink = chartStreamController.sink;
+
+    currentChartScheme = const ChartSchemeUnspecified();
+
     final temporaryTicketStreamController =
         StreamController<TemporaryTicketScheme>.broadcast();
     temporaryTicketStream = temporaryTicketStreamController.stream;
     temporaryTicketSink = temporaryTicketStreamController.sink;
 
-    currentChartScheme = const ChartSchemeUnspecified();
     currentTicketScheme = const TemporaryTicketSchemeUnspecified();
   }
 
@@ -472,16 +414,19 @@ class MockDataPage implements DataPage {
   }
 
   @override
-  Stream<int?> generateFirstKey() {
-    log('MockDataPage: generateFirstKey called');
-    return mockVault.firstKey;
+  Stream<ReceiptLogSchemeInstance?> getReceiptLog(int index) {
+    log('MockDataPage: getReceiptLog called with index: $index');
+    return mockVault.recordStreamFor(index);
   }
 
   @override
-  Future<TableSegment> getTableSegment(int key, int limit) {
-    log('MockDataPage: getTableSegment called with key: $key, limit: $limit');
-    final (records, successkey) = mockVault.getReceiptLogs(key, limit);
-    return Future.value(TableSegment(records, successkey));
+  Stream<int> getTableSize() {
+    log('MockDataPage: getTableSize called');
+    final returnStream = StreamController<int>();
+    returnStream.add(mockVault.receiptLogs.length);
+    returnStream
+        .addStream(mockVault.receiptLogsStream.map((logs) => logs.length));
+    return returnStream.stream;
   }
 
   @override
@@ -500,13 +445,12 @@ class MockReceiptLogVault {
   late final Sink<List<ReceiptLogSchemeInstance>> receiptLogsSink;
   // it provides the first record of the receipt logs.
   late final Stream<ReceiptLogSchemeInstance?> firstRecordStream;
-  late final Sink<ReceiptLogSchemeInstance?> firstRecordSink;
   Stream<int?> get firstKey => firstRecordStream.map((record) => record?.id);
   // </valut fields>
   MockReceiptLogVault() {
     // <mock receipt logs>
     receiptLogs = [
-      for (var i = 0; i < 20; i++)
+      for (var i = 0; i < 2000; i++)
         ReceiptLogSchemeInstance(
             id: i,
             price: const ConfigureblePrice(
@@ -525,10 +469,23 @@ class MockReceiptLogVault {
     receiptLogsSink.add(receiptLogs);
     final firstRecordStreamController =
         StreamController<ReceiptLogSchemeInstance?>.broadcast();
+    firstRecordStreamController
+        .addStream(receiptLogsStream.map((logs) => logs.firstOrNull));
     firstRecordStream = firstRecordStreamController.stream;
-    firstRecordSink = firstRecordStreamController.sink;
-    firstRecordSink.add(receiptLogs.firstOrNull);
     // </initialize stream>
+  }
+
+  Stream<ReceiptLogSchemeInstance?> recordStreamFor(int index) {
+    if (index < 0 || index >= receiptLogs.length) {
+      return Stream.value(null);
+    }
+    final returnStream = StreamController<ReceiptLogSchemeInstance?>();
+    returnStream.add(receiptLogs[index]);
+    returnStream.addStream(receiptLogsStream.map((logs) {
+      if (index < 0 || index >= receiptLogs.length) return null;
+      return logs[index];
+    }));
+    return returnStream.stream;
   }
 
   /// provides a sink which can receive the data in ticket format.
@@ -556,7 +513,6 @@ class MockReceiptLogVault {
       receiptLogs.clear();
       receiptLogs.addAll(newLogs);
       receiptLogsSink.add(receiptLogs);
-      firstRecordSink.add(receiptLogs.firstOrNull);
     });
     return ticketSink.sink;
   }
@@ -573,43 +529,8 @@ class MockReceiptLogVault {
             date: logContent.date,
             categoryName: logContent.category.name,
             description: logContent.description,
-            confirmed: logContent.confirmed))
+            confirmed: logContent.confirmed) as Ticket)
         .toList();
-  }
-
-  /// returns a list of streams of receipt logs and a stream of the key for the next record.
-  (List<Stream<ReceiptLogSchemeInstance?>>, Stream<int?>) getReceiptLogs(
-      int key, int limit) {
-    // records to be returned
-    final records = receiptLogs.where((log) => log.id >= key).take(limit);
-    // wrap the records with stream
-    final recordsBox = records.map((record) {
-      final stream = StreamController<ReceiptLogSchemeInstance?>();
-      stream.add(record); // the stream is fed with the record at this point.
-
-      // the stream tracks the updates of the receipt logs.
-      receiptLogsStream.listen((logs) {
-        ReceiptLogSchemeInstance? newRecord =
-            logs.where((log) => record.id == log.id).firstOrNull;
-        stream.add(newRecord);
-      });
-
-      return stream.stream;
-    });
-    // success key can be changed when new record is added/deleted
-    final successKeyBox = StreamController<int?>();
-    // listen to the updates of the receipt logs and find the new key on each update.
-    receiptLogsStream.listen((logs) {
-      if (logs.isEmpty) {
-        successKeyBox.add(null);
-        return;
-      }
-      final newKey =
-          logs.where((log) => log.id > records.last.id).firstOrNull?.id;
-      successKeyBox.add(newKey);
-    });
-
-    return (recordsBox.toList(growable: false), successKeyBox.stream);
   }
 
   void dispose() {}

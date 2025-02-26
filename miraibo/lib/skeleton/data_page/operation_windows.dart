@@ -1,4 +1,5 @@
-import 'dart:developer';
+import 'dart:developer' show log;
+import 'dart:math' show Random;
 
 // following skeleton classes are so small, so they are merged into this single file.
 
@@ -7,7 +8,7 @@ import 'dart:developer';
 /// This window is used when user wants to export receipt log data to external environment.
 abstract interface class ExportationWindow {
   // <controllers>
-  Future<void> exportDataTo(String path);
+  Future<bool> exportDataTo(String path);
   // </controllers>
   // <navigators>
   /// should be called when this skeleton is no longer needed.
@@ -20,7 +21,7 @@ abstract interface class ExportationWindow {
 /// That means that all of the current receipt logs in app will be deleted and replaced with the external data.
 abstract interface class OverwriteWindow {
   // <controllers>
-  Future<void> overwriteDataWith(String path);
+  Future<bool> overwriteDataWith(String path);
   // </controllers>
   // <navigators>
   /// should be called when this skeleton is no longer needed.
@@ -32,7 +33,7 @@ abstract interface class OverwriteWindow {
 /// This window is used when user wants to import receipt log data from external environment.
 abstract interface class ImportationWindow {
   // <controllers>
-  Future<void> importDataFrom(String path);
+  Future<bool> importDataFrom(String path);
   // </controllers>
   // <navigators>
   /// should be called when this skeleton is no longer needed.
@@ -55,7 +56,7 @@ abstract interface class ImportationWindow {
 /// The backup-file can be used to restore the app data later.
 abstract interface class BackupWindow {
   // <controllers>
-  Future<void> backupDataTo(String path);
+  Future<bool> backupDataTo(String path);
   // </controllers>
   // <navigators>
   /// should be called when this skeleton is no longer needed.
@@ -68,7 +69,7 @@ abstract interface class BackupWindow {
 /// Restoration resets all of current database and replaces with the external data.
 abstract interface class RestoreWindow {
   // <controllers>
-  Future<void> restoreDataFrom(String path);
+  Future<bool> restoreDataFrom(String path);
   // </controllers>
   // <navigators>
   /// should be called when this skeleton is no longer needed.
@@ -80,8 +81,9 @@ abstract interface class RestoreWindow {
 // <mock>
 class MockExportationWindow implements ExportationWindow {
   @override
-  Future<void> exportDataTo(String path) async {
+  Future<bool> exportDataTo(String path) async {
     log('MockExportationWindow: exportDataTo called with path: $path');
+    return Random().nextBool();
   }
 
   @override
@@ -92,8 +94,9 @@ class MockExportationWindow implements ExportationWindow {
 
 class MockOverwriteWindow implements OverwriteWindow {
   @override
-  Future<void> overwriteDataWith(String path) async {
+  Future<bool> overwriteDataWith(String path) async {
     log('MockOverwriteWindow: overwriteDataWith called with path: $path');
+    return Random().nextBool();
   }
 
   @override
@@ -104,8 +107,9 @@ class MockOverwriteWindow implements OverwriteWindow {
 
 class MockImportationWindow implements ImportationWindow {
   @override
-  Future<void> importDataFrom(String path) async {
+  Future<bool> importDataFrom(String path) async {
     log('MockImportationWindow: importDataFrom called with path: $path');
+    return Random().nextBool();
   }
 
   @override
@@ -116,8 +120,9 @@ class MockImportationWindow implements ImportationWindow {
 
 class MockBackupWindow implements BackupWindow {
   @override
-  Future<void> backupDataTo(String path) async {
+  Future<bool> backupDataTo(String path) async {
     log('MockBackupWindow: backupDataTo called with path: $path');
+    return Random().nextBool();
   }
 
   @override
@@ -128,8 +133,9 @@ class MockBackupWindow implements BackupWindow {
 
 class MockRestoreWindow implements RestoreWindow {
   @override
-  Future<void> restoreDataFrom(String path) async {
+  Future<bool> restoreDataFrom(String path) async {
     log('MockRestoreWindow: restoreDataFrom called with path: $path');
+    return Random().nextBool();
   }
 
   @override

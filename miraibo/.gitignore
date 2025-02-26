@@ -50,4 +50,4 @@ macos/
 linux/
 ios/
 
-android/
+# android/ It is modified now

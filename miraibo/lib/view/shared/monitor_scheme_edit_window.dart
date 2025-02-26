@@ -64,6 +64,11 @@ class _MonitorSchemeEditWindowState
   }
 
   @override
+  void onDelete() {
+    widget.skeleton.deleteMonitorScheme();
+  }
+
+  @override
   void dispose() {
     widget.skeleton.dispose();
     super.dispose();

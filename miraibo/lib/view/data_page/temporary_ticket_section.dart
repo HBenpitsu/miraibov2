@@ -37,6 +37,9 @@ class _TemporaryTicketSectionState extends State<TemporaryTicketSection> {
         child: Center(
           child: switch (ticket) {
             skt.TemporaryTicketUnspecified _ => TicketAppearanceTemplate(
+                priceBackgroundColor:
+                    Theme.of(context).colorScheme.surfaceContainer,
+                priceColor: Theme.of(context).colorScheme.surfaceContainer,
                 ticketType: 'unconfigured',
                 categories: [''],
                 amount: 0,

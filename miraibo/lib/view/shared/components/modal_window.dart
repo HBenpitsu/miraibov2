@@ -113,9 +113,9 @@ class _ModalWindowContainerState extends State<ModalWindowContainer> {
             backgroundColor: Colors.transparent,
             body: Center(
                 child: Column(children: [
-              const Spacer(flex: 2),
+              const Spacer(),
               eventConsumingWindow,
-              const Spacer(flex: 1),
+              const Spacer(),
               // to avoid screen keyboard overlapping
               // with AnimatedContainer, the relocation becomes smooth
               AnimatedContainer(

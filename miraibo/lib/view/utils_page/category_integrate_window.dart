@@ -28,6 +28,9 @@ class CategoryIntegrationWindow extends StatefulWidget {
 class _CategoryIntegrationWindowState
     extends IntegrateWindowPreState<CategoryIntegrationWindow> {
   @override
+  String get windowTitle => 'Integrate Category';
+
+  @override
   Widget replacerSelector() {
     return FutureBuilder(
         future: widget.skeleton.getOptions(),

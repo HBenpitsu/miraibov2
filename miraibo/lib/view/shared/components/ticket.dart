@@ -352,7 +352,7 @@ String makePeriodString(dto.OpenPeriod period) {
     case (null, dto.Date ends):
       return 'until ${makeDateString(ends)}';
     case (null, null):
-      return '';
+      return 'indefinitely';
     default:
       throw Exception('Illegal situation');
   }

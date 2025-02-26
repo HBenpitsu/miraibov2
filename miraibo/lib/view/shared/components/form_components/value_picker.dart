@@ -273,12 +273,12 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
   }
 
   /// the maximum number that can be interpreted correctly
-  static const maximumNumber = 9999999999999999;
+  static const maximumNumber = 10000000000000000;
 
   int? getResult() {
     try {
       final result = expression.interpret().toInt();
-      if (result.isNaN || result > maximumNumber) return null;
+      if (result.isNaN || result >= maximumNumber) return null;
       return result;
     } catch (e) {
       return null;

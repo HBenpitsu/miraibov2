@@ -56,7 +56,7 @@ class _AccumulationChartState extends State<AccumulationChart> {
   List<LineTooltipItem?> tooltipBuilder(
       List<LineBarSpot> spots, int indexOfAllSpotsLine) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final tooltips = spots.map((spot) {
+    return spots.map((spot) {
       // return null when the spot is not one of the allSpotsLine
       if (spot.barIndex != indexOfAllSpotsLine) {
         return null;
@@ -89,8 +89,6 @@ class _AccumulationChartState extends State<AccumulationChart> {
         );
       }
     }).toList();
-    print(tooltips);
-    return tooltips;
   }
 
   List<TouchedSpotIndicatorData?> touchedSpotIndicatorBuilder(
@@ -253,13 +251,13 @@ extension OpenPeriodStringify on dto.OpenPeriod {
   String asString() {
     switch ((begins, ends)) {
       case (null, null):
-        return 'All';
+        return 'Entire Period';
       case (null, dto.Date end):
         return 'Until ${end.asString()}';
       case (dto.Date begin, null):
         return 'From ${begin.asString()}';
       case (dto.Date begin, dto.Date end):
-        return 'From ${begin.asString()} to ${end.asString()}';
+        return 'From ${begin.asString()} To ${end.asString()}';
     }
     throw Exception('Bad state');
   }

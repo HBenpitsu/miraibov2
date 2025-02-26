@@ -208,6 +208,7 @@ class _SubtotalChartState extends State<SubtotalChart> {
     Padding(
         padding: explanationPadding,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
               Icon(Icons.pinch),

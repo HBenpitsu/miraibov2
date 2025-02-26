@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:miraibo/skeleton/data_page/data_page.dart' as skt;
 import 'package:miraibo/view/shared/constants.dart';
 import 'package:miraibo/view/data_page/temporary_ticket_section.dart';
 import 'package:miraibo/view/data_page/chart_section/chart_section.dart';
+import 'package:miraibo/view/data_page/operation_section.dart';
+import 'package:miraibo/view/data_page/table_section.dart';
 
 const sectorMargin = SizedBox(height: 20);
 
@@ -23,59 +27,62 @@ class _DataPageState extends State<DataPage>
   @override
   bool get wantKeepAlive => true;
 
-  bool scrollLock = false;
+  bool isScrollLocked = false;
 
   late final ScrollController scrollCtl;
-  late final _DataPageContent content;
+  late final Widget content;
+
+  /// add true when the user wants to scroll up.
+  /// add false when the user wants to scroll down.
+  late final Sink<bool> scrollEventSink;
+
+  late final StreamController<bool> scrollLockEventNotifier;
 
   @override
   void initState() {
     super.initState();
     scrollCtl = ScrollController();
-    content = _DataPageContent(widget.skeleton);
+    final scrollEventNotifier = StreamController<bool>();
+    scrollEventSink = scrollEventNotifier.sink;
+    scrollLockEventNotifier = StreamController<bool>.broadcast();
+    scrollLockEventNotifier.stream.listen((isLocked) {
+      if (isLocked) {
+        widget.scrollLock();
+      } else {
+        widget.scrollUnlock();
+      }
+      if (!mounted) return;
+      setState(() {
+        isScrollLocked = isLocked;
+      });
+    });
+    content = _DataPageContent(
+      widget.skeleton,
+      // scrolling physics is heavily depends on the table section, so it is passed here.
+      pageScrollCtl: scrollCtl,
+      scrollEventStream: scrollEventNotifier.stream,
+      scrollLockNotifier: scrollLockEventNotifier,
+    );
   }
 
+  void goUp() => scrollEventSink.add(true);
+
+  void goDown() => scrollEventSink.add(false);
+
   Widget get bottomBar {
-    final screenHeight = MediaQuery.of(context).size.height;
     return SizedBox(
         height: bottomNavigationBarHeight,
         child: Row(
           children: [
             Expanded(
                 child: IconButton(
-                    onPressed: () {
-                      scrollCtl.animateTo(
-                          scrollCtl.position.pixels - screenHeight,
-                          duration: const Duration(seconds: 1),
-                          curve: Curves.easeInOut);
-                    },
-                    icon: const Icon(Icons.arrow_upward))),
+                    onPressed: goUp, icon: const Icon(Icons.autorenew))),
             Expanded(
                 child: _ScrollLockButton(
-              scrollLock: () {
-                widget.scrollLock();
-                if (!mounted) return;
-                setState(() {
-                  scrollLock = true;
-                });
-              },
-              scrollUnlock: () {
-                widget.scrollUnlock();
-                if (!mounted) return;
-                setState(() {
-                  scrollLock = false;
-                });
-              },
-            )),
+                    scrollLockNotifier: scrollLockEventNotifier)),
             Expanded(
                 child: IconButton(
-                    onPressed: () {
-                      scrollCtl.animateTo(
-                          scrollCtl.position.pixels + screenHeight,
-                          duration: const Duration(seconds: 1),
-                          curve: Curves.easeInOut);
-                    },
-                    icon: const Icon(Icons.arrow_downward))),
+                    onPressed: goDown, icon: const Icon(Icons.arrow_downward))),
           ],
         ));
   }
@@ -84,10 +91,20 @@ class _DataPageState extends State<DataPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      body: SingleChildScrollView(
-          physics: scrollLock ? const NeverScrollableScrollPhysics() : null,
-          controller: scrollCtl,
-          child: content),
+      body: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (notification) {
+            // if the page is scrolled up, do nothing.
+            if (scrollCtl.position.pixels <= 0) return false;
+            // otherwise, disallow the indicator.
+            // to avoid 'setState during build' error.
+            notification.disallowIndicator();
+            return false;
+          },
+          child: SingleChildScrollView(
+              physics:
+                  isScrollLocked ? const NeverScrollableScrollPhysics() : null,
+              controller: scrollCtl,
+              child: content)),
       bottomNavigationBar: bottomBar,
     );
   }
@@ -96,15 +113,14 @@ class _DataPageState extends State<DataPage>
   void dispose() {
     widget.skeleton.dispose();
     scrollCtl.dispose();
+    scrollEventSink.close();
     super.dispose();
   }
 }
 
 class _ScrollLockButton extends StatefulWidget {
-  final void Function() scrollLock;
-  final void Function() scrollUnlock;
-  const _ScrollLockButton(
-      {required this.scrollLock, required this.scrollUnlock});
+  final StreamController<bool> scrollLockNotifier;
+  const _ScrollLockButton({required this.scrollLockNotifier});
 
   @override
   State<StatefulWidget> createState() => _ScrollLockButtonState();
@@ -114,6 +130,17 @@ class _ScrollLockButtonState extends State<_ScrollLockButton> {
   bool isLocked = false;
 
   @override
+  void initState() {
+    super.initState();
+    widget.scrollLockNotifier.stream.listen((isLocked) {
+      if (!mounted) return;
+      setState(() {
+        this.isLocked = isLocked;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final text = SizedBox(
         width: 100,
@@ -121,14 +148,7 @@ class _ScrollLockButtonState extends State<_ScrollLockButton> {
     final themeColor = Theme.of(context).colorScheme;
     final button = TextButton(
         onPressed: () {
-          setState(() {
-            isLocked = !isLocked;
-            if (isLocked) {
-              widget.scrollLock();
-            } else {
-              widget.scrollUnlock();
-            }
-          });
+          widget.scrollLockNotifier.add(!isLocked);
         },
         style: TextButton.styleFrom(
           backgroundColor: isLocked
@@ -142,7 +162,13 @@ class _ScrollLockButtonState extends State<_ScrollLockButton> {
 
 class _DataPageContent extends StatelessWidget {
   final skt.DataPage skeleton;
-  const _DataPageContent(this.skeleton);
+  final ScrollController pageScrollCtl;
+  final Stream<bool> scrollEventStream;
+  final StreamController<bool> scrollLockNotifier;
+  const _DataPageContent(this.skeleton,
+      {required this.scrollEventStream,
+      required this.pageScrollCtl,
+      required this.scrollLockNotifier});
 
   @override
   Widget build(BuildContext context) {
@@ -156,9 +182,16 @@ class _DataPageContent extends StatelessWidget {
         Text('Temporary Ticket', style: textTheme.headlineLarge),
         TemporaryTicketSection(skeleton),
         sectorMargin,
-        Text('Operation Section'),
+        Text('Data Operations', style: textTheme.headlineLarge),
+        OperationSection(skeleton),
         sectorMargin,
-        Text('Table Section'),
+        Text('Table Section', style: textTheme.headlineLarge),
+        TableSection(
+          skeleton,
+          parentalScrollCtl: pageScrollCtl,
+          scrollEventStream: scrollEventStream,
+          scrollLockNotifier: scrollLockNotifier,
+        ),
       ],
     );
   }

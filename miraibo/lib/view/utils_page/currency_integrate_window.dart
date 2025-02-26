@@ -25,6 +25,9 @@ class CurrencyIntegrateWindow extends StatefulWidget {
 class _CurrencyIntegrateWindowState
     extends IntegrateWindowPreState<CurrencyIntegrateWindow> {
   @override
+  String get windowTitle => 'Integrate Currency';
+
+  @override
   Widget replacerSelector() {
     return FutureBuilder(
         future: widget.skeleton.getOptions(),

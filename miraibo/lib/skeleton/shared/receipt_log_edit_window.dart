@@ -147,4 +147,3 @@ class MockReceiptLogEditWindow implements ReceiptLogEditWindow {
   }
 }
 // </mock>
-

@@ -20,7 +20,7 @@ class ValedContainer extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [valeColor, valeColor.withOpacity(0)]),
+            colors: [valeColor, valeColor.withAlpha(0)]),
       ),
     );
     final lowerVale = Container(
@@ -29,7 +29,7 @@ class ValedContainer extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [valeColor, valeColor.withOpacity(0)]),
+            colors: [valeColor, valeColor.withAlpha(0)]),
       ),
     );
     final rightVale = Container(
@@ -38,7 +38,7 @@ class ValedContainer extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.centerRight,
             end: Alignment.centerLeft,
-            colors: [valeColor, valeColor.withOpacity(0)]),
+            colors: [valeColor, valeColor.withAlpha(0)]),
       ),
     );
     final leftVale = Container(
@@ -47,7 +47,7 @@ class ValedContainer extends StatelessWidget {
         gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: [valeColor, valeColor.withOpacity(0)]),
+            colors: [valeColor, valeColor.withAlpha(0)]),
       ),
     );
     final valedContent = Stack(children: [
@@ -82,24 +82,12 @@ class ValedList extends StatelessWidget {
       valeSize: EdgeInsets.only(top: upperValeHeight, bottom: lowerValeHeight),
       valeColor: valeColor,
       child: ListView.builder(
+        padding: EdgeInsets.only(top: upperValeHeight, bottom: lowerValeHeight),
         itemBuilder: (context, index) {
-          // the first item is a dummy to avoid vale at the top
-          if (index == 0) {
-            return SizedBox(height: upperValeHeight);
-          }
-          // omit the dummy item from the index
-          index -= 1;
-
-          // the last item is a dummy to avoid vale at the bottom
-          if (index == itemCount) {
-            return SizedBox(height: lowerValeHeight);
-          }
-
           // return null when the index is out of range
-          if (index > itemCount) {
+          if (index >= itemCount) {
             return null;
           }
-
           return builder(context, index);
         },
       ),

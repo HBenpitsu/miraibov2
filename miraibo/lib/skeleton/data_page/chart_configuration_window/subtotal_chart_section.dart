@@ -105,8 +105,7 @@ class MockSubtotalChartSection implements SubtotalChartSection {
     currentScheme = SubtotalChartScheme(
         currency: currencyList[currencyId],
         viewportRange: viewportRange,
-        categories:
-            categoryIds.map((id) => categoryList[id]).toList(growable: false),
+        categories: categoryIds.map((id) => categoryList[id]).toList(),
         intervalInDays: intervalInDays);
   }
 

@@ -8,6 +8,7 @@ abstract class EditWindowState<T extends StatefulWidget> extends State<T> {
   Future<Widget> form();
   Object? get currentScheme;
   void onChanged(Object currentScheme);
+  void onDelete();
   String get title;
 
   /// return null if valid
@@ -36,28 +37,35 @@ abstract class EditWindowState<T extends StatefulWidget> extends State<T> {
     Navigator.of(context).pop();
   }
 
+  void _delete() {
+    onDelete();
+    Navigator.of(context).pop();
+  }
+
   Widget actionButtons() {
     return Padding(
         padding: const EdgeInsets.all(actionButtonPadding),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const Spacer(flex: 1),
             Expanded(
-                flex: 2,
                 child: TextButton(
-                  onPressed: _cancel,
-                  child: const Text('Cancel'),
-                )),
+              onPressed: _cancel,
+              child: const Text('Cancel'),
+            )),
+            const SizedBox(width: 5),
             Expanded(
-                flex: 2,
                 child: TextButton(
-                  onPressed: _save,
-                  child: const Text('Save'),
-                )),
-            const Spacer(
-              flex: 1,
-            ),
+              onPressed: _delete,
+              child: const Text('Delete',
+                  style: TextStyle(color: Colors.redAccent)),
+            )),
+            const SizedBox(width: 5),
+            Expanded(
+                child: TextButton(
+              onPressed: _save,
+              child: const Text('Save'),
+            )),
           ],
         ));
   }
