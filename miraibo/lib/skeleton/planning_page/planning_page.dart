@@ -1,6 +1,6 @@
 import 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
 export 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
-export 'package:miraibo/skeleton/planning_page/daily_screen/daily_screen.dart';
+export 'package:miraibo/skeleton/planning_page/daily_screen.dart';
 
 // <interface>
 /// plannning page consists of two screens: monthly screen and daily screen.

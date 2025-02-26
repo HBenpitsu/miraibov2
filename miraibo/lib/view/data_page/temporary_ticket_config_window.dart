@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window/temporary_ticket_config_window.dart'
+import 'package:miraibo/skeleton/data_page/temporary_ticket_config_window.dart'
     as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/modal_window.dart';

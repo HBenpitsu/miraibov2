@@ -1,7 +1,7 @@
 import 'package:miraibo/skeleton/data_page/data_page.dart';
 export 'package:miraibo/skeleton/data_page/data_page.dart';
-import 'package:miraibo/skeleton/main_page/main_page.dart';
-export 'package:miraibo/skeleton/main_page/main_page.dart';
+import 'package:miraibo/skeleton/main_page.dart';
+export 'package:miraibo/skeleton/main_page.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart';
 export 'package:miraibo/skeleton/planning_page/planning_page.dart';
 import 'package:miraibo/skeleton/utils_page.dart';

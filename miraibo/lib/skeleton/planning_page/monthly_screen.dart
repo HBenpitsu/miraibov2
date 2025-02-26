@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:miraibo/dto/dto.dart';
-import 'package:miraibo/skeleton/planning_page/daily_screen/daily_screen.dart';
+
+import 'package:miraibo/skeleton/planning_page/daily_screen.dart';
 
 // <interface>
 /// Monthly screen consists of infinite set of monthly calenders.

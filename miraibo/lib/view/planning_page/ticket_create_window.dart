@@ -2,8 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/modal_window.dart';
-import 'package:miraibo/skeleton/planning_page/daily_screen/ticket_create_window/ticket_create_window.dart'
-    as skt;
+import 'package:miraibo/skeleton/planning_page/daily_screen.dart' as skt;
 import 'package:miraibo/view/shared/components/receipt_log_config_section_with_presets.dart';
 import 'package:miraibo/view/shared/components/ticket_scheme_config_section.dart';
 import 'package:miraibo/view/shared/constants.dart';

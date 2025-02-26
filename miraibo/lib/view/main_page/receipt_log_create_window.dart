@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/skeleton/main_page/receipt_log_create_window.dart'
-    as skt;
+import 'package:miraibo/skeleton/main_page.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/modal_window.dart';
 import 'package:miraibo/view/shared/components/receipt_log_config_section_with_presets.dart';

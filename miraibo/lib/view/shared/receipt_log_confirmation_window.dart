@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/skeleton/shared/receipt_log_confirmation_window.dart'
-    as skt;
+import 'package:miraibo/skeleton/shared.dart' as skt;
 import 'package:miraibo/view/shared/components/modal_window.dart';
 import 'package:miraibo/view/shared/components/ticket.dart';
 import 'package:miraibo/view/shared/constants.dart';

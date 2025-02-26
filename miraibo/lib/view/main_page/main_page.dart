@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/view/main_page/receipt_log_create_window.dart';
 import 'package:miraibo/view/shared/components/ticket_container.dart';
-import 'package:miraibo/skeleton/main_page/main_page.dart' as skt;
+import 'package:miraibo/skeleton/main_page.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/constants.dart';
 import 'package:miraibo/view/shared/receipt_log_confirmation_window.dart';

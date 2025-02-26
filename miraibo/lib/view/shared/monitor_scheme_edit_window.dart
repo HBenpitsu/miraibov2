@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/skeleton/shared/monitor_scheme_edit_window.dart' as skt;
+import 'package:miraibo/skeleton/shared.dart' as skt;
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/edit_window_pre_state.dart';
 import 'package:miraibo/view/shared/components/ticket_scheme_config_section.dart';

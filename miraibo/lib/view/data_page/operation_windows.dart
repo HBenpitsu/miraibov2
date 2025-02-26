@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miraibo/skeleton/data_page/operation_windows.dart' as skt;
+import 'package:miraibo/skeleton/data_page/data_page.dart' as skt;
 import 'package:miraibo/view/shared/components/modal_window.dart';
 import 'package:miraibo/view/shared/constants.dart';
 import 'package:file_picker/file_picker.dart';
