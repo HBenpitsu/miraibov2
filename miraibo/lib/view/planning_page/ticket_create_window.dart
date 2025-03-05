@@ -171,7 +171,8 @@ class _MonitorConfigTabState extends State<MonitorConfigTab> {
       );
       return false;
     }
-    if (currentScheme!.categories.isEmpty) {
+    if (!currentScheme!.isAllCategoriesIncluded &&
+        currentScheme!.categories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('At least one category must be selected.'),
@@ -183,7 +184,8 @@ class _MonitorConfigTabState extends State<MonitorConfigTab> {
         categoryIds: currentScheme!.categories.map((e) => e.id).toList(),
         period: currentScheme!.period,
         displayOption: currentScheme!.displayOption,
-        currencyId: currentScheme!.currency.id);
+        currencyId: currentScheme!.currency.id,
+        isAllCategoriesIncluded: currentScheme!.isAllCategoriesIncluded);
     return true;
   }
 
@@ -356,16 +358,8 @@ class _EstimationConfigTabState extends State<EstimationConfigTab> {
       );
       return false;
     }
-    if (currentScheme!.categories.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('At least one category must be selected.'),
-        ),
-      );
-      return false;
-    }
     widget.skeleton.createEstimationScheme(
-        categoryIds: currentScheme!.categories.map((e) => e.id).toList(),
+        categoryId: currentScheme!.category.id,
         period: currentScheme!.period,
         displayOption: currentScheme!.displayOption,
         currencyId: currentScheme!.currency.id);

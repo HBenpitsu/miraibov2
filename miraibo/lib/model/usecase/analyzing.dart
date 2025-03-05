@@ -1,4 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 /// {@template estimateWithScheme}
 /// estimates the price of the given schedule with the given estimation scheme.

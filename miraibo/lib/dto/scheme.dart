@@ -1,6 +1,6 @@
 import 'package:miraibo/dto/general.dart';
 import 'package:miraibo/dto/schedule.dart';
-import 'package:miraibo/dto/enumration.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 class ReceiptLogSchemeInstance {
   // there is an id field in addition to the fields in ReceiptLogScheme
@@ -101,25 +101,25 @@ class EstimationScheme {
   final OpenPeriod period;
   final Currency currency;
   final EstimationDisplayOption displayOption;
-  final List<Category> categories;
+  final Category category;
 
   const EstimationScheme(
       {required this.period,
       required this.currency,
       required this.displayOption,
-      required this.categories});
+      required this.category});
 
   EstimationScheme copyWith({
     OpenPeriod? period,
     Currency? currency,
     EstimationDisplayOption? displayOption,
-    List<Category>? categories,
+    Category? category,
   }) {
     return EstimationScheme(
       period: period ?? this.period,
       currency: currency ?? this.currency,
       displayOption: displayOption ?? this.displayOption,
-      categories: categories ?? this.categories,
+      category: category ?? this.category,
     );
   }
 }
@@ -129,24 +129,30 @@ class MonitorScheme {
   final Currency currency;
   final MonitorDisplayOption displayOption;
   final List<Category> categories;
+  final bool isAllCategoriesIncluded;
 
-  const MonitorScheme(
-      {required this.period,
-      required this.currency,
-      required this.displayOption,
-      required this.categories});
+  const MonitorScheme({
+    required this.period,
+    required this.currency,
+    required this.displayOption,
+    required this.categories,
+    required this.isAllCategoriesIncluded,
+  });
 
   MonitorScheme copyWith({
     OpenPeriod? period,
     Currency? currency,
     MonitorDisplayOption? displayOption,
     List<Category>? categories,
+    bool? isAllCategoriesIncluded,
   }) {
     return MonitorScheme(
       period: period ?? this.period,
       currency: currency ?? this.currency,
       displayOption: displayOption ?? this.displayOption,
       categories: categories ?? this.categories,
+      isAllCategoriesIncluded:
+          isAllCategoriesIncluded ?? this.isAllCategoriesIncluded,
     );
   }
 }

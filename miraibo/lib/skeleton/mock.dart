@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:miraibo/skeleton/root.dart';
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 import 'dart:developer' show log;
 import 'dart:math' show Random;
@@ -75,15 +76,18 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
       currency: currencyList[0],
       displayOption: MonitorDisplayOption.meanInDays,
       categories: categoryList.sublist(0, 5),
+      isAllCategoriesIncluded: false,
     ));
   }
 
   @override
-  Future<void> updateMonitorScheme(
-      {required List<int> categoryIds,
-      required OpenPeriod period,
-      required MonitorDisplayOption displayOption,
-      required int currencyId}) async {
+  Future<void> updateMonitorScheme({
+    required List<int> categoryIds,
+    required bool isAllCategoriesIncluded,
+    required OpenPeriod period,
+    required MonitorDisplayOption displayOption,
+    required int currencyId,
+  }) async {
     log('updateMonitorScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
@@ -101,10 +105,12 @@ class MockMonitorSchemeEditWindow implements MonitorSchemeEditWindow {
         period: period,
         displayOption: displayOption,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
-        categoryNames: categoryList
-            .where((element) => categoryIds.contains(element.id))
-            .map((e) => e.name)
-            .toList(growable: false),
+        categoryNames: isAllCategoriesIncluded
+            ? []
+            : categoryList
+                .where((element) => categoryIds.contains(element.id))
+                .map((e) => e.name)
+                .toList(growable: false),
       ));
     }
     tickets.addAll(newTickets);
@@ -658,17 +664,17 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
       ),
       currency: currencyList[0],
       displayOption: EstimationDisplayOption.perWeek,
-      categories: categoryList.sublist(0, 5),
+      category: categoryList[0],
     ));
   }
 
   @override
   Future<void> updateEstimationScheme(
-      {required List<int> categoryIds,
+      {required int categoryId,
       required OpenPeriod period,
       required EstimationDisplayOption displayOption,
       required int currencyId}) async {
-    log('updateEstimationScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
+    log('updateEstimationScheme is called with categoryIds: $categoryId, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     List<Ticket> newTickets = [];
     while (tickets.isNotEmpty) {
       final ticket = tickets.removeAt(0);
@@ -685,10 +691,7 @@ class MockEstimationSchemeEditWindow implements EstimationSchemeEditWindow {
         period: period,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
         displayOption: displayOption,
-        categoryNames: categoryList
-            .where((element) => categoryIds.contains(element.id))
-            .map((e) => e.name)
-            .toList(growable: false),
+        categoryName: categoryList[categoryId].name,
       ));
     }
     tickets.addAll(newTickets);
@@ -745,21 +748,6 @@ class MockDailyScreen implements DailyScreen {
           displayOption: MonitorDisplayOption.meanInDays,
           categoryNames: [
             'list of categories aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-          ]),
-      MonitorTicket(
-          id: 1,
-          period: endlessPeriod,
-          price: price,
-          displayOption: MonitorDisplayOption.quartileMeanInDays,
-          categoryNames: [
-            'category1',
-            'category2',
-            'category3',
-            'category4',
-            'category5',
-            'category6',
-            'category7',
-            'category8',
           ]),
       MonitorTicket(
           id: 2,
@@ -851,25 +839,25 @@ class MockDailyScreen implements DailyScreen {
           period: startlessPeriod,
           price: price,
           displayOption: EstimationDisplayOption.perDay,
-          categoryNames: ['list of categories']),
+          categoryName: 'category0'),
       EstimationTicket(
           id: 13,
           period: endlessPeriod,
           price: price,
           displayOption: EstimationDisplayOption.perMonth,
-          categoryNames: ['category1', 'category2']),
+          categoryName: 'category0'),
       EstimationTicket(
           id: 14,
           period: closedPeriod,
           price: price,
           displayOption: EstimationDisplayOption.perWeek,
-          categoryNames: []),
+          categoryName: 'category0'),
       EstimationTicket(
           id: 15,
           period: closedPeriod,
           price: price,
           displayOption: EstimationDisplayOption.perYear,
-          categoryNames: []),
+          categoryName: 'category0'),
       ReceiptLogTicket(
           id: 16,
           date: Date(year, month, day),
@@ -1209,17 +1197,20 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
     log('getDefaultCurrency is called');
     return MonitorScheme(
         categories: categoryList,
+        isAllCategoriesIncluded: true,
         currency: currencyList[0],
         period: const OpenPeriod(begins: null, ends: null),
         displayOption: MonitorDisplayOption.summation);
   }
 
   @override
-  Future<void> createMonitorScheme(
-      {required List<int> categoryIds,
-      required OpenPeriod period,
-      required MonitorDisplayOption displayOption,
-      required int currencyId}) async {
+  Future<void> createMonitorScheme({
+    required List<int> categoryIds,
+    required bool isAllCategoriesIncluded,
+    required OpenPeriod period,
+    required MonitorDisplayOption displayOption,
+    required int currencyId,
+  }) async {
     log('createMonitorScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(MonitorTicket(
@@ -1227,9 +1218,11 @@ class MockMonitorSchemeSection implements MonitorSchemeSection {
         period: period,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
         displayOption: displayOption,
-        categoryNames: categoryIds
-            .map((id) => categoryList[id].name)
-            .toList(growable: false)));
+        categoryNames: isAllCategoriesIncluded
+            ? []
+            : categoryIds
+                .map((id) => categoryList[id].name)
+                .toList(growable: false)));
     ticketsStream.add(tickets);
   }
 
@@ -1275,25 +1268,23 @@ class MockEstimationSchemeSection implements EstimationSchemeSection {
         period: OpenPeriod(begins: null, ends: null),
         currency: currencyList[0],
         displayOption: EstimationDisplayOption.perDay,
-        categories: categoryList);
+        category: categoryList[0]);
   }
 
   @override
   Future<void> createEstimationScheme(
-      {required List<int> categoryIds,
+      {required int categoryId,
       required OpenPeriod period,
       required EstimationDisplayOption displayOption,
       required int currencyId}) async {
-    log('createEstimationScheme is called with categoryIds: $categoryIds, period: $period, displayOption: $displayOption, currencyId: $currencyId');
+    log('createEstimationScheme is called with categoryIds: $categoryId, period: $period, displayOption: $displayOption, currencyId: $currencyId');
     final id = DateTime.now().millisecondsSinceEpoch * 10 + random.nextInt(10);
     tickets.add(EstimationTicket(
         id: id,
         period: period,
         price: Price(amount: 1000, symbol: currencyList[currencyId].symbol),
         displayOption: displayOption,
-        categoryNames: categoryIds
-            .map((id) => categoryList[id].name)
-            .toList(growable: false)));
+        categoryName: categoryList[categoryId].name));
     ticketsStream.add(tickets);
   }
 
@@ -1321,7 +1312,6 @@ class MockMainPage implements MainPage {
     final twoMonthAgo = now.subtract(const Duration(days: 2 * 31)).cutOffTime();
     final twoMonthLater = now.add(const Duration(days: 2 * 31)).cutOffTime();
     final startlessPeriod = OpenPeriod(begins: null, ends: twoMonthLater);
-    final endlessPeriod = OpenPeriod(begins: twoMonthAgo, ends: null);
     final closedPeriod = OpenPeriod(begins: twoMonthAgo, ends: twoMonthLater);
     const price = Price(amount: 1000, symbol: 'JPY');
     // </prepare parameters>
@@ -1334,12 +1324,6 @@ class MockMainPage implements MainPage {
           price: price,
           displayOption: MonitorDisplayOption.meanInDays,
           categoryNames: ['list of categories']),
-      MonitorTicket(
-          id: 1,
-          period: endlessPeriod,
-          price: price,
-          displayOption: MonitorDisplayOption.quartileMeanInDays,
-          categoryNames: ['category1', 'category2']),
       MonitorTicket(
           id: 2,
           period: closedPeriod,
@@ -1670,7 +1654,7 @@ class MockDataPage implements DataPage {
               period: period,
               price: price,
               displayOption: EstimationDisplayOption.perDay,
-              categoryNames: []);
+              categoryName: 'category0');
         case TemporaryMonitorScheme _:
           return const TemporaryMonitorTicket(
               period: period,
@@ -1999,12 +1983,18 @@ class MockTemporaryMonitorSchemeSection
         categories: categoryList,
         period: const OpenPeriod(begins: null, ends: null),
         displayOption: MonitorDisplayOption.meanInDays,
-        currency: currencyList[0]);
+        currency: currencyList[0],
+        isAllCategoriesIncluded: true);
   }
 
   @override
-  Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayOption displayOption, int currencyId) async {
+  Future<void> applyMonitorScheme(
+    List<int> categoryIds,
+    OpenPeriod period,
+    MonitorDisplayOption displayOption,
+    int currencyId,
+    bool isAllCategoriesIncluded,
+  ) async {
     log('applyMonitorScheme is called');
     // cast bunch of parameters to the temporary monitor scheme
     currentScheme = TemporaryMonitorScheme(
@@ -2012,7 +2002,8 @@ class MockTemporaryMonitorSchemeSection
             categoryIds.map((id) => categoryList[id]).toList(growable: false),
         period: period,
         displayOption: displayOption,
-        currency: currencyList[currencyId]);
+        currency: currencyList[currencyId],
+        isAllCategoriesIncluded: isAllCategoriesIncluded);
   }
 
   @override
@@ -2065,21 +2056,19 @@ class MockTemporaryEstimationSchemeSection
     }
     // provide a mock-default scheme
     return TemporaryEstimationScheme(
-        categories: categoryList,
+        category: categoryList[0],
         currency: currencyList[0],
         displayOption: EstimationDisplayOption.perMonth,
         period: const OpenPeriod(begins: null, ends: null));
   }
 
   @override
-  Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
+  Future<void> applyMonitorScheme(int categoryId, OpenPeriod period,
       EstimationDisplayOption displayOption, int currencyId) async {
     log('applyMonitorScheme is called');
     // cast bunch of parameters to the temporary estimation scheme
     currentScheme = TemporaryEstimationScheme(
-        categories: categoryList
-            .where((element) => categoryIds.contains(element.id))
-            .toList(growable: false),
+        category: categoryList[0],
         currency: currencyList[currencyId],
         displayOption: displayOption,
         period: period);
@@ -2183,18 +2172,20 @@ class MockSubtotalChartSection implements SubtotalChartSection {
         currency: currencyList[0],
         viewportRange: closedPeriod,
         intervalInDays: 7,
-        categories: categoryList);
+        categories: categoryList,
+        isAllCategoriesIncluded: true);
   }
 
   @override
-  Future<void> applyScheme(List<int> categoryIds, int currencyId,
-      ClosedPeriod viewportRange, int intervalInDays) async {
+  Future<void> applyScheme(List<int> categoryIds, bool isAllCategoriesIncluded,
+      int currencyId, ClosedPeriod viewportRange, int intervalInDays) async {
     log('MockSubtotalChartSection: applyScheme called with categoryIds: $categoryIds, currencyId: $currencyId, viewportRange: $viewportRange, intervalInDays: $intervalInDays');
     // cast bunch of parameters to SubtotalChartScheme and set it to currentScheme
     currentScheme = SubtotalChartScheme(
         currency: currencyList[currencyId],
         viewportRange: viewportRange,
         categories: categoryIds.map((id) => categoryList[id]).toList(),
+        isAllCategoriesIncluded: isAllCategoriesIncluded,
         intervalInDays: intervalInDays);
   }
 
@@ -2256,19 +2247,25 @@ class MockPieChartSection implements PieChartSection {
     return PieChartScheme(
         currency: currencyList[0],
         analysisRange: period,
-        categories: categoryList);
+        categories: categoryList,
+        isAllCategoriesIncluded: true);
   }
 
   @override
   Future<void> applyScheme(
-      int currencyId, OpenPeriod period, List<int> categoryIds) async {
+    int currencyId,
+    OpenPeriod period,
+    List<int> categoryIds,
+    bool isAllCategoriesIncluded,
+  ) async {
     log('applyScheme is called');
     // cast bunch of parameters to PieChartScheme and set it to currentScheme
     currentScheme = PieChartScheme(
         currency: currencyList[currencyId],
         analysisRange: period,
         categories:
-            categoryIds.map((id) => categoryList[id]).toList(growable: false));
+            categoryIds.map((id) => categoryList[id]).toList(growable: false),
+        isAllCategoriesIncluded: isAllCategoriesIncluded);
   }
 
   @override
@@ -2333,6 +2330,7 @@ class MockAccumulationChartSection implements AccumulationChartSection {
         analysisRange: period,
         viewportRange: closedPeriod,
         categories: categoryList,
+        isAllCategoriesIncluded: true,
         intervalInDays: 1);
   }
 
@@ -2342,6 +2340,7 @@ class MockAccumulationChartSection implements AccumulationChartSection {
       OpenPeriod analysisRange,
       ClosedPeriod viewportRange,
       List<int> categoryIds,
+      bool isAllCategoriesIncluded,
       int intervalInDays) async {
     log('applyScheme is called');
     // cast bunch of parameters to AccumulationChartScheme and set it to currentScheme
@@ -2351,6 +2350,7 @@ class MockAccumulationChartSection implements AccumulationChartSection {
         viewportRange: viewportRange,
         categories:
             categoryIds.map((id) => categoryList[id]).toList(growable: false),
+        isAllCategoriesIncluded: isAllCategoriesIncluded,
         intervalInDays: intervalInDays);
   }
 

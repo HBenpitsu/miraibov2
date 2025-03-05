@@ -1,0 +1,184 @@
+import 'package:miraibo/shared/enumeration.dart';
+
+-- <Decorators>
+
+CREATE TABLE categories (
+    _id INTEGER PRIMARY KEY,
+    _name TEXT NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE TABLE currencies (
+    _id INTEGER PRIMARY KEY,
+    _symbol TEXT NOT NULL,
+    _ratio REAL NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+-- </Decorators>
+
+-- <Ticket Records>
+-- <receiptLogs>
+
+CREATE TABLE receiptLogs (
+    _id INTEGER PRIMARY KEY,
+    _date DATE NOT NULL,
+    _amount REAL NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _description TEXT NOT NULL,
+    _categoryId INTEGER NOT NULL REFERENCES categories(_id),
+    _confirmed BOOLEAN NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX receiptLogs_date ON receiptLogs(_date);
+
+-- </receiptLogs>
+-- <plans>
+-- <oneshotPlans>
+
+CREATE TABLE oneshotPlans (
+    _id INTEGER PRIMARY KEY,
+    _amount REAL NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _description TEXT NOT NULL,
+    _categoryId INTEGER NOT NULL REFERENCES categories(_id),
+    _date DATE NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX oneshotPlans_date ON oneshotPlans(_date);
+
+-- </oneshotPlans>
+-- <intervalPlans>
+
+CREATE TABLE intervalPlans (
+    _id INTEGER PRIMARY KEY,
+    _amount REAL NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _description TEXT NOT NULL,
+    _categoryId INTEGER NOT NULL REFERENCES categories(_id),
+    _interval INTEGER NOT NULL,
+    _origin DATE NOT NULL,
+    _periodBegins DATE NOT NULL,
+    _periodEnds DATE NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX intervalPlans_origin ON intervalPlans(_origin);
+CREATE INDEX intervalPlans_periodBegins ON intervalPlans(_periodBegins);
+CREATE INDEX intervalPlans_periodEnds ON intervalPlans(_periodEnds);
+
+-- </intervalPlans>
+-- <weeklyPlans>
+
+CREATE TABLE weeklyPlans (
+    _id INTEGER PRIMARY KEY,
+    _amount REAL NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _description TEXT NOT NULL,
+    _categoryId INTEGER NOT NULL REFERENCES categories(_id),
+    _sunday BOOLEAN NOT NULL,
+    _monday BOOLEAN NOT NULL,
+    _tuesday BOOLEAN NOT NULL,
+    _wednesday BOOLEAN NOT NULL,
+    _thursday BOOLEAN NOT NULL,
+    _friday BOOLEAN NOT NULL,
+    _saturday BOOLEAN NOT NULL,
+    _periodBegins DATE NOT NULL,
+    _periodEnds DATE NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX weeklyPlans_periodBegins ON weeklyPlans(_periodBegins);
+CREATE INDEX weeklyPlans_periodEnds ON weeklyPlans(_periodEnds);
+
+-- </weeklyPlans>
+-- <monthlyPlans>
+
+CREATE TABLE monthlyPlans (
+    _id INTEGER PRIMARY KEY,
+    _amount REAL NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _description TEXT NOT NULL,
+    _categoryId INTEGER NOT NULL REFERENCES categories(_id),
+    _offset INTEGER NOT NULL,
+    _periodBegins DATE NOT NULL,
+    _periodEnds DATE NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX monthlyPlans_periodBegins ON monthlyPlans(_periodBegins);
+CREATE INDEX monthlyPlans_periodEnds ON monthlyPlans(_periodEnds);
+
+-- </monthlyPlans>
+-- <annualPlans>
+
+CREATE TABLE annualPlans (
+    _id INTEGER PRIMARY KEY,
+    _amount REAL NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _description TEXT NOT NULL,
+    _categoryId INTEGER NOT NULL REFERENCES categories(_id),
+    _origin DATE NOT NULL,
+    _periodBegins DATE NOT NULL,
+    _periodEnds DATE NOT NULL,
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX annualPlans_origin ON annualPlans(_origin);
+CREATE INDEX annualPlans_periodBegins ON annualPlans(_periodBegins);
+
+-- </annualPlans>
+-- </plans>
+-- <estimationSchemes>
+
+CREATE TABLE estimationSchemes (
+    _id INTEGER PRIMARY KEY,
+    _categoryId INTEGER NOT NULL REFERENCES categories(_id),
+    _periodBegins DATE NOT NULL,
+    _periodEnds DATE NOT NULL,
+    _displayOption ENUM(EstimationDisplayOption) NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX estimationSchemes_periodBegins ON estimationSchemes(_periodBegins);
+CREATE INDEX estimationSchemes_periodEnds ON estimationSchemes(_periodEnds);
+
+-- </estimationSchemes>
+-- <monitorSchemes>
+
+CREATE TABLE monitorSchemes (
+    _id INTEGER PRIMARY KEY,
+    _periodBegins DATE NOT NULL,
+    _periodEnds DATE NOT NULL,
+    _displayOption ENUM(MonitorDisplayOption) NOT NULL,
+    _currencyId INTEGER NOT NULL REFERENCES currencies(_id),
+    _createdAt DATETIME NOT NULL,
+    _updatedAt DATETIME NOT NULL
+);
+
+CREATE INDEX monitorSchemes_periodBegins ON monitorSchemes(_periodBegins);
+CREATE INDEX monitorSchemes_periodEnds ON monitorSchemes(_periodEnds);
+
+CREATE TABLE monitorSchemeCategoryLinkers (
+    _scheme INTEGER NOT NULL REFERENCES monitorSchemes(_id),
+    _category INTEGER NOT NULL REFERENCES categories(_id),
+    _createdAt DATETIME NOT NULL,
+    PRIMARY KEY (_scheme, _category)
+);
+
+CREATE INDEX monitorSchemeCategoryLinkers_scheme ON monitorSchemeCategoryLinkers(_scheme);
+
+-- </monitorSchemes>
+-- </Ticket Records>

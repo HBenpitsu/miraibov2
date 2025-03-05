@@ -80,8 +80,13 @@ abstract interface class AccumulationChartSection {
 
   // <actions>
   /// Apply the specified accumulation chart scheme to [currentScheme].
-  Future<void> applyScheme(int currencyId, OpenPeriod analysisRange,
-      ClosedPeriod viewportRange, List<int> categoryIds, int intervalInDays);
+  Future<void> applyScheme(
+      int currencyId,
+      OpenPeriod analysisRange,
+      ClosedPeriod viewportRange,
+      List<int> categoryIds,
+      bool isAllCategoriesIncluded,
+      int intervalInDays);
   // </actions>
 
   // <navigators>
@@ -120,7 +125,11 @@ abstract interface class PieChartSection {
 
   // <actions>
   Future<void> applyScheme(
-      int currencyId, OpenPeriod analysisRange, List<int> categoryIds);
+    int currencyId,
+    OpenPeriod analysisRange,
+    List<int> categoryIds,
+    bool isAllCategoriesIncluded,
+  );
   // </actions>
 
   // <navigators>
@@ -159,8 +168,13 @@ abstract interface class SubtotalChartSection {
   // </presenters>
 
   // <actions>
-  Future<void> applyScheme(List<int> categoryIds, int currencyId,
-      ClosedPeriod viewportRange, int intervalInDays);
+  Future<void> applyScheme(
+    List<int> categoryIds,
+    bool isAllCategoriesIncluded,
+    int currencyId,
+    ClosedPeriod viewportRange,
+    int intervalInDays,
+  );
   // </actions>
 
   // <navigators>

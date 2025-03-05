@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 import 'package:miraibo/skeleton/planning_page/monthly_screen.dart';
 
@@ -127,7 +128,7 @@ abstract interface class EstimationSchemeEditWindow {
   /// Update the estimation scheme with the specified parameters.
   /// [targetSchemeId] is used to identify the estimation scheme to be updated.
   Future<void> updateEstimationScheme(
-      {required List<int> categoryIds,
+      {required int categoryId,
       required OpenPeriod period,
       required EstimationDisplayOption displayOption,
       required int currencyId});
@@ -261,7 +262,7 @@ abstract interface class EstimationSchemeSection {
   // <controllers>
   /// create the estimation scheme with the specified scheme.
   Future<void> createEstimationScheme(
-      {required List<int> categoryIds,
+      {required int categoryId,
       required OpenPeriod period,
       required EstimationDisplayOption displayOption,
       required int currencyId});
@@ -303,11 +304,13 @@ abstract interface class MonitorSchemeSection {
 
   // <controllers>
   /// create the monitor scheme with the specified scheme.
-  Future<void> createMonitorScheme(
-      {required List<int> categoryIds,
-      required OpenPeriod period,
-      required MonitorDisplayOption displayOption,
-      required int currencyId});
+  Future<void> createMonitorScheme({
+    required List<int> categoryIds,
+    required bool isAllCategoriesIncluded,
+    required OpenPeriod period,
+    required MonitorDisplayOption displayOption,
+    required int currencyId,
+  });
   // </controllers>
 
   // <navigators>

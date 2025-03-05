@@ -1,4 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 // <for ReceiptLog>
 

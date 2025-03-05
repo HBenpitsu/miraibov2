@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show compute;
 import 'package:miraibo/model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 Future<EstimationTicket> __estimateWithScheme(
     (List<int>, int, EstimationDisplayOption) param) {

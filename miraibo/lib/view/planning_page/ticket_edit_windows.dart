@@ -127,16 +127,13 @@ class _EstimationSchemeEditWindowState
     if (currentScheme == null) {
       return 'It is not initialized. Try again.';
     }
-    if (currentScheme!.categories.isEmpty) {
-      return 'At least one category must be selected.';
-    }
     return null;
   }
 
   @override
   void onChanged(covariant dto.EstimationScheme currentScheme) {
     widget.skeleton.updateEstimationScheme(
-        categoryIds: currentScheme.categories.map((e) => e.id).toList(),
+        categoryId: currentScheme.category.id,
         period: currentScheme.period,
         displayOption: currentScheme.displayOption,
         currencyId: currentScheme.currency.id);

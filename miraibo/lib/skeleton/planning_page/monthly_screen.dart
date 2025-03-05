@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 import 'package:miraibo/skeleton/planning_page/daily_screen.dart';
 

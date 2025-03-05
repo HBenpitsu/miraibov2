@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 export 'package:miraibo/skeleton/data_page/shared.dart';
 import 'package:miraibo/skeleton/data_page/chart_configuration_window.dart';
 export 'package:miraibo/skeleton/data_page/chart_configuration_window.dart';
@@ -170,13 +171,13 @@ class TemporaryEstimationTicket extends TemporaryTicket {
   final EstimationDisplayOption displayOption;
 
   /// empty when all categories are counted.
-  final List<String> categoryNames;
+  final String categoryName;
 
   const TemporaryEstimationTicket(
       {required this.period,
       required this.price,
       required this.displayOption,
-      required this.categoryNames});
+      required this.categoryName});
 }
 
 class TemporaryMonitorTicket extends TemporaryTicket {

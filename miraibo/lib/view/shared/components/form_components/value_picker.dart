@@ -263,13 +263,12 @@ class _InAppCalculatorWindow extends StatefulWidget {
 }
 
 class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
-  late String _expression;
+  String _expression = '';
   String get expression => _expression;
   set expression(String value) {
-    setState(() {
-      _expression = value;
-      expressionFieldTextCtl.text = _expression;
-    });
+    _expression = value;
+    expressionFieldTextCtl.text = _expression;
+    setState(() {});
   }
 
   /// the maximum number that can be interpreted correctly
@@ -294,8 +293,8 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
   @override
   void initState() {
     super.initState();
-    _expression = widget.initial;
     expressionFieldTextCtl = TextEditingController(text: widget.initial);
+    _expression = widget.initial;
     keyBoardCache = keyboard();
     memosCache =
         _Memos(memos: widget.memos, onTap: (memo) => insert(memo.toString()));
@@ -308,6 +307,7 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
       expression += value;
       return;
     }
+
     final before = expression.substring(0, selection.start);
     final after = expression.substring(selection.end);
     final cursor = before.length + value.length;
@@ -317,7 +317,6 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
     // we should wait a little to get 'expression' reflacted to the text field
     // otherwise, scroll offset will be outdated just after scrolling
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      expressionFieldFocusNode.requestFocus();
       expressionFieldTextCtl.selection =
           TextSelection.collapsed(offset: cursor);
 
@@ -325,6 +324,10 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
 
       final state = expressionFieldKey.currentState as EditableTextState;
       state.bringIntoView(TextPosition(offset: cursor));
+      // Code below is needed for Linux
+      // In Linux, bringIntoView causes corrupted selection
+      expressionFieldTextCtl.selection =
+          TextSelection.collapsed(offset: cursor);
     });
   }
 
@@ -361,7 +364,6 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
     // we should wait a little to get 'expression' reflacted to the text field
     // otherwise, scroll offset will be outdated just after scrolling
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      expressionFieldFocusNode.requestFocus();
       expressionFieldTextCtl.selection =
           TextSelection.collapsed(offset: cursor);
 
@@ -369,6 +371,10 @@ class _InAppCalculatorWindowState extends State<_InAppCalculatorWindow> {
 
       final state = expressionFieldKey.currentState as EditableTextState;
       state.bringIntoView(TextPosition(offset: cursor));
+      // Code below is needed for Linux
+      // In Linux, bringIntoView causes corrupted selection
+      expressionFieldTextCtl.selection =
+          TextSelection.collapsed(offset: cursor);
     });
   }
 

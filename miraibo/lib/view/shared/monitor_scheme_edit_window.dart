@@ -48,7 +48,8 @@ class _MonitorSchemeEditWindowState
     if (currentScheme == null) {
       return 'It is not initialized. Try again.';
     }
-    if (currentScheme!.categories.isEmpty) {
+    if (!currentScheme!.isAllCategoriesIncluded &&
+        currentScheme!.categories.isEmpty) {
       return 'At least one category must be selected.';
     }
     return null;
@@ -58,6 +59,7 @@ class _MonitorSchemeEditWindowState
   void onChanged(covariant dto.MonitorScheme currentScheme) {
     widget.skeleton.updateMonitorScheme(
         categoryIds: currentScheme.categories.map((e) => e.id).toList(),
+        isAllCategoriesIncluded: currentScheme.isAllCategoriesIncluded,
         period: currentScheme.period,
         displayOption: currentScheme.displayOption,
         currencyId: currentScheme.currency.id);

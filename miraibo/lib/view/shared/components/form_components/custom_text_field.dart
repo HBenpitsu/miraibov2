@@ -13,17 +13,18 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String)? invalidMessageBuilder;
   final bool rollback;
 
-  const CustomTextField(
-      {this.decoration,
-      this.controller,
-      this.focusNode,
-      this.keyboardType,
-      this.onEditCompleted,
-      this.multiline,
-      this.invalidMessageBuilder,
-      this.initialText,
-      this.rollback = true,
-      super.key});
+  const CustomTextField({
+    this.decoration,
+    this.controller,
+    this.focusNode,
+    this.keyboardType,
+    this.onEditCompleted,
+    this.multiline,
+    this.invalidMessageBuilder,
+    this.initialText,
+    this.rollback = true,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +35,7 @@ class CustomTextField extends StatelessWidget {
         onFocusChange: (hasFocus) {
           if (hasFocus) return;
           if (onEditCompleted == null) return;
-          final invalidMessage =
-              this.invalidMessageBuilder?.call(controller.text);
+          final invalidMessage = invalidMessageBuilder?.call(controller.text);
           if (invalidMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

@@ -53,7 +53,7 @@ class _TemporaryTicketSectionState extends State<TemporaryTicketSection> {
                 displayOption: ticket.displayOption,
                 period: ticket.period),
             skt.TemporaryEstimationTicket ticket => EstimateTicket(
-                categories: ticket.categoryNames,
+                category: ticket.categoryName,
                 amount: ticket.price.amount,
                 currencySymbol: ticket.price.symbol,
                 displayOption: ticket.displayOption,

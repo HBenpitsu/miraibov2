@@ -6,6 +6,7 @@ import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
 import 'package:miraibo/view/planning_page/bidirectional_infinite_list.dart';
 import 'package:miraibo/view/shared/constants.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 /// MonthlyScreen has infinite list of MonthlyCalendar widgets
 /// Main function of MonthlyScreen is to show a list of MonthlyCalendar widgets

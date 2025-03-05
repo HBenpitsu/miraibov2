@@ -200,15 +200,18 @@ class _AccumulationChartSectionState
   @override
   String? applyScheme() {
     if (currentScheme == null) return "It is not initialized yet. Try again.";
-    if (currentScheme!.categories.isEmpty) {
+    if (!currentScheme!.isAllCategoriesIncluded &&
+        currentScheme!.categories.isEmpty) {
       return "Select at least one category.";
     }
     widget.skeleton.applyScheme(
-        currentScheme!.currency.id,
-        currentScheme!.analysisRange,
-        currentScheme!.viewportRange,
-        currentScheme!.categories.map((cat) => cat.id).toList(),
-        currentScheme!.intervalInDays);
+      currentScheme!.currency.id,
+      currentScheme!.analysisRange,
+      currentScheme!.viewportRange,
+      currentScheme!.categories.map((cat) => cat.id).toList(),
+      currentScheme!.isAllCategoriesIncluded,
+      currentScheme!.intervalInDays,
+    );
     return null;
   }
 
@@ -233,7 +236,7 @@ class _AccumulationChartSectionState
                 category,
                 currentScheme!.categories.contains(category)
               )),
-          onChanged: (selection) {
+          onChanged: (selection, isAll) {
             currentScheme = currentScheme!.copyWith(categories: selection);
           }),
       sectorMargin,
@@ -303,14 +306,17 @@ class _SubtotalChartSectionState
   @override
   String? applyScheme() {
     if (currentScheme == null) return 'It is not initialized yet. Try again.';
-    if (currentScheme!.categories.isEmpty) {
+    if (!currentScheme!.isAllCategoriesIncluded &&
+        currentScheme!.categories.isEmpty) {
       return 'Select at least one category.';
     }
     widget.skeleton.applyScheme(
-        currentScheme!.categories.map((cat) => cat.id).toList(),
-        currentScheme!.currency.id,
-        currentScheme!.viewportRange,
-        currentScheme!.intervalInDays);
+      currentScheme!.categories.map((cat) => cat.id).toList(),
+      currentScheme!.isAllCategoriesIncluded,
+      currentScheme!.currency.id,
+      currentScheme!.viewportRange,
+      currentScheme!.intervalInDays,
+    );
     return null;
   }
 
@@ -335,8 +341,9 @@ class _SubtotalChartSectionState
                 category,
                 currentScheme!.categories.contains(category)
               )),
-          onChanged: (selection) {
-            currentScheme = currentScheme!.copyWith(categories: selection);
+          onChanged: (selection, isAll) {
+            currentScheme = currentScheme!.copyWith(
+                categories: selection, isAllCategoriesIncluded: isAll);
           }),
       sectorMargin,
       sectorTitle('Currency'),
@@ -397,13 +404,15 @@ class _PieChartSectionState extends _SectionPreState<_PieChartSection> {
   @override
   String? applyScheme() {
     if (currentScheme == null) return 'It is not initialized yet. Try again.';
-    if (currentScheme!.categories.isEmpty) {
+    if (!currentScheme!.isAllCategoriesIncluded &&
+        currentScheme!.categories.isEmpty) {
       return 'Select at least one category.';
     }
     widget.skeleton.applyScheme(
       currentScheme!.currency.id,
       currentScheme!.analysisRange,
       currentScheme!.categories.map((cat) => cat.id).toList(),
+      currentScheme!.isAllCategoriesIncluded,
     );
     return null;
   }
@@ -429,8 +438,9 @@ class _PieChartSectionState extends _SectionPreState<_PieChartSection> {
                 category,
                 currentScheme!.categories.contains(category)
               )),
-          onChanged: (selection) {
-            currentScheme = currentScheme!.copyWith(categories: selection);
+          onChanged: (selection, isAll) {
+            currentScheme = currentScheme!.copyWith(
+                categories: selection, isAllCategoriesIncluded: isAll);
           }),
       sectorMargin,
       sectorTitle('Currency'),

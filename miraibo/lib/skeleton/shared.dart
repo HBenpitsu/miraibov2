@@ -1,4 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 // <log edit window>
 // <interface>
@@ -127,11 +128,13 @@ abstract interface class MonitorSchemeEditWindow {
   // <controllers>
   /// update the monitor scheme with the specified parameters.
   /// [targetTicketId] is used to identify the monitor scheme to be updated.
-  Future<void> updateMonitorScheme(
-      {required List<int> categoryIds,
-      required OpenPeriod period,
-      required MonitorDisplayOption displayOption,
-      required int currencyId});
+  Future<void> updateMonitorScheme({
+    required List<int> categoryIds,
+    required bool isAllCategoriesIncluded,
+    required OpenPeriod period,
+    required MonitorDisplayOption displayOption,
+    required int currencyId,
+  });
 
   /// delete the monitor scheme.
   /// [targetTicketId] is used to identify the monitor scheme to be deleted.

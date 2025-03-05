@@ -1,6 +1,6 @@
 import 'package:miraibo/dto/general.dart';
 import 'package:miraibo/dto/schedule.dart';
-import 'package:miraibo/dto/enumration.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 // Note that these data classes are used to transfer data to 'show' ticket.
 // That means these data classes are not used to transfer data to 'create', 'edit', 'delete' ticket.
@@ -48,14 +48,14 @@ class EstimationTicket extends Ticket {
   final OpenPeriod period;
   final Price price;
   final EstimationDisplayOption displayOption;
-  final List<String> categoryNames;
+  final String categoryName;
 
   const EstimationTicket(
       {required this.id,
       required this.period,
       required this.price,
       required this.displayOption,
-      required this.categoryNames});
+      required this.categoryName});
 }
 
 class MonitorTicket extends Ticket {

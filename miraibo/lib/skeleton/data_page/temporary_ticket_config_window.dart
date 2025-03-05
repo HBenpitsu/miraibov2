@@ -1,4 +1,5 @@
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/shared/enumeration.dart';
 import 'package:miraibo/skeleton/data_page/shared.dart';
 export 'package:miraibo/skeleton/data_page/shared.dart';
 
@@ -79,7 +80,7 @@ abstract interface class TemporaryEstimationSchemeSection {
   // </presenters>
 
   // <actions>
-  Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
+  Future<void> applyMonitorScheme(int categoryId, OpenPeriod period,
       EstimationDisplayOption displayOption, int currencyId);
   // </actions>
 
@@ -129,8 +130,13 @@ abstract interface class TemporaryMonitorSchemeSection {
 
   // <actions>
   /// Apply the specified monitor scheme to [currentScheme].
-  Future<void> applyMonitorScheme(List<int> categoryIds, OpenPeriod period,
-      MonitorDisplayOption displayOption, int currencyId);
+  Future<void> applyMonitorScheme(
+    List<int> categoryIds,
+    OpenPeriod period,
+    MonitorDisplayOption displayOption,
+    int currencyId,
+    bool isAllCategoriesIncluded,
+  );
   // </actions>
 
   // <navigators>

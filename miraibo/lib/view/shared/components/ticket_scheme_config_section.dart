@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/view/shared/components/form_components/form_components.dart';
-import 'package:miraibo/view/shared/components/form_components/custom_text_field.dart';
 import 'package:miraibo/view/shared/components/valed_container.dart';
+import 'package:miraibo/shared/enumeration.dart';
 
 const sectionMargine = SizedBox(height: 10);
 const lineMargine = SizedBox(height: 5);
@@ -707,16 +707,12 @@ class _EstimationConfigSectionState extends State<EstimationConfigSection> {
     return Column(children: [
       Text('Target Categories', style: textTheme.headlineMedium),
       lineMargine,
-      expands(
-        MultiSelector<dto.Category>.fromTuple(items: widget.categoryOptions.map(
-          (e) {
-            final selected = current.categories.contains(e);
-            return (e.name, e, selected);
-          },
-        ), onChanged: (selected) {
-          current = current.copyWith(categories: selected);
-        }),
-      ),
+      expands(SingleSelector<dto.Category>.fromTuple(
+          initialIndex: 0,
+          items: widget.categoryOptions.map((cat) => (cat.name, cat)),
+          onChanged: (selected) {
+            current = current.copyWith(category: selected);
+          })),
       sectionMargine,
       Text('Vaild during', style: textTheme.headlineMedium),
       lineMargine,
@@ -742,18 +738,14 @@ class _EstimationConfigSectionState extends State<EstimationConfigSection> {
       Text('Display Option', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<dto.EstimationDisplayOption>.fromTuple(
+        SingleSelector<EstimationDisplayOption>.fromTuple(
             initialIndex: current.displayOption.index,
-            items: dto.EstimationDisplayOption.values.map((e) => (
+            items: EstimationDisplayOption.values.map((e) => (
                   switch (e) {
-                    dto.EstimationDisplayOption.perDay =>
-                      'Mean in days (Excluding Outliers)',
-                    dto.EstimationDisplayOption.perWeek =>
-                      'Mean in weeks (Excluding Outliers)',
-                    dto.EstimationDisplayOption.perMonth =>
-                      'Mean in months (Excluding Outliers)',
-                    dto.EstimationDisplayOption.perYear =>
-                      'Mean in years (Excluding Outliers)',
+                    EstimationDisplayOption.perDay => 'Average in days',
+                    EstimationDisplayOption.perWeek => 'Average in weeks',
+                    EstimationDisplayOption.perMonth => 'Average in months',
+                    EstimationDisplayOption.perYear => 'Average in years',
                   },
                   e
                 )),
@@ -806,8 +798,9 @@ class _MonitorConfigSectionState extends State<MonitorConfigSection> {
             final selected = current.categories.contains(e);
             return (e.name, e, selected);
           },
-        ), onChanged: (selected) {
-          current = current.copyWith(categories: selected);
+        ), onChanged: (selected, isAll) {
+          current = current.copyWith(
+              categories: selected, isAllCategoriesIncluded: isAll);
         }),
       ),
       sectionMargine,
@@ -835,23 +828,15 @@ class _MonitorConfigSectionState extends State<MonitorConfigSection> {
       Text('Display Option', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<dto.MonitorDisplayOption>.fromTuple(
+        SingleSelector<MonitorDisplayOption>.fromTuple(
             initialIndex: current.displayOption.index,
-            items: dto.MonitorDisplayOption.values.map((e) => (
+            items: MonitorDisplayOption.values.map((e) => (
                   switch (e) {
-                    dto.MonitorDisplayOption.meanInDays => 'Mean in days',
-                    dto.MonitorDisplayOption.meanInWeeks => 'Mean in weeks',
-                    dto.MonitorDisplayOption.meanInMonths => 'Mean in months',
-                    dto.MonitorDisplayOption.meanInYears => 'Mean in years',
-                    dto.MonitorDisplayOption.quartileMeanInDays =>
-                      'Mean in days (Excluding Outliers)',
-                    dto.MonitorDisplayOption.quartileMeanInWeeks =>
-                      'Mean in weeks (Excluding Outliers)',
-                    dto.MonitorDisplayOption.quartileMeanInMonths =>
-                      'Mean in months (Excluding Outliers)',
-                    dto.MonitorDisplayOption.quartileMeanInYears =>
-                      'Mean in years (Excluding Outliers)',
-                    dto.MonitorDisplayOption.summation => 'Sum up all'
+                    MonitorDisplayOption.meanInDays => 'Mean in days',
+                    MonitorDisplayOption.meanInWeeks => 'Mean in weeks',
+                    MonitorDisplayOption.meanInMonths => 'Mean in months',
+                    MonitorDisplayOption.meanInYears => 'Mean in years',
+                    MonitorDisplayOption.summation => 'Sum up all'
                   },
                   e
                 )),

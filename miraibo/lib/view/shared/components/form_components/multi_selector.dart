@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 import 'package:miraibo/view/shared/components/modal_window.dart';
 import 'package:miraibo/view/shared/components/form_components/custom_search_bar.dart';
 import 'package:miraibo/view/shared/components/valed_container.dart';
@@ -16,7 +17,10 @@ class MultiSelector<T> extends StatefulWidget {
   /// the initial selection of each item
   /// true for initially selected
   final List<bool> initial;
-  final void Function(List<T>) onChanged;
+
+  /// callback function that takes selected items
+  /// and a boolean that indicates whether all items are selected or not
+  final void Function(List<T>, bool) onChanged;
 
   static const double _heightOfItem = 40;
   static const double _heightOfItemMargin = 2;
@@ -32,7 +36,7 @@ class MultiSelector<T> extends StatefulWidget {
       super.key});
   factory MultiSelector.fromTuple(
       {required Iterable<(String, T, bool)> items,
-      required void Function(List<T>) onChanged}) {
+      required void Function(List<T>, bool) onChanged}) {
     final labels = <String>[];
     final values = <T>[];
     final initial = <bool>[];
@@ -51,12 +55,19 @@ class MultiSelector<T> extends StatefulWidget {
 
 class _MultiSelectorState<T> extends State<MultiSelector<T>> {
   // <init>
+  bool _isAllSelected = false;
+  bool get isAllSelected => _isAllSelected;
+  set isAllSelected(bool value) {
+    _isAllSelected = value;
+    widget.onChanged(getSelectedValues(), _isAllSelected);
+  }
+
   late List<bool> _currentlySelected;
   List<bool> get currentlySelected => _currentlySelected;
   set currentlySelected(List<bool> value) {
     _currentlySelected = value;
     selectionNotifier?.add(value);
-    widget.onChanged(getSelectedValues());
+    widget.onChanged(getSelectedValues(), _isAllSelected);
   }
 
   late bool expanded;
@@ -118,16 +129,14 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
     selectionNotifier?.close();
     selectionNotifier = StreamController<List<bool>>();
     final list = _NotifiableItemList(
-        initiallyVisible: _currentlySelected,
+        initiallyVisible: currentlySelected,
         labels: widget.labels,
         visiblityNotifier: selectionNotifier!.stream,
         heightOfTopDummy: MultiSelector._heightOfUpperVale,
         overlap: const Color.fromARGB(10, 255, 0, 0),
         vale: Theme.of(context).colorScheme.surfaceContainer,
         onTap: (index) {
-          _currentlySelected[index] = false;
-          selectionNotifier?.add(_currentlySelected);
-          widget.onChanged(getSelectedValues());
+          currentlySelected[index] = false;
         });
     return Container(
         width: double.infinity,
@@ -135,14 +144,43 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
         child: list);
   }
 
+  Widget selectAllButton() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final style = TextButton.styleFrom(
+      backgroundColor: isAllSelected
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainer,
+      fixedSize: const Size.fromHeight(formChipHeight),
+    );
+    final label = Text(isAllSelected ? 'All' : 'Specified');
+    return Padding(
+        padding: const EdgeInsets.symmetric(
+            vertical: formChipPadding, horizontal: 0),
+        child: TextButton(
+          onPressed: () {
+            setState(() {
+              isAllSelected = !isAllSelected;
+            });
+          },
+          style: style,
+          child: SizedBox(width: double.infinity, child: Center(child: label)),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: FoldableSection(
-            header: header(),
-            bodyHeight: MultiSelector._heightOfItemDisplay,
-            body: body()));
+        padding: const EdgeInsets.all(formChipPadding),
+        child: Column(
+          children: [
+            selectAllButton(),
+            if (!isAllSelected)
+              FoldableSection(
+                  header: header(),
+                  bodyHeight: MultiSelector._heightOfItemDisplay,
+                  body: body())
+          ],
+        ));
   }
 
   @override

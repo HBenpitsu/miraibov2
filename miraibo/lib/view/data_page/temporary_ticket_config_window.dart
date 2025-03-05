@@ -212,15 +212,18 @@ class _MonitorSchemeSectionState
           period: currentScheme!.period,
           currency: currentScheme!.currency,
           displayOption: currentScheme!.displayOption,
-          categories: currentScheme!.categories),
+          categories: currentScheme!.categories,
+          isAllCategoriesIncluded: currentScheme!.isAllCategoriesIncluded),
       categoryOptions: categoryOptions,
       currencyOptions: currencyOptions,
       onChanged: (scheme) {
         currentScheme = skt.TemporaryMonitorScheme(
-            period: scheme.period,
-            currency: scheme.currency,
-            displayOption: scheme.displayOption,
-            categories: scheme.categories);
+          period: scheme.period,
+          currency: scheme.currency,
+          displayOption: scheme.displayOption,
+          categories: scheme.categories,
+          isAllCategoriesIncluded: currentScheme!.isAllCategoriesIncluded,
+        );
       },
     );
   }
@@ -230,14 +233,17 @@ class _MonitorSchemeSectionState
     if (currentScheme == null) {
       return 'It is not initialized yet. Try again.';
     }
-    if (currentScheme!.categories.isEmpty) {
+    if (!currentScheme!.isAllCategoriesIncluded &&
+        currentScheme!.categories.isEmpty) {
       return 'select at least one category';
     }
     widget.skeleton.applyMonitorScheme(
-        currentScheme!.categories.map((cat) => cat.id).toList(),
-        currentScheme!.period,
-        currentScheme!.displayOption,
-        currentScheme!.currency.id);
+      currentScheme!.categories.map((cat) => cat.id).toList(),
+      currentScheme!.period,
+      currentScheme!.displayOption,
+      currentScheme!.currency.id,
+      currentScheme!.isAllCategoriesIncluded,
+    );
     return null;
   }
 }
@@ -288,7 +294,7 @@ class _EstimationSchemeSectionState
           period: currentScheme!.period,
           currency: currentScheme!.currency,
           displayOption: currentScheme!.displayOption,
-          categories: currentScheme!.categories),
+          category: currentScheme!.category),
       categoryOptions: categoryOptions,
       currencyOptions: currencyOptions,
       onChanged: (scheme) {
@@ -296,7 +302,7 @@ class _EstimationSchemeSectionState
             period: scheme.period,
             currency: scheme.currency,
             displayOption: scheme.displayOption,
-            categories: scheme.categories);
+            category: scheme.category);
       },
     );
   }
@@ -306,11 +312,8 @@ class _EstimationSchemeSectionState
     if (currentScheme == null) {
       return 'It is not initialized yet. Try again.';
     }
-    if (currentScheme!.categories.isEmpty) {
-      return 'select at least one category';
-    }
     widget.skeleton.applyMonitorScheme(
-        currentScheme!.categories.map((cat) => cat.id).toList(),
+        currentScheme!.category.id,
         currentScheme!.period,
         currentScheme!.displayOption,
         currentScheme!.currency.id);
