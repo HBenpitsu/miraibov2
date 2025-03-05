@@ -60,4 +60,7 @@ class Plan {
   Future<void> delete() async {
     _repository.delete(this);
   }
+
+  @override
+  String toString() => 'Plan{$description, $price, $schedule, $category}';
 }

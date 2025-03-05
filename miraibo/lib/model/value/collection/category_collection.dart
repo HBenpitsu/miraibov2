@@ -92,4 +92,8 @@ class CategoryCollection {
     }
     return _categories.map((category) => category.id).toList();
   }
+
+  @override
+  String toString() =>
+      containsAll ? '(all categories) $_categories' : _categories.toString();
 }

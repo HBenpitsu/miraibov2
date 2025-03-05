@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:miraibo/model/value/date.dart';
 import 'package:miraibo/model/value/period.dart';
 
@@ -30,6 +31,9 @@ class OneshotSchedule extends Schedule {
       return [];
     }
   }
+
+  @override
+  String toString() => 'oneshot($date)';
 }
 
 class IntervalSchedule extends Schedule {
@@ -69,6 +73,9 @@ class IntervalSchedule extends Schedule {
     if (!period.contains(date)) return false;
     return (originDate - date).inDays % interval == 0;
   }
+
+  @override
+  String toString() => 'interval($originDate, $period, $interval days)';
 }
 
 class WeeklySchedule extends Schedule {
@@ -161,6 +168,12 @@ class WeeklySchedule extends Schedule {
     if (!period.contains(date)) return false;
     return _isWeekdayScheduled(date.weekday);
   }
+
+  @override
+  String toString() {
+    final weekdays = Weekday.values.where(_isWeekdayScheduled);
+    return 'weekly($period, $weekdays)';
+  }
 }
 
 class MonthlySchedule extends Schedule {
@@ -185,6 +198,7 @@ class MonthlySchedule extends Schedule {
     while (!periodIntersection.isOver(axis.withDelta(days: offset))) {
       yield axis.withDelta(days: offset);
       axis = axis.withDelta(months: 1);
+      Logger().d('$axis');
     }
   }
 
@@ -193,6 +207,9 @@ class MonthlySchedule extends Schedule {
     if (!period.contains(date)) return false;
     return date.withDelta(days: -offset).day == 1;
   }
+
+  @override
+  String toString() => 'monthly($period, $offset days)';
 }
 
 class AnnualSchedule extends Schedule {
@@ -229,4 +246,7 @@ class AnnualSchedule extends Schedule {
     if (!period.contains(date)) return false;
     return originDate.month == date.month && originDate.day == date.day;
   }
+
+  @override
+  String toString() => 'annual($originDate, $period)';
 }

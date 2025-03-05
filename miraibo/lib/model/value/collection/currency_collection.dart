@@ -38,4 +38,7 @@ class CurrencyCollection {
   static void setDefault(Currency currency) async {
     await _repository.setDefault(currency);
   }
+
+  @override
+  String toString() => _currencies.toString();
 }

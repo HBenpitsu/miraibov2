@@ -70,4 +70,7 @@ class Category {
   Future<void> delete() async {
     await _repository.delete(this);
   }
+
+  @override
+  String toString() => '$name(Category)';
 }

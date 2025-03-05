@@ -114,4 +114,8 @@ class MonitorScheme {
   Future<void> delete() async {
     repository.delete(this);
   }
+
+  @override
+  String toString() =>
+      'MonitorScheme{$period, $displayOption, $categories, $currency}';
 }

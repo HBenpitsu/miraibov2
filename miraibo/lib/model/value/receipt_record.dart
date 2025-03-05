@@ -14,4 +14,7 @@ class ReceiptRecord {
       date: date,
     );
   }
+
+  @override
+  String toString() => '$date: $price';
 }

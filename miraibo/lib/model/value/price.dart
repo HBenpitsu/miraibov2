@@ -39,4 +39,7 @@ class Price {
       currency: currency,
     );
   }
+
+  @override
+  String toString() => '(${currency.symbol})$amount';
 }

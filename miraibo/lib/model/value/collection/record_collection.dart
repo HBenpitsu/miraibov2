@@ -22,26 +22,31 @@ class RecordCollection {
   static Future<RecordCollection> get(
       Period period, CategoryCollection categories) async {
     final records = <ReceiptRecord>[];
-    await for (final estimation
-        in _estimationSchemeRepository.get(period, categories)) {
-      final intersectionPeriod = estimation.period.intersection(period);
-      if (intersectionPeriod == null) continue;
-      final price =
-          await estimation.estimatePerDay(currency: estimation.currency);
-      for (final date in intersectionPeriod.dates()) {
-        records.add(ReceiptRecord(price: price, date: date));
+    final future = period.intersection(Period.future());
+    if (future != null) {
+      await for (final estimation
+          in _estimationSchemeRepository.get(future, categories)) {
+        final intersectionPeriod = estimation.period.intersection(future);
+        if (intersectionPeriod == null) continue;
+        final price =
+            await estimation.estimatePerDay(currency: estimation.currency);
+        for (final date in intersectionPeriod.dates()) {
+          records.add(ReceiptRecord(price: price, date: date));
+        }
+      }
+      await for (final plan in _planRepository.get(future, categories)) {
+        final dates = plan.schedule.getScheduledDates(future);
+        for (final date in dates) {
+          records.add(ReceiptRecord(price: plan.price, date: date));
+        }
       }
     }
-    await for (final log in _receiptLogRepository.get(period, categories)) {
-      records.add(ReceiptRecord(price: log.price, date: log.date));
-    }
-    await for (final plan in _planRepository.get(period, categories)) {
-      final dates = plan.schedule.getScheduledDates(period);
-      for (final date in dates) {
-        records.add(ReceiptRecord(price: plan.price, date: date));
+    final past = period.intersection(Period.past());
+    if (past != null) {
+      await for (final log in _receiptLogRepository.get(past, categories)) {
+        records.add(ReceiptRecord(price: log.price, date: log.date));
       }
     }
-
     return RecordCollection._(period, categories, records);
   }
 
@@ -73,4 +78,7 @@ class RecordCollection {
     }
     return Price(currency: currency, amount: total / period.durationInDays);
   }
+
+  @override
+  String toString() => 'RecordCollection{$period, $categories, $_records}';
 }

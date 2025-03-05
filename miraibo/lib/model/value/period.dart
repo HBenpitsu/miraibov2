@@ -35,6 +35,20 @@ class Period {
       : begins = Date.today(),
         ends = Date.today().withDelta(days: days - 1);
 
+  Period.futureOrToday()
+      : begins = Date.today(),
+        ends = Date.latest;
+  Period.future()
+      : begins = Date.today().withDelta(days: 1),
+        ends = Date.latest;
+
+  Period.pastOrToday()
+      : begins = Date.earliest,
+        ends = Date.today();
+  Period.past()
+      : begins = Date.earliest,
+        ends = Date.today().withDelta(days: -1);
+
   bool get isEndless => ends >= Date.latest;
   bool get isStartless => begins <= Date.earliest;
 
@@ -72,4 +86,7 @@ class Period {
       yield date;
     }
   }
+
+  @override
+  String toString() => '$begins - $ends';
 }

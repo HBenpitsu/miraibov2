@@ -72,18 +72,10 @@ class Date {
   }
 
   bool operator <=(Date other) {
-    if (year < other.year) {
-      return true;
-    }
-    if (year > other.year) {
-      return false;
-    }
-    if (month < other.month) {
-      return true;
-    }
-    if (month > other.month) {
-      return false;
-    }
+    if (year < other.year) return true;
+    if (year > other.year) return false;
+    if (month < other.month) return true;
+    if (month > other.month) return false;
     return day <= other.day;
   }
 
@@ -92,18 +84,10 @@ class Date {
   }
 
   bool operator <(Date other) {
-    if (year < other.year) {
-      return true;
-    }
-    if (year > other.year) {
-      return false;
-    }
-    if (month < other.month) {
-      return true;
-    }
-    if (month > other.month) {
-      return false;
-    }
+    if (year < other.year) return true;
+    if (year > other.year) return false;
+    if (month < other.month) return true;
+    if (month > other.month) return false;
     return day < other.day;
   }
 
@@ -112,8 +96,7 @@ class Date {
   }
 
   Duration operator -(Date other) {
-    return DateTime(year, month, day)
-        .difference(DateTime(other.year, other.month, other.day));
+    return toDateTime().difference(other.toDateTime());
   }
 
   @override
@@ -126,4 +109,7 @@ class Date {
 
   @override
   int get hashCode => year.hashCode ^ month.hashCode ^ day.hashCode;
+
+  @override
+  String toString() => '$year-$month-$day';
 }

@@ -98,4 +98,8 @@ class EstimationScheme {
   Future<void> delete() async {
     repository.delete(this);
   }
+
+  @override
+  String toString() =>
+      'EstimationScheme{ $period, $displayOption, $currency, $category }';
 }

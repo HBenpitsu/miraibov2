@@ -2,9 +2,9 @@ import 'package:miraibo/model/repository/primitive.dart';
 import 'package:miraibo/model/value/collection/category_collection.dart';
 import 'package:miraibo/model/value/date.dart';
 import 'package:miraibo/model/value/period.dart';
-import 'package:miraibo/shared/enumeration.dart' as enumeration;
+import 'package:miraibo/shared/enumeration.dart';
 
-class EventExistence {
+class EventExistenceCheckingService {
   static final EstimationSchemeRepository _estimationSchemeRepository =
       EstimationSchemeRepository.instance;
   static final ReceiptLogRepository _receiptLogRepository =
@@ -14,8 +14,8 @@ class EventExistence {
       MonitorSchemeRepository.instance;
   static const _cacheSize = 200;
   static _Cache _cache = _Cache.empty();
-  static Future<enumeration.EventExistence> get(Date date) async {
-    final cachedValue = EventExistence._cache.get(date);
+  static Future<EventExistence> get(Date date) async {
+    final cachedValue = EventExistenceCheckingService._cache.get(date);
     if (cachedValue != null) {
       return cachedValue;
     }
@@ -26,7 +26,7 @@ class EventExistence {
 
     _cache = _Cache(
       period: period,
-      events: List.filled(_cacheSize, enumeration.EventExistence.none),
+      events: List.filled(_cacheSize, EventExistence.none),
     );
 
     await for (final estimation in _estimationSchemeRepository.get(
@@ -71,7 +71,7 @@ class EventExistence {
 
 class _Cache {
   late final Period? period;
-  late final List<enumeration.EventExistence> events;
+  late final List<EventExistence> events;
   _Cache.empty() {
     // first is more than last, that means "someDate < firstDate || lastDate < someDate" is always true
     period = null;
@@ -79,7 +79,7 @@ class _Cache {
   }
   _Cache({required this.period, required this.events});
 
-  enumeration.EventExistence? get(Date date) {
+  EventExistence? get(Date date) {
     if (period == null || !period!.contains(date)) {
       return null;
     }
@@ -90,10 +90,8 @@ class _Cache {
     if (period == null || !period!.contains(date)) {
       throw ArgumentError('date must be in period');
     }
-    if (events[(date - period!.begins).inDays] ==
-        enumeration.EventExistence.none) {
-      events[(date - period!.begins).inDays] =
-          enumeration.EventExistence.trivial;
+    if (events[(date - period!.begins).inDays] == EventExistence.none) {
+      events[(date - period!.begins).inDays] = EventExistence.trivial;
     }
   }
 
@@ -101,7 +99,6 @@ class _Cache {
     if (period == null || !period!.contains(date)) {
       throw ArgumentError('date must be in period');
     }
-    events[(date - period!.begins).inDays] =
-        enumeration.EventExistence.important;
+    events[(date - period!.begins).inDays] = EventExistence.important;
   }
 }

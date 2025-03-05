@@ -96,10 +96,12 @@ class _Cache {
     final returnStream = StreamController<ReceiptLog?>();
     // Because logListStream is broadcast, the first value should be passed again.
     // A broadcast stream does not hold the passed value.
-    waitForCurrentLogs().then((logs) {
-      returnStream.add(_pick(logs, index));
-    });
-    returnStream.addStream(logListStream.map((logs) => _pick(logs, index)));
+    waitForCurrentLogs()
+        .then((logs) => returnStream.add(_pick(logs, index)))
+        .then(
+          (_) => returnStream
+              .addStream(logListStream.map((logs) => _pick(logs, index))),
+        );
 
     return returnStream.stream;
   }

@@ -22,6 +22,17 @@ import 'package:miraibo/model/value/date.dart';
 import 'package:miraibo/model/value/price.dart';
 import 'package:miraibo/model/value/schedule.dart' as model;
 
+void bind() {
+  CategoryRepository.instance = CategoryRepositoryImpl();
+  CurrencyRepository.instance = CurrencyRepositoryImpl();
+  ReceiptLogRepository.instance = ReceiptLogRepositoryImpl();
+  PlanRepository.instance = PlanRepositoryImpl();
+  EstimationSchemeRepository.instance = EstimationSchemeRepositoryImpl();
+  MonitorSchemeRepository.instance = MonitorSchemeRepositoryImpl();
+  ErrorMessenger.instance = ErrorMessengerImpl();
+  ExternalEnvironmentInterface.instance = ExternalEnvironmentInterfaceImpl();
+}
+
 class CategoryRepositoryImpl implements CategoryRepository {
   static final database = AppDatabase();
 
@@ -75,11 +86,12 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<void> update(model.Category category) async {
-    await database.categories.update().replace(CategoriesCompanion(
-          id: Value(category.id),
-          name: Value(category.name),
-          updatedAt: Value(DateTime.now()),
-        ));
+    final statement = database.categories.update()
+      ..where((row) => row.id.equals(category.id));
+    await statement.write(CategoriesCompanion(
+      name: Value(category.name),
+      updatedAt: Value(DateTime.now()),
+    ));
   }
 
   @override
@@ -155,12 +167,13 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
 
   @override
   Future<void> update(model.Currency currency) {
-    return database.currencies.update().replace(CurrenciesCompanion(
-          id: Value(currency.id),
-          symbol: Value(currency.symbol),
-          ratio: Value(currency.ratio),
-          updatedAt: Value(DateTime.now()),
-        ));
+    final statement = database.currencies.update()
+      ..where((row) => row.id.equals(currency.id));
+    return statement.write(CurrenciesCompanion(
+      symbol: Value(currency.symbol),
+      ratio: Value(currency.ratio),
+      updatedAt: Value(DateTime.now()),
+    ));
   }
 
   @override
@@ -222,11 +235,11 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
     final query = database.receiptLogs.select();
     if (!period.isStartless) {
       query.where(
-          (row) => row.date.isSmallerOrEqualValue(period.ends.toDateTime()));
+          (row) => row.date.isBiggerOrEqualValue(period.begins.toDateTime()));
     }
     if (!period.isEndless) {
       query.where(
-          (row) => row.date.isBiggerOrEqualValue(period.begins.toDateTime()));
+          (row) => row.date.isSmallerOrEqualValue(period.ends.toDateTime()));
     }
     if (!categories.containsAll) {
       query.where((row) => row.categoryId.isIn(categories.ids()));
@@ -289,16 +302,17 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
 
   @override
   Future<void> update(model.ReceiptLog receiptLog) async {
-    await database.receiptLogs.update().replace(ReceiptLogsCompanion(
-          id: Value(receiptLog.id),
-          date: Value(receiptLog.date.toDateTime()),
-          categoryId: Value(receiptLog.category.id),
-          description: Value(receiptLog.description),
-          amount: Value(receiptLog.price.amount),
-          currencyId: Value(receiptLog.price.currency.id),
-          confirmed: Value(receiptLog.confirmed),
-          updatedAt: Value(DateTime.now()),
-        ));
+    final statement = database.receiptLogs.update()
+      ..where((row) => row.id.equals(receiptLog.id));
+    await statement.write(ReceiptLogsCompanion(
+      date: Value(receiptLog.date.toDateTime()),
+      categoryId: Value(receiptLog.category.id),
+      description: Value(receiptLog.description),
+      amount: Value(receiptLog.price.amount),
+      currencyId: Value(receiptLog.price.currency.id),
+      confirmed: Value(receiptLog.confirmed),
+      updatedAt: Value(DateTime.now()),
+    ));
   }
 
   @override
@@ -782,17 +796,18 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
 
   @override
   Future<void> update(model.EstimationScheme estimationScheme) async {
-    await database.estimationSchemes.update().replace(
-          EstimationSchemesCompanion(
-            id: Value(estimationScheme.id),
-            periodBegins: Value(estimationScheme.period.begins.toDateTime()),
-            periodEnds: Value(estimationScheme.period.ends.toDateTime()),
-            currencyId: Value(estimationScheme.currency.id),
-            categoryId: Value(estimationScheme.category.id),
-            displayOption: Value(estimationScheme.displayOption),
-            updatedAt: Value(DateTime.now()),
-          ),
-        );
+    final statement = database.estimationSchemes.update()
+      ..where((row) => row.id.equals(estimationScheme.id));
+    await statement.write(
+      EstimationSchemesCompanion(
+        periodBegins: Value(estimationScheme.period.begins.toDateTime()),
+        periodEnds: Value(estimationScheme.period.ends.toDateTime()),
+        currencyId: Value(estimationScheme.currency.id),
+        categoryId: Value(estimationScheme.category.id),
+        displayOption: Value(estimationScheme.displayOption),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   @override
@@ -915,20 +930,21 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
 
   @override
   Future<void> update(model.MonitorScheme monitorScheme) async {
-    await database.monitorSchemes.update().replace(
-          MonitorSchemesCompanion(
-            id: Value(monitorScheme.id),
-            periodBegins: Value(monitorScheme.period.begins.toDateTime()),
-            periodEnds: Value(monitorScheme.period.ends.toDateTime()),
-            currencyId: Value(monitorScheme.currency.id),
-            displayOption: Value(monitorScheme.displayOption),
-            updatedAt: Value(DateTime.now()),
-          ),
-        );
+    final statement = database.monitorSchemes.update()
+      ..where((row) => row.id.equals(monitorScheme.id));
+    await statement.write(
+      MonitorSchemesCompanion(
+        periodBegins: Value(monitorScheme.period.begins.toDateTime()),
+        periodEnds: Value(monitorScheme.period.ends.toDateTime()),
+        currencyId: Value(monitorScheme.currency.id),
+        displayOption: Value(monitorScheme.displayOption),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
     // reset linker
-    final query = database.monitorSchemeCategoryLinkers.delete();
-    query.where((row) => row.scheme.equals(monitorScheme.id));
-    await query.go();
+    final linkerReleaseCommand = database.monitorSchemeCategoryLinkers.delete()
+      ..where((row) => row.scheme.equals(monitorScheme.id));
+    await linkerReleaseCommand.go();
     if (monitorScheme.categories.containsAll) return;
     final now = DateTime.now();
     await database.monitorSchemeCategoryLinkers.insertAll([
@@ -947,9 +963,9 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
           id: Value(monitorScheme.id),
         ));
     // release linkers
-    final query = database.monitorSchemeCategoryLinkers.delete();
-    query.where((row) => row.scheme.equals(monitorScheme.id));
-    await query.go();
+    final command = database.monitorSchemeCategoryLinkers.delete();
+    command.where((row) => row.scheme.equals(monitorScheme.id));
+    await command.go();
   }
 }
 

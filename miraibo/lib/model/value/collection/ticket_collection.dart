@@ -64,4 +64,12 @@ class TicketCollection {
       receiptLogs: receiptLogs,
     );
   }
+
+  @override
+  String toString() => 'TicketCollection{'
+      'plans: $plans, '
+      'receiptLogs: $receiptLogs, '
+      'estimationSchemes: $estimationSchemes, '
+      'monitorSchemes: $monitorSchemes'
+      '}';
 }

@@ -13,8 +13,7 @@ import 'package:miraibo/model/value/period.dart';
 import 'package:miraibo/shared/enumeration.dart';
 
 class MockDataProvider {
-  static Future<void> createMockDates() async {
-    await InitializationService.initialize();
+  Future<void> makeLogs() async {
     final currency1 = await Currency.findOrCreate('CUR1', 10.0);
     final currency2 = await Currency.findOrCreate('CUR2', 20.0);
     final currency3 = await Currency.findOrCreate('CUR3', 30.0);
@@ -87,24 +86,33 @@ class MockDataProvider {
     ReceiptLog.create(
       Date.today().withDelta(days: -3),
       Price(amount: 100.0, currency: currency1),
-      'Receipt 7 - 3 days ago, unconfirmed',
+      'Receipt 10 - 3 days ago, unconfirmed',
       category1,
       false,
     );
     ReceiptLog.create(
       Date.today().withDelta(days: -7),
       Price(amount: 100.0, currency: currency1),
-      'Receipt 8 - 7 days ago, unconfirmed',
+      'Receipt 11 - 7 days ago, unconfirmed',
       category1,
       false,
     );
     ReceiptLog.create(
       Date.today().withDelta(days: -30),
       Price(amount: 100.0, currency: currency1),
-      'Receipt 9 - 30 days ago, unconfirmed',
+      'Receipt 12 - 30 days ago, unconfirmed',
       category1,
       false,
     );
+  }
+
+  Future<void> makePlans() async {
+    final currency1 = await Currency.findOrCreate('CUR1', 10.0);
+    final currency2 = await Currency.findOrCreate('CUR2', 20.0);
+    final currency3 = await Currency.findOrCreate('CUR3', 30.0);
+    final category1 = await Category.findOrCreate('CAT1');
+    final category2 = await Category.findOrCreate('CAT2');
+    final category3 = await Category.findOrCreate('CAT3');
     Plan.create(
       OneshotSchedule(date: Date.today()),
       Price(amount: 100.0, currency: currency1),
@@ -159,6 +167,15 @@ class MockDataProvider {
       'Plan 6 - annual schedule',
       category1,
     );
+  }
+
+  Future<void> makeMonitorSchemes() async {
+    final currency1 = await Currency.findOrCreate('CUR1', 10.0);
+    final currency2 = await Currency.findOrCreate('CUR2', 20.0);
+    final currency3 = await Currency.findOrCreate('CUR3', 30.0);
+    final category1 = await Category.findOrCreate('CAT1');
+    final category2 = await Category.findOrCreate('CAT2');
+    final category3 = await Category.findOrCreate('CAT3');
     MonitorScheme.create(
       period: Period(
         begins: Date.today().withDelta(years: -1),
@@ -195,6 +212,15 @@ class MockDataProvider {
       displayOption: MonitorDisplayOption.summation,
       categories: CategoryCollection.phantomAll,
     );
+  }
+
+  Future<void> makeEstimationSchemes() async {
+    final currency1 = await Currency.findOrCreate('CUR1', 10.0);
+    final currency2 = await Currency.findOrCreate('CUR2', 20.0);
+    final currency3 = await Currency.findOrCreate('CUR3', 30.0);
+    final category1 = await Category.findOrCreate('CAT1');
+    final category2 = await Category.findOrCreate('CAT2');
+    final category3 = await Category.findOrCreate('CAT3');
     EstimationScheme.create(
       period: Period(
         begins: Date.today().withDelta(years: -1),
@@ -231,5 +257,15 @@ class MockDataProvider {
       displayOption: EstimationDisplayOption.perYear,
       category: category3,
     );
+  }
+
+  static Future<MockDataProvider> provide() async {
+    await InitializationService.initialize();
+    final provider = MockDataProvider();
+    await provider.makeLogs();
+    await provider.makePlans();
+    await provider.makeMonitorSchemes();
+    await provider.makeEstimationSchemes();
+    return provider;
   }
 }

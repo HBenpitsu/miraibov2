@@ -67,4 +67,7 @@ class ReceiptLog {
   Future<void> delete() async {
     repository.delete(this);
   }
+
+  @override
+  String toString() => 'ReceiptLog{$description, $price, $date, $category}';
 }

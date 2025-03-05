@@ -75,4 +75,7 @@ class Currency {
   Future<void> delete() async {
     await repository.delete(this);
   }
+
+  @override
+  String toString() => '$symbol($ratio, Currency)';
 }

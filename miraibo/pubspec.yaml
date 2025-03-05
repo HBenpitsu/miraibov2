@@ -42,12 +42,12 @@ dependencies:
   collection: ^1.19.1
   drift: ^2.25.1
   drift_flutter: ^0.2.4
-  logger: ^2.5.0
   path: ^1.9.1
   path_provider: ^2.1.5
   sqlite3_flutter_libs: ^0.5.31
   sqlite3: ^2.7.4
   shared_preferences: ^2.5.2
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:
