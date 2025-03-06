@@ -4,7 +4,20 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
+        {
+            "name": "Dart: Run model test",
+            "type": "dart",
+            "request": "launch",
+            "cwd": "miraibo",
+            "program": "./test/model/model_test.dart",
+        },
+        {
+            "name": "Dart: Run all Tests",
+            "type": "dart",
+            "request": "launch",
+            "cwd": "miraibo",
+            "program": "./test/",
+        },
         {
             "name": "miraibo",
             "cwd": "miraibo",
@@ -24,6 +37,6 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
-        }
+        },
     ]
 }

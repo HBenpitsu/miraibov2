@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart' show compute;
-import 'package:miraibo/model/usecase/usecase.dart' as usecase;
+import 'package:miraibo/core-model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
 
 // <fetchEventExistenceOn>

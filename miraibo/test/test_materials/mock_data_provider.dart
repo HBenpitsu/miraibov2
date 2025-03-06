@@ -1,15 +1,15 @@
-import 'package:miraibo/model/service/initialization_service.dart';
-import 'package:miraibo/model/entity/currency.dart';
-import 'package:miraibo/model/entity/plan.dart';
-import 'package:miraibo/model/entity/monitor_scheme.dart';
-import 'package:miraibo/model/entity/estimation_scheme.dart';
-import 'package:miraibo/model/entity/receipt_log.dart';
-import 'package:miraibo/model/entity/category.dart';
-import 'package:miraibo/model/value/collection/category_collection.dart';
-import 'package:miraibo/model/value/date.dart';
-import 'package:miraibo/model/value/price.dart';
-import 'package:miraibo/model/value/schedule.dart';
-import 'package:miraibo/model/value/period.dart';
+import 'package:miraibo/core-model/service/initialization_service.dart';
+import 'package:miraibo/core-model/entity/currency.dart';
+import 'package:miraibo/core-model/entity/plan.dart';
+import 'package:miraibo/core-model/entity/monitor_scheme.dart';
+import 'package:miraibo/core-model/entity/estimation_scheme.dart';
+import 'package:miraibo/core-model/entity/receipt_log.dart';
+import 'package:miraibo/core-model/entity/category.dart';
+import 'package:miraibo/core-model/value/collection/category_collection.dart';
+import 'package:miraibo/core-model/value/date.dart';
+import 'package:miraibo/core-model/value/price.dart';
+import 'package:miraibo/core-model/value/schedule.dart';
+import 'package:miraibo/core-model/value/period.dart';
 import 'package:miraibo/shared/enumeration.dart';
 
 class MockDataProvider {

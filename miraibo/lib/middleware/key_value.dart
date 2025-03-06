@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:miraibo/model/value/date.dart' as model;
+import 'package:miraibo/core-model/value/date.dart' as model;
 
 class KeyValueStore {
   static KeyValueStore? _instance;
