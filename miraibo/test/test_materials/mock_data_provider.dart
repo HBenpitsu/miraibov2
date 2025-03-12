@@ -177,40 +177,40 @@ class MockDataProvider {
     final category2 = await Category.findOrCreate('CAT2');
     final category3 = await Category.findOrCreate('CAT3');
     MonitorScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency1,
-      displayOption: MonitorDisplayOption.meanInWeeks,
-      categories: CategoryCollection.single(category1),
+      currency1,
+      MonitorDisplayOption.meanInWeeks,
+      CategoryCollection.single(category1),
     );
     MonitorScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency2,
-      displayOption: MonitorDisplayOption.meanInMonths,
-      categories: CategoryCollection.single(category2),
+      currency2,
+      MonitorDisplayOption.meanInMonths,
+      CategoryCollection.single(category2),
     );
     MonitorScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency3,
-      displayOption: MonitorDisplayOption.meanInYears,
-      categories: CategoryCollection.single(category3),
+      currency3,
+      MonitorDisplayOption.meanInYears,
+      CategoryCollection.single(category3),
     );
     MonitorScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency3,
-      displayOption: MonitorDisplayOption.summation,
-      categories: CategoryCollection.phantomAll,
+      currency3,
+      MonitorDisplayOption.summation,
+      CategoryCollection.phantomAll,
     );
   }
 
@@ -222,40 +222,40 @@ class MockDataProvider {
     final category2 = await Category.findOrCreate('CAT2');
     final category3 = await Category.findOrCreate('CAT3');
     EstimationScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency1,
-      displayOption: EstimationDisplayOption.perDay,
-      category: category1,
+      currency1,
+      EstimationDisplayOption.perDay,
+      category1,
     );
     EstimationScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency1,
-      displayOption: EstimationDisplayOption.perWeek,
-      category: category1,
+      currency1,
+      EstimationDisplayOption.perWeek,
+      category1,
     );
     EstimationScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency2,
-      displayOption: EstimationDisplayOption.perMonth,
-      category: category2,
+      currency2,
+      EstimationDisplayOption.perMonth,
+      category2,
     );
     EstimationScheme.create(
-      period: Period(
+      Period(
         begins: Date.today().withDelta(years: -1),
         ends: Date.today().withDelta(years: 1),
       ),
-      currency: currency3,
-      displayOption: EstimationDisplayOption.perYear,
-      category: category3,
+      currency3,
+      EstimationDisplayOption.perYear,
+      category3,
     );
   }
 

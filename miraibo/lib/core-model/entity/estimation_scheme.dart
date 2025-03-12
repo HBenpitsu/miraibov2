@@ -60,17 +60,15 @@ class EstimationScheme {
 
   Future<Price> scaledEstimation({Currency? currency}) async {
     final price = await estimatePerDay(currency: currency);
-    return Price(
-        amount: price.amount * displayOption.scaler,
-        currency: currency ?? this.currency);
+    return price.exchangeOrKeep(currency) * displayOption.scaler;
   }
 
-  static Future<EstimationScheme> create({
-    required Period period,
-    required Currency currency,
-    required EstimationDisplayOption displayOption,
-    required Category category,
-  }) async {
+  static Future<EstimationScheme> create(
+    Period period,
+    Currency currency,
+    EstimationDisplayOption displayOption,
+    Category category,
+  ) async {
     final newEntity = EstimationScheme(
       id: IdProvider().get(),
       period: period,

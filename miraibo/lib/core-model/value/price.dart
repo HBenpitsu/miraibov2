@@ -19,6 +19,47 @@ class Price {
     );
   }
 
+  Price exchangeOrKeep(Currency? currency) {
+    if (currency == null) {
+      return this;
+    }
+    return exchangeTo(currency);
+  }
+
+  Price operator *(num multiplier) {
+    return Price(
+      amount: amount * multiplier,
+      currency: currency,
+    );
+  }
+
+  Price operator /(num divisor) {
+    return Price(
+      amount: amount / divisor,
+      currency: currency,
+    );
+  }
+
+  Price operator +(Price other) {
+    if (currency != other.currency) {
+      throw ArgumentError('Currency mismatch');
+    }
+    return Price(
+      amount: amount + other.amount,
+      currency: currency,
+    );
+  }
+
+  Price operator -(Price other) {
+    if (currency != other.currency) {
+      throw ArgumentError('Currency mismatch');
+    }
+    return Price(
+      amount: amount - other.amount,
+      currency: currency,
+    );
+  }
+
   @override
   String toString() => '(${currency.symbol})${amount.toStringAsFixed(2)}';
 }

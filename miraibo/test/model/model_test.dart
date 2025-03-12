@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logger/logger.dart';
 import 'package:miraibo/core-model/value/period.dart';
@@ -11,11 +9,14 @@ import 'package:miraibo/core-model/entity/category.dart' as model;
 import 'package:miraibo/core-model/entity/currency.dart' as model;
 import 'package:miraibo/core-model/entity/receipt_log.dart' as model;
 import 'package:miraibo/core-model/entity/estimation_scheme.dart' as model;
+import 'package:miraibo/shared/enumeration.dart';
 import 'package:miraibo/core-model/entity/monitor_scheme.dart' as model;
-import 'package:miraibo/core-model/entity/plan.dart' as model;
-import 'package:miraibo/core-model/entity/receipt_log.dart' as model;
 import 'package:miraibo/core-model/value/collection/category_collection.dart'
     as model;
+import 'package:miraibo/core-model/entity/plan.dart' as model;
+import 'package:miraibo/core-model/value/schedule.dart' as model;
+import 'package:miraibo/core-model/value/date.dart' as model;
+import 'package:miraibo/core-model/value/price.dart' as model;
 import 'package:miraibo/core-model/value/collection/currency_collection.dart'
     as model;
 import 'package:miraibo/core-model/value/collection/receipt_log_collection.dart'
@@ -30,6 +31,7 @@ import 'package:miraibo/external-model/service/external_data_service.dart'
     as model;
 import 'package:miraibo/external-model/service/error_handling_service.dart'
     as model;
+import 'package:miraibo/core-model/value/period.dart' as model;
 
 Future<void> showAllLogs(Logger logger) async {
   {
@@ -141,11 +143,75 @@ void main() {
     logger.i(await model.CategoryCollection.getAll());
     showAllLogs(logger);
   });
+  test('external data service', () async {
+    final path = await fakePathProvider.getApplicationDocumentsPath();
+    await model.ReceiptLogCSVService.exportCSVToFile('$path/test.csv');
+    logger.i(
+        await model.ReceiptLogCSVService.importCSVFromFile('$path/test.csv'));
+    logger.i(
+        await model.ReceiptLogCSVService.importCSVFromFile('$path/test.csv'));
+    await showAllLogs(logger);
+  });
+  test('Ticket collection', () async {
+    final estCat = await model.Category.findOrCreate('EstimationTicket');
+    final currency = await model.Currency.findOrCreate('CUR1', 1);
+    final anotherCurrency = await model.Currency.findOrCreate('updated', 2);
+    final estScheme = await model.EstimationScheme.create(
+        model.Period.entirePeriod,
+        currency,
+        EstimationDisplayOption.perDay,
+        estCat);
+    await model.ReceiptLog.create(
+      model.Date.today(),
+      model.Price(amount: 100, currency: currency),
+      'estimation source',
+      estCat,
+      true,
+    );
+    logger.i(await estScheme.estimatePerDay());
+    logger.i(await estScheme.scaledEstimation());
+    await estScheme.update(currency: anotherCurrency);
+    logger.i(await estScheme.scaledEstimation());
+    await estScheme.delete();
+    final monCat = await model.Category.findOrCreate('MonitoringTicket');
+    final monScheme = await model.MonitorScheme.create(
+        model.Period.entirePeriod,
+        currency,
+        MonitorDisplayOption.meanInDays,
+        model.CategoryCollection.single(monCat));
+    await model.ReceiptLog.create(
+      model.Date.today().withDelta(days: -1),
+      model.Price(amount: 100000, currency: currency),
+      'monitoring source',
+      monCat,
+      true,
+    );
+    logger.i(await monScheme.getValue());
+    await monScheme.update(currency: anotherCurrency);
+    logger.i(await monScheme.getValue());
+    await monScheme.delete();
+    final planCat = await model.Category.findOrCreate('PlanTicket');
+    final plan = await model.Plan.create(
+        model.OneshotSchedule(date: model.Date.today()),
+        model.Price(amount: 100, currency: currency),
+        'plan',
+        planCat);
+    await plan.update(
+        schedule:
+            model.OneshotSchedule(date: model.Date.today().withDelta(days: 1)));
+    await plan.delete();
+    final receiptLogCat = await model.Category.findOrCreate('ReceiptLogTicket');
+    final receiptLog = await model.ReceiptLog.create(
+        model.Date.today(),
+        model.Price(amount: 100, currency: currency),
+        'receipt log',
+        receiptLogCat,
+        true);
+    await receiptLog.update(description: 'updated');
+    await receiptLog.delete();
+  });
   tearDownAll(() async {
     // fakePathProvider.tearDown();
     logger.i(await fakePathProvider.getApplicationDocumentsPath());
-  });
-  test('external data service', () async {
-    await model.ReceiptLogCSVService.exportCSVToFile('test.csv');
   });
 }

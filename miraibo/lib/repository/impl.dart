@@ -1137,6 +1137,28 @@ class ExternalEnvironmentInterfaceImpl implements ExternalEnvironmentInterface {
   Future<Stream<String>?> loadFile(String path) async {
     final file = File(path);
     if (!await file.exists()) return null;
-    return utf8.decoder.bind(file.openRead());
+    RandomAccessFile descriptor = await file.open();
+    return _loadLines(descriptor);
+  }
+
+  static const bufferSize = 1024;
+
+  Stream<String> _loadLines(RandomAccessFile descriptor) async* {
+    final lineSeparator = utf8.encode('\n')[0];
+    final List<int> line = [];
+    while (true) {
+      final buffer = await descriptor.read(bufferSize);
+      if (buffer.isEmpty) break;
+      for (final byte in buffer) {
+        if (byte == lineSeparator) {
+          line.add(byte);
+          yield utf8.decode(line);
+          line.clear();
+        } else {
+          line.add(byte);
+        }
+      }
+    }
+    if (line.isNotEmpty) yield utf8.decode(line);
   }
 }

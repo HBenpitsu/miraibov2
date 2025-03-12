@@ -4,7 +4,6 @@ import 'package:miraibo/core-model/value/period.dart';
 import 'package:miraibo/core-model/entity/currency.dart';
 import 'package:miraibo/core-model/value/price.dart';
 import 'package:miraibo/repository/core.dart';
-import 'package:miraibo/core-model/value/date.dart';
 
 class RecordCollection {
   static final EstimationSchemeRepository _estimationSchemeRepository =
@@ -70,10 +69,8 @@ class RecordCollection {
   /// O(n)
   Price meanPerDays(Currency currency) {
     double total = 0;
-    Date latest = Date.earliest;
     for (final record in _records) {
       total += record.price.exchangeTo(currency).amount;
-      latest = Date.later(latest, record.date);
     }
     return Price(currency: currency, amount: total / period.durationInDays);
   }

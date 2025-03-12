@@ -1,3 +1,4 @@
+import 'package:miraibo/middleware/csv_parser.dart';
 import 'package:miraibo/repository/core.dart';
 import 'package:miraibo/core-model/entity/receipt_log.dart';
 import 'package:miraibo/repository/external.dart';
@@ -15,16 +16,23 @@ class ReceiptLogCSVService {
 
   static const String csvHeader = 'year, month, day, '
       'name_of_category, description, amount, '
-      'symbol_of_currency, ratio_of_currency, confirmed';
+      'symbol_of_currency, ratio_of_currency, confirmed\n';
 
   static Stream<String> _exportCSV() async* {
     yield csvHeader;
     await for (final log
         in repository.get(Period.entirePeriod, CategoryCollection.phantomAll)) {
-      yield '${log.date.year}, ${log.date.month}, ${log.date.day}, '
-          '${log.category.name}, ${log.description}, '
-          '${log.price.amount}, ${log.price.currency.symbol}, ${log.price.currency.ratio}, '
-          '${log.confirmed}';
+      yield '''${CSVLineParser.encode([
+            log.date.year,
+            log.date.month,
+            log.date.day,
+            log.category.name,
+            log.description,
+            log.price.amount,
+            log.price.currency.symbol,
+            log.price.currency.ratio,
+            log.confirmed,
+          ])}\n''';
     }
   }
 
@@ -34,15 +42,23 @@ class ReceiptLogCSVService {
 
   /// return error message.
   /// it is null if the CSV file is successfully imported
-  static Future<String?> importCSV(Stream<String> lineStream) async {
-    final header = await lineStream.take(1).first;
-    if (header != csvHeader) {
-      return 'Invalid header';
-    }
+  static Future<String?> _importCSV(Stream<String> lineStream) async {
+    bool firstLine = true;
     await for (final line in lineStream) {
-      final values = line.split(',').map((e) => e.trim()).toList();
+      if (firstLine) {
+        if (line != csvHeader) {
+          return 'Invalid header';
+        }
+        firstLine = false;
+        continue;
+      }
+
+      if (line == '') continue;
+
+      final stripped = line.substring(0, line.length - 1); // remove '\n'
+      final values = CSVLineParser.parse(stripped);
       if (values.length != 9) {
-        return 'Invalid number of columns';
+        return 'Invalid number of columns ($values)';
       }
       final year = int.tryParse(values[0]);
       final month = int.tryParse(values[1]);
@@ -83,6 +99,6 @@ class ReceiptLogCSVService {
     if (lineStream == null) {
       return 'File not found';
     }
-    return await importCSV(lineStream);
+    return await _importCSV(lineStream);
   }
 }

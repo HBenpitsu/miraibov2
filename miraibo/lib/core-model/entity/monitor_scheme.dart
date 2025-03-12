@@ -75,18 +75,15 @@ class MonitorScheme {
       case MonitorDisplayStatisticsKind.mean:
         price = records.meanPerDays(currency);
     }
-    return Price(
-      amount: price.amount * displayOption.scaler,
-      currency: currency,
-    );
+    return price * displayOption.scaler;
   }
 
-  static Future<MonitorScheme> create({
-    required Period period,
-    required Currency currency,
-    required MonitorDisplayOption displayOption,
-    required CategoryCollection categories,
-  }) async {
+  static Future<MonitorScheme> create(
+    Period period,
+    Currency currency,
+    MonitorDisplayOption displayOption,
+    CategoryCollection categories,
+  ) async {
     final newEntity = MonitorScheme(
       id: IdProvider().get(),
       period: period,
