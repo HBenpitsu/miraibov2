@@ -1,6 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
+import 'package:shared_preferences_linux/shared_preferences_linux.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:miraibo/core-model/value/date.dart' as model;
 
 class KeyValueStore {
@@ -8,6 +13,18 @@ class KeyValueStore {
   final SharedPreferencesAsync _prefs = SharedPreferencesAsync();
   KeyValueStore._();
   factory KeyValueStore() {
+    if (kIsWeb) {
+      throw UnimplementedError('Web is not supported');
+    } else {
+      if (Platform.isLinux) {
+        SharedPreferencesAsyncPlatform.instance = SharedPreferencesAsyncLinux();
+      } else if (Platform.isAndroid) {
+        SharedPreferencesAsyncPlatform.instance =
+            SharedPreferencesAsyncAndroid();
+      } else {
+        throw UnimplementedError('Platform is not supported');
+      }
+    }
     return _instance ??= KeyValueStore._();
   }
 

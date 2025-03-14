@@ -27,8 +27,15 @@ Future<int> createReceiptLog({
   required String description,
   required bool confirmed,
 }) {
-  return compute(__createReceiptLog,
-      (originDate, amount, currencyId, categoryId, description, confirmed));
+  return usecase.createReceiptLog(
+      originDate: originDate,
+      amount: amount,
+      currencyId: currencyId,
+      categoryId: categoryId,
+      description: description,
+      confirmed: confirmed);
+  // return compute(__createReceiptLog,
+  //     (originDate, amount, currencyId, categoryId, description, confirmed));
 }
 // </createReceiptLog>
 
@@ -55,8 +62,17 @@ Future<void> editReceiptLog({
   required String description, // description
   required bool confirmed, // confirmed
 }) {
-  return compute(__editReceiptLog,
-      (id, originDate, amount, currencyId, categoryId, description, confirmed));
+  return usecase.editReceiptLog(
+    id: id,
+    originDate: originDate,
+    amount: amount,
+    currencyId: currencyId,
+    categoryId: categoryId,
+    description: description,
+    confirmed: confirmed,
+  );
+  // return compute(__editReceiptLog,
+  //     (id, originDate, amount, currencyId, categoryId, description, confirmed));
 }
 // </editReceiptLog>
 
@@ -67,7 +83,8 @@ Future<void> __deleteReceiptLog(int id) {
 }
 
 Future<void> deleteReceiptLog(int id) {
-  return compute(__deleteReceiptLog, id);
+  return usecase.deleteReceiptLog(id);
+  // return compute(__deleteReceiptLog, id);
 }
 // </deleteReceiptLog>
 
@@ -88,8 +105,10 @@ Future<int> createPlan({
   required int categoryId, // category
   required String description, // description
 }) async {
-  return compute(
-      __createPlan, (schedule, amount, currencyId, categoryId, description));
+  return usecase.createPlan(
+      schedule, amount, currencyId, categoryId, description);
+  // return compute(
+  //     __createPlan, (schedule, amount, currencyId, categoryId, description));
 }
 // </createPlan>
 
@@ -108,8 +127,10 @@ Future<void> editPlan({
   required int categoryId, // category
   required String description, // description
 }) async {
-  return compute(
-      __editPlan, (id, schedule, amount, currencyId, categoryId, description));
+  return usecase.editPlan(
+      id, schedule, amount, currencyId, categoryId, description);
+  // return compute(
+  //     __editPlan, (id, schedule, amount, currencyId, categoryId, description));
 }
 // </editPlan>
 
@@ -120,7 +141,8 @@ Future<void> __deletePlan(int id) {
 }
 
 Future<void> deletePlan(int id) {
-  return compute(__deletePlan, id);
+  return usecase.deletePlan(id);
+  // return compute(__deletePlan, id);
 }
 // </deletePlan>
 
@@ -145,8 +167,10 @@ Future<int> createEstimationScheme({
   required EstimationDisplayOption displayOption,
   required int currencyId,
 }) async {
-  return compute(__createEstimationScheme,
-      (period, categoryId, displayOption, currencyId));
+  return usecase.createEstimationScheme(
+      period, categoryId, displayOption, currencyId);
+  // return compute(__createEstimationScheme,
+  //     (period, categoryId, displayOption, currencyId));
 }
 
 Future<void> __editEstimationScheme(
@@ -163,8 +187,10 @@ Future<void> editEstimationScheme({
   required List<int> categoryIds,
   required int currencyId,
 }) async {
-  return compute(__editEstimationScheme,
-      (id, period, categoryIds, displayOption, currencyId));
+  return usecase.editEstimationScheme(
+      id, period, categoryIds, displayOption, currencyId);
+  // return compute(__editEstimationScheme,
+  //     (id, period, categoryIds, displayOption, currencyId));
 }
 
 Future<void> __deleteEstimationScheme(int id) {
@@ -173,7 +199,8 @@ Future<void> __deleteEstimationScheme(int id) {
 }
 
 Future<void> deleteEstimationScheme(int id) async {
-  return compute(__deleteEstimationScheme, id);
+  return usecase.deleteEstimationScheme(id);
+  // return compute(__deleteEstimationScheme, id);
 }
 
 // </for EstimationScheme>
@@ -192,8 +219,10 @@ Future<int> createMonitorScheme(
   MonitorDisplayOption displayOption,
   int currencyId,
 ) async {
-  return compute(
-      __createMonitorScheme, (period, categoryIds, displayOption, currencyId));
+  return usecase.createMonitorScheme(
+      period, categoryIds, displayOption, currencyId);
+  // return compute(
+  //     __createMonitorScheme, (period, categoryIds, displayOption, currencyId));
 }
 
 Future<void> __editMonitorScheme(
@@ -210,8 +239,10 @@ Future<void> editMonitorScheme(
   MonitorDisplayOption displayOption,
   int currencyId,
 ) async {
-  return compute(__editMonitorScheme,
-      (id, period, categoryIds, displayOption, currencyId));
+  return usecase.editMonitorScheme(
+      id, period, categoryIds, displayOption, currencyId);
+  // return compute(__editMonitorScheme,
+  //     (id, period, categoryIds, displayOption, currencyId));
 }
 
 Future<void> __deleteMonitorScheme(int id) {
@@ -220,7 +251,8 @@ Future<void> __deleteMonitorScheme(int id) {
 }
 
 Future<void> deleteMonitorScheme(int id) async {
-  return compute(__deleteMonitorScheme, id);
+  return usecase.deleteMonitorScheme(id);
+  // return compute(__deleteMonitorScheme, id);
 }
 
 // </for MonitorScheme>

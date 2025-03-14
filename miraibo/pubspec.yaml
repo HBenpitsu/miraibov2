@@ -48,6 +48,9 @@ dependencies:
   sqlite3: ^2.7.4
   shared_preferences: ^2.5.2
   logger: ^2.5.0
+  shared_preferences_platform_interface: ^2.4.1
+  shared_preferences_linux: ^2.4.1
+  shared_preferences_android: ^2.4.8
 
 dev_dependencies:
   flutter_test:

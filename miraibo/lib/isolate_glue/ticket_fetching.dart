@@ -11,7 +11,8 @@ Future<List<Ticket>> __fetchTicketsOn(Date date) {
 
 /// {@macro fetchTicketsOn}
 Future<List<Ticket>> fetchTicketsOn(Date date) {
-  return compute(__fetchTicketsOn, date);
+  return usecase.fetchTicketsOn(date);
+  // return compute(__fetchTicketsOn, date);
 }
 // </fetchTicketsOn
 
@@ -23,6 +24,7 @@ Future<List<Ticket>> __fetchReceiptLogsAndMonitorsForToday(() param) {
 
 /// {@macro fetchReceiptLogsAndMonitorsForToday}
 Future<List<Ticket>> fetchReceiptLogsAndMonitorsForToday() async {
-  return compute(__fetchReceiptLogsAndMonitorsForToday, ());
+  return usecase.fetchReceiptLogsAndMonitorsForToday();
+  // return compute(__fetchReceiptLogsAndMonitorsForToday, ());
 }
 // </fetchReceiptLogsAndMonitorsForToday>

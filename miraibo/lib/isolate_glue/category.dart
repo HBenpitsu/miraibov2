@@ -11,7 +11,8 @@ Future<int> __createCategory(String name) {
 
 /// {@macro createCategory}
 Future<int> createCategory(String name) {
-  return compute(__createCategory, name);
+  return usecase.createCategory(name);
+  // return compute(__createCategory, name);
 }
 // </createCategory>
 
@@ -22,7 +23,8 @@ Future<void> __editCategory((int, String) param) {
 }
 
 Future<void> editCategory(int id, String name) {
-  return compute(__editCategory, (id, name));
+  return usecase.editCategory(id, name);
+  // return compute(__editCategory, (id, name));
 }
 // </editCategory>
 
@@ -33,7 +35,8 @@ Future<void> __integrateCategory((int, int) param) {
 }
 
 Future<void> integrateCategory(int replaceeId, int replacerId) {
-  return compute(__integrateCategory, (replaceeId, replacerId));
+  return usecase.integrateCategory(replaceeId, replacerId);
+  // return compute(__integrateCategory, (replaceeId, replacerId));
 }
 // </integrateCategory>
 
@@ -45,6 +48,7 @@ Future<List<Category>> __fetchAllCategories(() param) {
 
 /// {@macro fetchAllCategories}
 Future<List<Category>> fetchAllCategories() async {
-  return compute(__fetchAllCategories, ());
+  return usecase.fetchAllCategories();
+  // return compute(__fetchAllCategories, ());
 }
 // </fetchAllCategories>

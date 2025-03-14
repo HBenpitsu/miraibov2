@@ -13,9 +13,10 @@ Future<EstimationTicket> __estimateWithScheme(
 
 /// {@macro estimateWithScheme}
 Future<EstimationTicket> estimateWithScheme(
-    int categoryIds, int currencyId, EstimationDisplayOption displayOption) {
-  return compute(
-      __estimateWithScheme, (categoryIds, currencyId, displayOption));
+    int categoryId, int currencyId, EstimationDisplayOption displayOption) {
+  return usecase.estimateWithScheme(categoryId, currencyId, displayOption);
+  // return compute(
+  //     __estimateWithScheme, (categoryIds, currencyId, displayOption));
 }
 
 __estimateFor((int, SendPort) params) async {
@@ -31,17 +32,18 @@ __estimateFor((int, SendPort) params) async {
 
 /// {@macro estimateFor}
 Stream<EstimationTicket> estimateFor(int estimationSchemeId) async* {
-  final receivePort = ReceivePort();
-  final isolate = await Isolate.spawn(
-      __estimateFor, (estimationSchemeId, receivePort.sendPort));
-  await for (final log in receivePort) {
-    if (log == null) {
-      receivePort.close();
-      return;
-    }
-    yield log;
-  }
-  isolate.kill();
+  yield* usecase.estimateFor(estimationSchemeId);
+  // final receivePort = ReceivePort();
+  // final isolate = await Isolate.spawn(
+  //     __estimateFor, (estimationSchemeId, receivePort.sendPort));
+  // await for (final log in receivePort) {
+  //   if (log == null) {
+  //     receivePort.close();
+  //     return;
+  //   }
+  //   yield log;
+  // }
+  // isolate.kill();
 }
 
 Future<MonitorTicket> __monitorWithScheme(
@@ -53,8 +55,10 @@ Future<MonitorTicket> __monitorWithScheme(
 /// {@macro monitorWithScheme}
 Future<MonitorTicket> monitorWithScheme(OpenPeriod period,
     List<int> categoryIds, MonitorDisplayOption displayOption, int currencyId) {
-  return compute(
-      __monitorWithScheme, (period, categoryIds, displayOption, currencyId));
+  return usecase.monitorWithScheme(
+      period, categoryIds, displayOption, currencyId);
+  // return compute(
+  //     __monitorWithScheme, (period, categoryIds, displayOption, currencyId));
 }
 
 __monitorFor((int, SendPort) params) async {
@@ -70,15 +74,16 @@ __monitorFor((int, SendPort) params) async {
 
 /// {@macro monitorFor}
 Stream<MonitorTicket?> monitorFor(int monitorSchemeId) async* {
-  final receivePort = ReceivePort();
-  final isolate = await Isolate.spawn(
-      __monitorFor, (monitorSchemeId, receivePort.sendPort));
-  await for (final log in receivePort) {
-    if (log == null) {
-      receivePort.close();
-      return;
-    }
-    yield log;
-  }
-  isolate.kill();
+  yield* usecase.monitorFor(monitorSchemeId);
+  // final receivePort = ReceivePort();
+  // final isolate = await Isolate.spawn(
+  //     __monitorFor, (monitorSchemeId, receivePort.sendPort));
+  // await for (final log in receivePort) {
+  //   if (log == null) {
+  //     receivePort.close();
+  //     return;
+  //   }
+  //   yield log;
+  // }
+  // isolate.kill();
 }

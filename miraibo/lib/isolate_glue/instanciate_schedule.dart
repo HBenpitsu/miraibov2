@@ -10,5 +10,6 @@ Future<void> __instanciateScheduleUntilToday(() param) {
 
 /// {@macro instanciateScheduleUntilToday}
 Future<void> instanciateScheduleUntilToday() async {
-  await compute(__instanciateScheduleUntilToday, ());
+  return usecase.instanciateScheduleUntilToday();
+  // await compute(__instanciateScheduleUntilToday, ());
 }

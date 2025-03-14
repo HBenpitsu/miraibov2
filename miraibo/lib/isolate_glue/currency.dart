@@ -11,7 +11,8 @@ Future<int> __createCurrency((String, double) param) {
 
 /// {@macro createCurrency}
 Future<int> createCurrency(String name, double ratio) {
-  return compute(__createCurrency, (name, ratio));
+  return usecase.createCurrency(name, ratio);
+  // return compute(__createCurrency, (name, ratio));
 }
 // </createCurrency>
 
@@ -22,7 +23,8 @@ Future<void> __editCurrency((int, String, double) param) {
 }
 
 Future<void> editCurrency(int id, String name, double ratio) {
-  return compute(__editCurrency, (id, name, ratio));
+  return usecase.editCurrency(id, name, ratio);
+  // return compute(__editCurrency, (id, name, ratio));
 }
 // </editCurrency>
 
@@ -33,7 +35,8 @@ Future<void> __integrateCurrency((int, int) param) {
 }
 
 Future<void> integrateCurrency(int replaceeId, int replacerId) {
-  return compute(__integrateCurrency, (replaceeId, replacerId));
+  return usecase.integrateCurrency(replaceeId, replacerId);
+  // return compute(__integrateCurrency, (replaceeId, replacerId));
 }
 // </integrateCurrency>
 
@@ -46,7 +49,8 @@ Future<void> __setCurrencyAsDefault(int id) {
 
 /// {@macro setCurrencyAsDefault}
 Future<void> setCurrencyAsDefault(int id) {
-  return compute(__setCurrencyAsDefault, id);
+  return usecase.setCurrencyAsDefault(id);
+  // return compute(__setCurrencyAsDefault, id);
 }
 // </setCurrencyAsDefault>
 
@@ -58,7 +62,8 @@ Future<List<Currency>> __fetchAllCurrencies(() param) {
 
 /// {@macro fetchAllCurrencies}
 Future<List<Currency>> fetchAllCurrencies() {
-  return compute(__fetchAllCurrencies, ());
+  return usecase.fetchAllCurrencies();
+  // return compute(__fetchAllCurrencies, ());
 }
 // </fetchAllCurrencies>
 
@@ -70,6 +75,7 @@ Future<Currency> __fetchDefaultCurrency(() param) {
 
 /// {@macro fetchDefaultCurrency}
 Future<Currency> fetchDefaultCurrency() {
-  return compute(__fetchDefaultCurrency, ());
+  return usecase.fetchDefaultCurrency();
+  // return compute(__fetchDefaultCurrency, ());
 }
 // </fetchDefaultCurrency>

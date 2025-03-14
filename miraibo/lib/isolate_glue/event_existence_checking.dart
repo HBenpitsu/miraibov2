@@ -11,6 +11,7 @@ Future<void> __fetchEventExistenceOn(Date date) {
 
 /// {@macro fetchEventExistenceOn}
 Future<void> fetchEventExistenceOn(Date date) {
-  return compute(__fetchEventExistenceOn, date);
+  return usecase.fetchEventExistenceOn(date);
+  // return compute(__fetchEventExistenceOn, date);
 }
 // </fetchEventExistenceOn>

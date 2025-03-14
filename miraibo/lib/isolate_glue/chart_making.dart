@@ -13,8 +13,9 @@ Future<List<RatioValue>> __getValuesOfPieChart(
 /// {@macro getValuesOfPieChart}
 Future<List<RatioValue>> getValuesOfPieChart(
     int currencyId, OpenPeriod analysisRange, List<int> categoryIds) {
-  return compute(
-      __getValuesOfPieChart, (currencyId, analysisRange, categoryIds));
+  return usecase.getValuesOfPieChart(currencyId, analysisRange, categoryIds);
+  // return compute(
+  //     __getValuesOfPieChart, (currencyId, analysisRange, categoryIds));
 }
 // </getValuesOfPieChart>
 
@@ -33,8 +34,10 @@ Future<List<AccumulatedValue>> getValuesOfAccumulationChart(
     ClosedPeriod viewportRange,
     List<int> categoryIds,
     int intervalInDays) {
-  return compute(__getValuesOfAccumulationChart,
-      (currencyId, analysisRange, viewportRange, categoryIds, intervalInDays));
+  return usecase.getValuesOfAccumulationChart(
+      currencyId, analysisRange, viewportRange, categoryIds, intervalInDays);
+  // return compute(__getValuesOfAccumulationChart,
+  //     (currencyId, analysisRange, viewportRange, categoryIds, intervalInDays));
 }
 // </getValuesOfAccumulationChart>
 
@@ -52,7 +55,9 @@ Future<List<SubtotalValue>> getValuesOfSubtotalChart(
     ClosedPeriod viewportRange,
     List<int> categoryIds,
     int intervalInDays) async {
-  return compute(__getValuesOfSubtotalChart,
-      (currencyId, viewportRange, categoryIds, intervalInDays));
+  return usecase.getValuesOfSubtotalChart(
+      currencyId, viewportRange, categoryIds, intervalInDays);
+  // return compute(__getValuesOfSubtotalChart,
+  //     (currencyId, viewportRange, categoryIds, intervalInDays));
 }
 // </getValuesOfSubtotalChart>
