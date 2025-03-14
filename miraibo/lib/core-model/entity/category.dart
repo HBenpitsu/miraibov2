@@ -24,6 +24,15 @@ class Category {
     return _repository.find(name);
   }
 
+  static Future<Category?> get(int id) async {
+    for (final category in await _repository.getAll()) {
+      if (category.id == id) {
+        return category;
+      }
+    }
+    return null;
+  }
+
   static Future<Category> findOrCreate(String name) async {
     final found = await find(name);
     return found ?? create(name);

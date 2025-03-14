@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show compute;
-import 'package:miraibo/core-model/usecase/usecase.dart' as usecase;
+import 'package:miraibo/external-model/usecase/external_interacting.dart'
+    as usecase;
 
 /// {@macro exportDataTo}
 Future<void> exportDataTo(String path) {

@@ -3829,6 +3829,202 @@ class AnnualPlansCompanion extends UpdateCompanion<AnnualPlan> {
   }
 }
 
+class InstanciatedPlans extends Table
+    with TableInfo<InstanciatedPlans, InstanciatedPlan> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  InstanciatedPlans(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  late final GeneratedColumn<int> planId = GeneratedColumn<int>(
+      '_planId', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      '_date', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [planId, date];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'instanciatedPlans';
+  @override
+  VerificationContext validateIntegrity(Insertable<InstanciatedPlan> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('_planId')) {
+      context.handle(_planIdMeta,
+          planId.isAcceptableOrUnknown(data['_planId']!, _planIdMeta));
+    } else if (isInserting) {
+      context.missing(_planIdMeta);
+    }
+    if (data.containsKey('_date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['_date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  InstanciatedPlan map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InstanciatedPlan(
+      planId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}_planId'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}_date'])!,
+    );
+  }
+
+  @override
+  InstanciatedPlans createAlias(String alias) {
+    return InstanciatedPlans(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class InstanciatedPlan extends DataClass
+    implements Insertable<InstanciatedPlan> {
+  final int planId;
+  final DateTime date;
+  const InstanciatedPlan({required this.planId, required this.date});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['_planId'] = Variable<int>(planId);
+    map['_date'] = Variable<DateTime>(date);
+    return map;
+  }
+
+  InstanciatedPlansCompanion toCompanion(bool nullToAbsent) {
+    return InstanciatedPlansCompanion(
+      planId: Value(planId),
+      date: Value(date),
+    );
+  }
+
+  factory InstanciatedPlan.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InstanciatedPlan(
+      planId: serializer.fromJson<int>(json['_planId']),
+      date: serializer.fromJson<DateTime>(json['_date']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      '_planId': serializer.toJson<int>(planId),
+      '_date': serializer.toJson<DateTime>(date),
+    };
+  }
+
+  InstanciatedPlan copyWith({int? planId, DateTime? date}) => InstanciatedPlan(
+        planId: planId ?? this.planId,
+        date: date ?? this.date,
+      );
+  InstanciatedPlan copyWithCompanion(InstanciatedPlansCompanion data) {
+    return InstanciatedPlan(
+      planId: data.planId.present ? data.planId.value : this.planId,
+      date: data.date.present ? data.date.value : this.date,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InstanciatedPlan(')
+          ..write('planId: $planId, ')
+          ..write('date: $date')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(planId, date);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InstanciatedPlan &&
+          other.planId == this.planId &&
+          other.date == this.date);
+}
+
+class InstanciatedPlansCompanion extends UpdateCompanion<InstanciatedPlan> {
+  final Value<int> planId;
+  final Value<DateTime> date;
+  final Value<int> rowid;
+  const InstanciatedPlansCompanion({
+    this.planId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InstanciatedPlansCompanion.insert({
+    required int planId,
+    required DateTime date,
+    this.rowid = const Value.absent(),
+  })  : planId = Value(planId),
+        date = Value(date);
+  static Insertable<InstanciatedPlan> custom({
+    Expression<int>? planId,
+    Expression<DateTime>? date,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (planId != null) '_planId': planId,
+      if (date != null) '_date': date,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InstanciatedPlansCompanion copyWith(
+      {Value<int>? planId, Value<DateTime>? date, Value<int>? rowid}) {
+    return InstanciatedPlansCompanion(
+      planId: planId ?? this.planId,
+      date: date ?? this.date,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (planId.present) {
+      map['_planId'] = Variable<int>(planId.value);
+    }
+    if (date.present) {
+      map['_date'] = Variable<DateTime>(date.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InstanciatedPlansCompanion(')
+          ..write('planId: $planId, ')
+          ..write('date: $date, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class EstimationSchemes extends Table
     with TableInfo<EstimationSchemes, EstimationScheme> {
   @override
@@ -4964,6 +5160,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       'CREATE INDEX annualPlans_origin ON annualPlans (_origin)');
   late final Index annualPlansPeriodBegins = Index('annualPlans_periodBegins',
       'CREATE INDEX annualPlans_periodBegins ON annualPlans (_periodBegins)');
+  late final InstanciatedPlans instanciatedPlans = InstanciatedPlans(this);
+  late final Index instanciatedPlansDate = Index('instanciatedPlans_date',
+      'CREATE INDEX instanciatedPlans_date ON instanciatedPlans (_date)');
   late final EstimationSchemes estimationSchemes = EstimationSchemes(this);
   late final Index estimationSchemesPeriodBegins = Index(
       'estimationSchemes_periodBegins',
@@ -5007,6 +5206,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         annualPlans,
         annualPlansOrigin,
         annualPlansPeriodBegins,
+        instanciatedPlans,
+        instanciatedPlansDate,
         estimationSchemes,
         estimationSchemesPeriodBegins,
         estimationSchemesPeriodEnds,
@@ -9096,6 +9297,134 @@ typedef $AnnualPlansProcessedTableManager = ProcessedTableManager<
     (AnnualPlan, $AnnualPlansReferences),
     AnnualPlan,
     PrefetchHooks Function({bool currencyId, bool categoryId})>;
+typedef $InstanciatedPlansCreateCompanionBuilder = InstanciatedPlansCompanion
+    Function({
+  required int planId,
+  required DateTime date,
+  Value<int> rowid,
+});
+typedef $InstanciatedPlansUpdateCompanionBuilder = InstanciatedPlansCompanion
+    Function({
+  Value<int> planId,
+  Value<DateTime> date,
+  Value<int> rowid,
+});
+
+class $InstanciatedPlansFilterComposer
+    extends Composer<_$AppDatabase, InstanciatedPlans> {
+  $InstanciatedPlansFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnFilters(column));
+}
+
+class $InstanciatedPlansOrderingComposer
+    extends Composer<_$AppDatabase, InstanciatedPlans> {
+  $InstanciatedPlansOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnOrderings(column));
+}
+
+class $InstanciatedPlansAnnotationComposer
+    extends Composer<_$AppDatabase, InstanciatedPlans> {
+  $InstanciatedPlansAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+}
+
+class $InstanciatedPlansTableManager extends RootTableManager<
+    _$AppDatabase,
+    InstanciatedPlans,
+    InstanciatedPlan,
+    $InstanciatedPlansFilterComposer,
+    $InstanciatedPlansOrderingComposer,
+    $InstanciatedPlansAnnotationComposer,
+    $InstanciatedPlansCreateCompanionBuilder,
+    $InstanciatedPlansUpdateCompanionBuilder,
+    (
+      InstanciatedPlan,
+      BaseReferences<_$AppDatabase, InstanciatedPlans, InstanciatedPlan>
+    ),
+    InstanciatedPlan,
+    PrefetchHooks Function()> {
+  $InstanciatedPlansTableManager(_$AppDatabase db, InstanciatedPlans table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $InstanciatedPlansFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $InstanciatedPlansOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $InstanciatedPlansAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> planId = const Value.absent(),
+            Value<DateTime> date = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              InstanciatedPlansCompanion(
+            planId: planId,
+            date: date,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int planId,
+            required DateTime date,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              InstanciatedPlansCompanion.insert(
+            planId: planId,
+            date: date,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $InstanciatedPlansProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    InstanciatedPlans,
+    InstanciatedPlan,
+    $InstanciatedPlansFilterComposer,
+    $InstanciatedPlansOrderingComposer,
+    $InstanciatedPlansAnnotationComposer,
+    $InstanciatedPlansCreateCompanionBuilder,
+    $InstanciatedPlansUpdateCompanionBuilder,
+    (
+      InstanciatedPlan,
+      BaseReferences<_$AppDatabase, InstanciatedPlans, InstanciatedPlan>
+    ),
+    InstanciatedPlan,
+    PrefetchHooks Function()>;
 typedef $EstimationSchemesCreateCompanionBuilder = EstimationSchemesCompanion
     Function({
   Value<int> id,
@@ -10229,6 +10558,8 @@ class $AppDatabaseManager {
       $MonthlyPlansTableManager(_db, _db.monthlyPlans);
   $AnnualPlansTableManager get annualPlans =>
       $AnnualPlansTableManager(_db, _db.annualPlans);
+  $InstanciatedPlansTableManager get instanciatedPlans =>
+      $InstanciatedPlansTableManager(_db, _db.instanciatedPlans);
   $EstimationSchemesTableManager get estimationSchemes =>
       $EstimationSchemesTableManager(_db, _db.estimationSchemes);
   $MonitorSchemesTableManager get monitorSchemes =>

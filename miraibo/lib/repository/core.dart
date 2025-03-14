@@ -1,6 +1,7 @@
 import 'package:miraibo/core-model/entity/receipt_log.dart';
 import 'package:miraibo/core-model/value/collection/category_collection.dart';
 import 'package:miraibo/core-model/value/period.dart';
+import 'package:miraibo/core-model/value/date.dart';
 import 'package:miraibo/core-model/entity/plan.dart';
 import 'package:miraibo/core-model/entity/monitor_scheme.dart';
 import 'package:miraibo/core-model/entity/estimation_scheme.dart';
@@ -12,6 +13,7 @@ abstract class CategoryRepository {
   Stream<List<Category>> watchAll();
   Future<List<Category>> getAll();
   Future<Category?> find(String name);
+  Stream<Category?> watchById(int id);
   Future<void> update(Category category);
   Future<void> insert(Category category);
   Future<void> insertAll(Iterable<Category> categories);
@@ -23,6 +25,7 @@ abstract class CurrencyRepository {
   Stream<List<Currency>> watchAll();
   Future<List<Currency>> getAll();
   Future<Currency?> find(String symbol, double ratio);
+  Stream<Currency?> watchById(int id);
   Future<Currency?> getDefault();
   Future<void> setDefault(Currency currency);
   Future<void> update(Currency currency);
@@ -36,6 +39,7 @@ abstract class EstimationSchemeRepository {
     Period period,
     CategoryCollection categories,
   );
+  Stream<EstimationScheme?> watchById(int id);
   Future<void> replaceCategory(Category oldCategory, Category newCategory);
   Stream<EstimationScheme> savedIn(Currency currency);
   Future<void> update(EstimationScheme estimationScheme);
@@ -49,6 +53,7 @@ abstract class MonitorSchemeRepository {
     Period period,
     CategoryCollection categories,
   );
+  Stream<MonitorScheme?> watchById(int id);
   Future<void> replaceCategory(Category oldCategory, Category newCategory);
   Stream<MonitorScheme> savedIn(Currency currency);
   Future<void> update(MonitorScheme monitorScheme);
@@ -60,6 +65,7 @@ abstract class ReceiptLogRepository {
   static late final ReceiptLogRepository instance;
   Stream<ReceiptLog> get(Period period, CategoryCollection categories,
       {bool? confirmed});
+  Stream<ReceiptLog?> watchById(int id);
   Stream<List<ReceiptLog>> watchRows(int skip, int limit);
   Future<List<ReceiptLog>> getRows(int skip, int limit);
   Future<void> replaceCategory(Category oldCategory, Category newCategory);
@@ -67,6 +73,7 @@ abstract class ReceiptLogRepository {
   Future<void> insert(ReceiptLog receiptLog);
   Future<void> update(ReceiptLog receiptLog);
   Future<void> delete(ReceiptLog receiptLog);
+  Future<void> deleteAll();
 }
 
 abstract class PlanRepository {
@@ -75,9 +82,19 @@ abstract class PlanRepository {
     Period period,
     CategoryCollection categories,
   );
+  Stream<Plan?> watchById(int id);
   Future<void> replaceCategory(Category oldCategory, Category newCategory);
   Stream<Plan> savedIn(Currency currency);
   Future<void> update(Plan plan);
   Future<void> delete(Plan plan);
   Future<void> insert(Plan plan);
+  Future<void> markAsInstanciated(Plan plan, Date date);
+  Future<List<int>> instanciatedPlans(Date date);
+  Future<Date> getLastInstanciatedDate();
+  Future<void> setLastInstanciatedDate(Date date);
+}
+
+abstract class InitializationRepository {
+  static late final InitializationRepository instance;
+  Future<void> initializeAppDate();
 }

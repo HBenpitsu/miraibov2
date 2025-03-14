@@ -1,14 +1,28 @@
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/core-model/value/collection/receipt_log_collection.dart'
+    as model;
 
 /// {@template fetchLoggedReceiptRecords}
-/// fetch bunch of logged receipt records from recent ones.
-/// [limitOfRecords] is the *maximum* number of records to fetch.
-/// (The number of records may be less than [limitOfRecords])
-/// [skipFirstRecords] is the number of records to skip from the beginning.
-/// For example, when you want to fetch 5 records from the 3rd record,
-/// you should call this function with limitOfRecords=5 and skipFirstRecords=2.
+/// fetch the logged receipt records at given index
 /// {@endtemplate}
-Future<ReceiptLogSchemeInstance> fetchLoggedReceiptRecords(
-    int limitOfRecords, int skipFirstRecords) async {
-  throw UnimplementedError();
+Stream<ReceiptLogSchemeInstance?> fetchLoggedReceiptRecord(int index) async* {
+  final logStream = model.ReceiptLogCollection.watchFor(index);
+  await for (final log in logStream) {
+    if (log == null) {
+      yield null;
+      continue;
+    }
+    yield ReceiptLogSchemeInstance(
+      id: log.id,
+      date: Date(log.date.year, log.date.month, log.date.day),
+      price: ConfigureblePrice(
+        amount: log.price.amount.toInt(),
+        currencyId: log.price.currency.id,
+        currencySymbol: log.price.currency.symbol,
+      ),
+      description: log.description,
+      category: Category(id: log.category.id, name: log.category.name),
+      confirmed: log.confirmed,
+    );
+  }
 }

@@ -1,4 +1,12 @@
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/core-model/value/collection/record_collection.dart'
+    as model;
+import 'package:miraibo/core-model/entity/category.dart' as model;
+import 'package:miraibo/core-model/value/collection/category_collection.dart'
+    as model;
+import 'package:miraibo/core-model/value/date.dart' as model;
+import 'package:miraibo/core-model/value/period.dart' as model;
+import 'package:miraibo/core-model/entity/currency.dart' as model;
 
 /// {@template getValuesOfPieChart}
 /// returns the values to make a pie chart.
@@ -14,7 +22,49 @@ import 'package:miraibo/dto/dto.dart';
 /// {@endtemplate}
 Future<List<RatioValue>> getValuesOfPieChart(
     int currencyId, OpenPeriod analysisRange, List<int> categoryIds) async {
-  throw UnimplementedError();
+  final currency = (await model.Currency.get(currencyId))!;
+  List<model.Category> categories;
+  if (categoryIds.isEmpty) {
+    categories = await model.CategoryCollection.getAll();
+  } else {
+    categories = [];
+    for (final categoryId in categoryIds) {
+      categories.add((await model.Category.get(categoryId))!);
+    }
+  }
+  final buffer = <(String, double)>[];
+  for (final category in categories) {
+    final records = await model.RecordCollection.get(
+        model.Period(
+          begins: analysisRange.begins != null
+              ? model.Date(
+                  analysisRange.begins!.year,
+                  analysisRange.begins!.month,
+                  analysisRange.begins!.day,
+                )
+              : model.Date.earliest,
+          ends: analysisRange.ends != null
+              ? model.Date(
+                  analysisRange.ends!.year,
+                  analysisRange.ends!.month,
+                  analysisRange.ends!.day,
+                )
+              : model.Date.latest,
+        ),
+        model.CategoryCollection.single(category));
+    buffer.add((category.name, records.total(currency).amount));
+  }
+  final total =
+      buffer.fold(0.0, (previousValue, element) => previousValue + element.$2);
+  final result = <RatioValue>[];
+  for (final pair in buffer) {
+    result.add(RatioValue(
+      categoryName: pair.$1,
+      amount: pair.$2,
+      ratio: pair.$2 / total,
+    ));
+  }
+  return result;
 }
 
 /// {@template getValuesOfAccumulationChart}
@@ -53,7 +103,42 @@ Future<List<AccumulatedValue>> getValuesOfAccumulationChart(
     ClosedPeriod viewportRange,
     List<int> categoryIds,
     int intervalInDays) async {
-  throw UnimplementedError();
+  final currency = (await model.Currency.get(currencyId))!;
+  model.CategoryCollection categories;
+  if (categoryIds.isEmpty) {
+    categories = model.CategoryCollection.phantomAll;
+  } else {
+    final categoryList = <model.Category>[];
+    for (final categoryId in categoryIds) {
+      categoryList.add((await model.Category.get(categoryId))!);
+    }
+    categories = model.CategoryCollection(categories: categoryList);
+  }
+  final residure =
+      viewportRange.asDateTimeRange().duration.inDays % intervalInDays;
+  model.Date ends = model.Date(viewportRange.begins.year,
+      viewportRange.begins.month, viewportRange.begins.day + residure);
+  final result = <AccumulatedValue>[];
+  while (viewportRange.ends.asDateTime().isAfter(ends.toDateTime())) {
+    final records = await model.RecordCollection.get(
+        model.Period(
+          begins: analysisRange.begins != null
+              ? model.Date(
+                  analysisRange.begins!.year,
+                  analysisRange.begins!.month,
+                  analysisRange.begins!.day,
+                )
+              : model.Date.earliest,
+          ends: ends,
+        ),
+        categories);
+    ends = ends.withDelta(days: intervalInDays);
+    result.add(AccumulatedValue(
+      date: Date(ends.year, ends.month, ends.day),
+      amount: records.total(currency).amount,
+    ));
+  }
+  return result;
 }
 
 /// {@template getValuesOfSubtotalChart}
@@ -87,5 +172,34 @@ Future<List<SubtotalValue>> getValuesOfSubtotalChart(
     ClosedPeriod viewportRange,
     List<int> categoryIds,
     int intervalInDays) async {
-  throw UnimplementedError();
+  final currency = (await model.Currency.get(currencyId))!;
+  model.CategoryCollection categories;
+  if (categoryIds.isEmpty) {
+    categories = model.CategoryCollection.phantomAll;
+  } else {
+    final categoryList = <model.Category>[];
+    for (final categoryId in categoryIds) {
+      categoryList.add((await model.Category.get(categoryId))!);
+    }
+    categories = model.CategoryCollection(categories: categoryList);
+  }
+  final residure =
+      viewportRange.asDateTimeRange().duration.inDays % intervalInDays;
+  model.Date ends = model.Date(viewportRange.begins.year,
+      viewportRange.begins.month, viewportRange.begins.day + residure);
+  final result = <SubtotalValue>[];
+  while (viewportRange.ends.asDateTime().isAfter(ends.toDateTime())) {
+    final records = await model.RecordCollection.get(
+        model.Period(
+          begins: ends.withDelta(days: -intervalInDays + 1),
+          ends: ends,
+        ),
+        categories);
+    ends = ends.withDelta(days: intervalInDays);
+    result.add(SubtotalValue(
+      date: Date(ends.year, ends.month, ends.day),
+      amount: records.total(currency).amount,
+    ));
+  }
+  return result;
 }

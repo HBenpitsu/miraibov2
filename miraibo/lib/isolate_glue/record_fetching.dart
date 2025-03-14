@@ -1,14 +1,27 @@
-import 'package:flutter/foundation.dart' show compute;
+import 'dart:isolate';
+
 import 'package:miraibo/core-model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
 
-Future<ReceiptLogSchemeInstance> __fetchLoggedReceiptRecords((int, int) param) {
-  return usecase.fetchLoggedReceiptRecords(param.$1, param.$2);
+__fetchLoggedReceiptRecord((int, SendPort) params) async {
+  final index = params.$1;
+  final sendPort = params.$2;
+  final logStream = usecase.fetchLoggedReceiptRecord(index);
+  await for (final log in logStream) {
+    sendPort.send(log);
+  }
 }
 
 /// {@macro fetchLoggedReceiptRecords}
-Future<ReceiptLogSchemeInstance> fetchLoggedReceiptRecords(
-    int limitOfRecords, int skipFirstRecords) async {
-  return compute(
-      __fetchLoggedReceiptRecords, (limitOfRecords, skipFirstRecords));
+Stream<ReceiptLogSchemeInstance?> fetchLoggedReceiptRecord(int index) async* {
+  final receivePort = ReceivePort();
+  final isolate = await Isolate.spawn(
+      __fetchLoggedReceiptRecord, (index, receivePort.sendPort));
+  await for (final log in receivePort) {
+    if (log == null) {
+      receivePort.close();
+    }
+    yield log;
+  }
+  isolate.kill();
 }

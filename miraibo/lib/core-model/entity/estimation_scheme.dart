@@ -80,6 +80,10 @@ class EstimationScheme {
     return newEntity;
   }
 
+  static Stream<EstimationScheme?> watch(int id) {
+    return repository.watchById(id);
+  }
+
   Future<void> update({
     Period? period,
     Currency? currency,

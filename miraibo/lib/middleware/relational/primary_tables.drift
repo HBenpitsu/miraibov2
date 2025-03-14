@@ -138,6 +138,16 @@ CREATE INDEX annualPlans_origin ON annualPlans(_origin);
 CREATE INDEX annualPlans_periodBegins ON annualPlans(_periodBegins);
 
 -- </annualPlans>
+-- <instanciatedPlans>
+
+CREATE TABLE instanciatedPlans (
+    _planId INTEGER NOT NULL,
+    _date DATE NOT NULL,
+);
+
+CREATE INDEX instanciatedPlans_date ON instanciatedPlans(_date);
+
+-- </instanciatedPlans>
 -- </plans>
 -- <estimationSchemes>
 

@@ -6,5 +6,5 @@ export 'package:miraibo/core-model/usecase/ticket_fetching.dart';
 export 'package:miraibo/core-model/usecase/ticket_managing.dart';
 export 'package:miraibo/core-model/usecase/analyzing.dart';
 export 'package:miraibo/core-model/usecase/record_fetching.dart';
-export 'package:miraibo/core-model/usecase/external_interacting.dart';
 export 'package:miraibo/dto/dto.dart';
+export 'package:miraibo/core-model/usecase/instanciate_schedule.dart';

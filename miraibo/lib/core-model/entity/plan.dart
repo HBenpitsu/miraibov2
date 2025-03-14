@@ -44,6 +44,10 @@ class Plan {
     return newEntity;
   }
 
+  static Stream<Plan?> watch(int id) {
+    return _repository.watchById(id);
+  }
+
   Future<void> update({
     Schedule? schedule,
     Price? price,

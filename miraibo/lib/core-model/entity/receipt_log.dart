@@ -49,6 +49,10 @@ class ReceiptLog {
     return newEntity;
   }
 
+  static Stream<ReceiptLog?> watch(int id) {
+    return repository.watchById(id);
+  }
+
   Future<void> update({
     Date? date,
     Price? price,

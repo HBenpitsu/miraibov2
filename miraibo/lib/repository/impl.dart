@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -31,6 +32,7 @@ void bind() {
   MonitorSchemeRepository.instance = MonitorSchemeRepositoryImpl();
   ErrorMessenger.instance = ErrorMessengerImpl();
   ExternalEnvironmentInterface.instance = ExternalEnvironmentInterfaceImpl();
+  InitializationRepository.instance = InitializationRepositoryImpl();
 }
 
 class CategoryRepositoryImpl implements CategoryRepository {
@@ -69,6 +71,19 @@ class CategoryRepositoryImpl implements CategoryRepository {
       id: response.id,
       name: response.name,
     );
+  }
+
+  @override
+  Stream<model.Category?> watchById(int id) {
+    final query = database.categories.select()
+      ..where((row) => row.id.equals(id));
+    return query.watchSingleOrNull().map((row) {
+      if (row == null) return null;
+      return model.Category(
+        id: row.id,
+        name: row.name,
+      );
+    });
   }
 
   @override
@@ -152,6 +167,20 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
       symbol: response.symbol,
       ratio: response.ratio,
     );
+  }
+
+  @override
+  Stream<model.Currency?> watchById(int id) {
+    final query = database.currencies.select()
+      ..where((row) => row.id.equals(id));
+    return query.watchSingleOrNull().map((row) {
+      if (row == null) return null;
+      return model.Currency(
+        id: row.id,
+        symbol: row.symbol,
+        ratio: row.ratio,
+      );
+    });
   }
 
   @override
@@ -298,6 +327,17 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
   }
 
   @override
+  Stream<model.ReceiptLog?> watchById(int id) {
+    final query = database.receiptLogs.select()
+      ..where((row) => row.id.equals(id));
+    final jointQuery = _join(query);
+    return jointQuery.watchSingleOrNull().map((row) {
+      if (row == null) return null;
+      return _parse(row);
+    });
+  }
+
+  @override
   Future<void> insert(model.ReceiptLog receiptLog) async {
     await database.receiptLogs.insert().insert(
         ReceiptLog(
@@ -352,17 +392,30 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
       ..where((row) => row.currencyId.equals(currency.id));
     return _queryToStream(query);
   }
+
+  @override
+  Future<void> deleteAll() {
+    return database.receiptLogs.delete().go();
+  }
 }
 
 class PlanRepositoryImpl implements PlanRepository {
   static final database = AppDatabase();
+  static final keyValue = KeyValueStore();
 
-  Stream<model.Plan> _queryToStream(
-      SimpleSelectStatement<OneshotPlans, OneshotPlan> oneshotPlanQuery,
-      SimpleSelectStatement<IntervalPlans, IntervalPlan> intervalPlanQuery,
-      SimpleSelectStatement<WeeklyPlans, WeeklyPlan> weeklyPlanQuery,
-      SimpleSelectStatement<MonthlyPlans, MonthlyPlan> monthlyPlanQuery,
-      SimpleSelectStatement<AnnualPlans, AnnualPlan> annualPlanQuery) async* {
+  (
+    JoinedSelectStatement<HasResultSet, dynamic>,
+    JoinedSelectStatement<HasResultSet, dynamic>,
+    JoinedSelectStatement<HasResultSet, dynamic>,
+    JoinedSelectStatement<HasResultSet, dynamic>,
+    JoinedSelectStatement<HasResultSet, dynamic>,
+  ) _join(
+    SimpleSelectStatement<OneshotPlans, OneshotPlan> oneshotPlanQuery,
+    SimpleSelectStatement<IntervalPlans, IntervalPlan> intervalPlanQuery,
+    SimpleSelectStatement<WeeklyPlans, WeeklyPlan> weeklyPlanQuery,
+    SimpleSelectStatement<MonthlyPlans, MonthlyPlan> monthlyPlanQuery,
+    SimpleSelectStatement<AnnualPlans, AnnualPlan> annualPlanQuery,
+  ) {
     final oneshotPlanJointQuery = oneshotPlanQuery.join(
       [
         innerJoin(
@@ -424,132 +477,181 @@ class PlanRepositoryImpl implements PlanRepository {
       ],
     );
 
+    return (
+      oneshotPlanJointQuery,
+      intervalPlanJointQuery,
+      weeklyPlanJointQuery,
+      monthlyPlanJointQuery,
+      annualPlanJointQuery,
+    );
+  }
+
+  model.Plan _parseOneshot(TypedResult row) {
+    final plan = row.readTable(database.oneshotPlans);
+    final category = row.readTable(database.categories);
+    final currency = row.readTable(database.currencies);
+    return model.Plan(
+        id: plan.id,
+        category: model.Category(
+          id: category.id,
+          name: category.name,
+        ),
+        description: plan.description,
+        price: Price(
+            amount: plan.amount,
+            currency: model.Currency(
+              id: currency.id,
+              symbol: currency.symbol,
+              ratio: currency.ratio,
+            )),
+        schedule: model.OneshotSchedule(date: Date.fromDateTime(plan.date)));
+  }
+
+  model.Plan _parseInterval(TypedResult row) {
+    final plan = row.readTable(database.intervalPlans);
+    final category = row.readTable(database.categories);
+    final currency = row.readTable(database.currencies);
+    return model.Plan(
+        id: plan.id,
+        category: model.Category(
+          id: category.id,
+          name: category.name,
+        ),
+        description: plan.description,
+        price: Price(
+            amount: plan.amount,
+            currency: model.Currency(
+              id: currency.id,
+              symbol: currency.symbol,
+              ratio: currency.ratio,
+            )),
+        schedule: model.IntervalSchedule(
+            originDate: Date.fromDateTime(plan.origin),
+            period: Period(
+                begins: Date.fromDateTime(plan.periodBegins),
+                ends: Date.fromDateTime(plan.periodEnds)),
+            interval: plan.interval));
+  }
+
+  model.Plan _parseWeekly(TypedResult row) {
+    final plan = row.readTable(database.weeklyPlans);
+    final category = row.readTable(database.categories);
+    final currency = row.readTable(database.currencies);
+    return model.Plan(
+        id: plan.id,
+        category: model.Category(
+          id: category.id,
+          name: category.name,
+        ),
+        description: plan.description,
+        price: Price(
+            amount: plan.amount,
+            currency: model.Currency(
+              id: currency.id,
+              symbol: currency.symbol,
+              ratio: currency.ratio,
+            )),
+        schedule: model.WeeklySchedule(
+            period: Period(
+                begins: Date.fromDateTime(plan.periodBegins),
+                ends: Date.fromDateTime(plan.periodEnds)),
+            sunday: plan.sunday,
+            monday: plan.monday,
+            tuesday: plan.tuesday,
+            wednesday: plan.tuesday,
+            thursday: plan.tuesday,
+            friday: plan.friday,
+            saturday: plan.saturday));
+  }
+
+  model.Plan _parseMonthly(TypedResult row) {
+    final plan = row.readTable(database.monthlyPlans);
+    final category = row.readTable(database.categories);
+    final currency = row.readTable(database.currencies);
+    return model.Plan(
+        id: plan.id,
+        category: model.Category(
+          id: category.id,
+          name: category.name,
+        ),
+        description: plan.description,
+        price: Price(
+            amount: plan.amount,
+            currency: model.Currency(
+              id: currency.id,
+              symbol: currency.symbol,
+              ratio: currency.ratio,
+            )),
+        schedule: model.MonthlySchedule(
+            period: Period(
+                begins: Date.fromDateTime(plan.periodBegins),
+                ends: Date.fromDateTime(plan.periodEnds)),
+            offset: plan.offset));
+  }
+
+  model.Plan _parseAnnual(TypedResult row) {
+    final plan = row.readTable(database.annualPlans);
+    final category = row.readTable(database.categories);
+    final currency = row.readTable(database.currencies);
+    return model.Plan(
+        id: plan.id,
+        category: model.Category(
+          id: category.id,
+          name: category.name,
+        ),
+        description: plan.description,
+        price: Price(
+            amount: plan.amount,
+            currency: model.Currency(
+              id: currency.id,
+              symbol: currency.symbol,
+              ratio: currency.ratio,
+            )),
+        schedule: model.AnnualSchedule(
+            period: Period(
+                begins: Date.fromDateTime(plan.periodBegins),
+                ends: Date.fromDateTime(plan.periodEnds)),
+            originDate: Date.fromDateTime(plan.origin)));
+  }
+
+  Stream<model.Plan> _queryToStream(
+      SimpleSelectStatement<OneshotPlans, OneshotPlan> oneshotPlanQuery,
+      SimpleSelectStatement<IntervalPlans, IntervalPlan> intervalPlanQuery,
+      SimpleSelectStatement<WeeklyPlans, WeeklyPlan> weeklyPlanQuery,
+      SimpleSelectStatement<MonthlyPlans, MonthlyPlan> monthlyPlanQuery,
+      SimpleSelectStatement<AnnualPlans, AnnualPlan> annualPlanQuery) async* {
+    final (
+      oneshotPlanJointQuery,
+      intervalPlanJointQuery,
+      weeklyPlanJointQuery,
+      monthlyPlanJointQuery,
+      annualPlanJointQuery
+    ) = _join(
+      oneshotPlanQuery,
+      intervalPlanQuery,
+      weeklyPlanQuery,
+      monthlyPlanQuery,
+      annualPlanQuery,
+    );
+
     for (final row in await oneshotPlanJointQuery.get()) {
-      final plan = row.readTable(database.oneshotPlans);
-      final category = row.readTable(database.categories);
-      final currency = row.readTable(database.currencies);
-      yield model.Plan(
-          id: plan.id,
-          category: model.Category(
-            id: category.id,
-            name: category.name,
-          ),
-          description: plan.description,
-          price: Price(
-              amount: plan.amount,
-              currency: model.Currency(
-                id: currency.id,
-                symbol: currency.symbol,
-                ratio: currency.ratio,
-              )),
-          schedule: model.OneshotSchedule(date: Date.fromDateTime(plan.date)));
+      yield _parseOneshot(row);
     }
 
     for (final row in await intervalPlanJointQuery.get()) {
-      final plan = row.readTable(database.intervalPlans);
-      final category = row.readTable(database.categories);
-      final currency = row.readTable(database.currencies);
-      yield model.Plan(
-          id: plan.id,
-          category: model.Category(
-            id: category.id,
-            name: category.name,
-          ),
-          description: plan.description,
-          price: Price(
-              amount: plan.amount,
-              currency: model.Currency(
-                id: currency.id,
-                symbol: currency.symbol,
-                ratio: currency.ratio,
-              )),
-          schedule: model.IntervalSchedule(
-              originDate: Date.fromDateTime(plan.origin),
-              period: Period(
-                  begins: Date.fromDateTime(plan.periodBegins),
-                  ends: Date.fromDateTime(plan.periodEnds)),
-              interval: plan.interval));
+      yield _parseInterval(row);
     }
 
     for (final row in await weeklyPlanJointQuery.get()) {
-      final plan = row.readTable(database.weeklyPlans);
-      final category = row.readTable(database.categories);
-      final currency = row.readTable(database.currencies);
-      yield model.Plan(
-          id: plan.id,
-          category: model.Category(
-            id: category.id,
-            name: category.name,
-          ),
-          description: plan.description,
-          price: Price(
-              amount: plan.amount,
-              currency: model.Currency(
-                id: currency.id,
-                symbol: currency.symbol,
-                ratio: currency.ratio,
-              )),
-          schedule: model.WeeklySchedule(
-              period: Period(
-                  begins: Date.fromDateTime(plan.periodBegins),
-                  ends: Date.fromDateTime(plan.periodEnds)),
-              sunday: plan.sunday,
-              monday: plan.monday,
-              tuesday: plan.tuesday,
-              wednesday: plan.tuesday,
-              thursday: plan.tuesday,
-              friday: plan.friday,
-              saturday: plan.saturday));
+      yield _parseWeekly(row);
     }
 
     for (final row in await monthlyPlanJointQuery.get()) {
-      final plan = row.readTable(database.monthlyPlans);
-      final category = row.readTable(database.categories);
-      final currency = row.readTable(database.currencies);
-      yield model.Plan(
-          id: plan.id,
-          category: model.Category(
-            id: category.id,
-            name: category.name,
-          ),
-          description: plan.description,
-          price: Price(
-              amount: plan.amount,
-              currency: model.Currency(
-                id: currency.id,
-                symbol: currency.symbol,
-                ratio: currency.ratio,
-              )),
-          schedule: model.MonthlySchedule(
-              period: Period(
-                  begins: Date.fromDateTime(plan.periodBegins),
-                  ends: Date.fromDateTime(plan.periodEnds)),
-              offset: plan.offset));
+      yield _parseMonthly(row);
     }
 
     for (final row in await annualPlanJointQuery.get()) {
-      final plan = row.readTable(database.annualPlans);
-      final category = row.readTable(database.categories);
-      final currency = row.readTable(database.currencies);
-      yield model.Plan(
-          id: plan.id,
-          category: model.Category(
-            id: category.id,
-            name: category.name,
-          ),
-          description: plan.description,
-          price: Price(
-              amount: plan.amount,
-              currency: model.Currency(
-                id: currency.id,
-                symbol: currency.symbol,
-                ratio: currency.ratio,
-              )),
-          schedule: model.AnnualSchedule(
-              period: Period(
-                  begins: Date.fromDateTime(plan.periodBegins),
-                  ends: Date.fromDateTime(plan.periodEnds)),
-              originDate: Date.fromDateTime(plan.origin)));
+      yield _parseAnnual(row);
     }
   }
 
@@ -593,6 +695,60 @@ class PlanRepositoryImpl implements PlanRepository {
     }
     return _queryToStream(oneshotPlanQuery, intervalPlanQuery, weeklyPlanQuery,
         monthlyPlanQuery, annualPlanQuery);
+  }
+
+  @override
+  Stream<model.Plan?> watchById(int id) {
+    final oneshotPlanQuery = database.oneshotPlans.select()
+      ..where((row) => row.id.equals(id));
+    final intervalPlanQuery = database.intervalPlans.select()
+      ..where((row) => row.id.equals(id));
+    final weeklyPlanQuery = database.weeklyPlans.select()
+      ..where((row) => row.id.equals(id));
+    final monthlyPlanQuery = database.monthlyPlans.select()
+      ..where((row) => row.id.equals(id));
+    final annualPlanQuery = database.annualPlans.select()
+      ..where((row) => row.id.equals(id));
+    final (
+      oneshotPlanJointQuery,
+      intervalPlanJointQuery,
+      weeklyPlanJointQuery,
+      monthlyPlanJointQuery,
+      annualPlanJointQuery
+    ) = _join(
+      oneshotPlanQuery,
+      intervalPlanQuery,
+      weeklyPlanQuery,
+      monthlyPlanQuery,
+      annualPlanQuery,
+    );
+    final returnStreamController = StreamController<model.Plan>();
+    oneshotPlanJointQuery.watchSingleOrNull().listen((row) {
+      if (row != null) {
+        returnStreamController.add(_parseOneshot(row));
+      }
+    });
+    intervalPlanJointQuery.watchSingleOrNull().listen((row) {
+      if (row != null) {
+        returnStreamController.add(_parseInterval(row));
+      }
+    });
+    weeklyPlanJointQuery.watchSingleOrNull().listen((row) {
+      if (row != null) {
+        returnStreamController.add(_parseWeekly(row));
+      }
+    });
+    monthlyPlanJointQuery.watchSingleOrNull().listen((row) {
+      if (row != null) {
+        returnStreamController.add(_parseMonthly(row));
+      }
+    });
+    annualPlanJointQuery.watchSingleOrNull().listen((row) {
+      if (row != null) {
+        returnStreamController.add(_parseAnnual(row));
+      }
+    });
+    return returnStreamController.stream;
   }
 
   @override
@@ -814,14 +970,44 @@ class PlanRepositoryImpl implements PlanRepository {
     return _queryToStream(oneshotPlanQuery, intervalPlanQuery, weeklyPlanQuery,
         monthlyPlanQuery, annualPlanQuery);
   }
+
+  @override
+  Future<List<int>> instanciatedPlans(Date date) async {
+    final query = database.instanciatedPlans.select()
+      ..where((row) => row.date.equals(date.toDateTime()));
+    final instanciatedPlanIds = await query.get();
+    return instanciatedPlanIds.map((row) => row.planId).toList();
+  }
+
+  @override
+  Future<void> markAsInstanciated(model.Plan plan, Date date) {
+    return database.instanciatedPlans.insert().insert(
+        InstanciatedPlan(
+          planId: plan.id,
+          date: date.toDateTime(),
+        ),
+        mode: InsertMode.insertOrRollback);
+  }
+
+  @override
+  Future<void> setLastInstanciatedDate(Date date) async {
+    await keyValue.setLastPlanInstanciation(date);
+  }
+
+  @override
+  Future<Date> getLastInstanciatedDate() async {
+    return await keyValue.getLastPlanInstanciation() ??
+        await keyValue.getStartUsingApp() ??
+        Date.today();
+  }
 }
 
 class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
   static final database = AppDatabase();
 
-  Stream<model.EstimationScheme> _queryToStream(
-      SimpleSelectStatement<EstimationSchemes, EstimationScheme> query) async* {
-    final jointQuery = query.join([
+  JoinedSelectStatement<HasResultSet, dynamic> _join(
+      SimpleSelectStatement<EstimationSchemes, EstimationScheme> query) {
+    return query.join([
       innerJoin(
         database.currencies,
         database.estimationSchemes.currencyId.equalsExp(database.currencies.id),
@@ -831,26 +1017,35 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
         database.estimationSchemes.categoryId.equalsExp(database.categories.id),
       )
     ]);
+  }
+
+  model.EstimationScheme _parse(TypedResult row) {
+    final scheme = row.readTable(database.estimationSchemes);
+    final currency = row.readTable(database.currencies);
+    final category = row.readTable(database.categories);
+    return model.EstimationScheme(
+      id: scheme.id,
+      displayOption: scheme.displayOption,
+      period: Period(
+          begins: Date.fromDateTime(scheme.periodBegins),
+          ends: Date.fromDateTime(scheme.periodEnds)),
+      currency: model.Currency(
+        id: currency.id,
+        symbol: currency.symbol,
+        ratio: currency.ratio,
+      ),
+      category: model.Category(
+        id: category.id,
+        name: category.name,
+      ),
+    );
+  }
+
+  Stream<model.EstimationScheme> _queryToStream(
+      SimpleSelectStatement<EstimationSchemes, EstimationScheme> query) async* {
+    final jointQuery = _join(query);
     for (final row in await jointQuery.get()) {
-      final scheme = row.readTable(database.estimationSchemes);
-      final currency = row.readTable(database.currencies);
-      final category = row.readTable(database.categories);
-      yield model.EstimationScheme(
-        id: scheme.id,
-        displayOption: scheme.displayOption,
-        period: Period(
-            begins: Date.fromDateTime(scheme.periodBegins),
-            ends: Date.fromDateTime(scheme.periodEnds)),
-        currency: model.Currency(
-          id: currency.id,
-          symbol: currency.symbol,
-          ratio: currency.ratio,
-        ),
-        category: model.Category(
-          id: category.id,
-          name: category.name,
-        ),
-      );
+      yield _parse(row);
     }
   }
 
@@ -870,6 +1065,16 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
       query.where((row) => row.categoryId.isIn(categories.ids()));
     }
     return _queryToStream(query);
+  }
+
+  @override
+  Stream<model.EstimationScheme?> watchById(int id) {
+    final query = database.estimationSchemes.select()
+      ..where((row) => row.id.equals(id));
+    return _join(query).watchSingleOrNull().map((row) {
+      if (row == null) return null;
+      return _parse(row);
+    });
   }
 
   @override
@@ -954,9 +1159,9 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
     );
   }
 
-  Stream<model.MonitorScheme> _queryToStream(
-      SimpleSelectStatement<MonitorSchemes, MonitorScheme> query) async* {
-    final jointQuery = query.join([
+  JoinedSelectStatement<HasResultSet, dynamic> _join(
+      SimpleSelectStatement<MonitorSchemes, MonitorScheme> query) {
+    return query.join([
       innerJoin(
         database.currencies,
         database.monitorSchemes.currencyId.equalsExp(database.currencies.id),
@@ -972,6 +1177,11 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
             .equalsExp(database.categories.id),
       ),
     ]);
+  }
+
+  Stream<model.MonitorScheme> _queryToStream(
+      SimpleSelectStatement<MonitorSchemes, MonitorScheme> query) async* {
+    final jointQuery = _join(query);
     List<model.Category> buffer = [];
     MonitorScheme? lastScheme;
     Currency? lastCurrency;
@@ -1022,6 +1232,32 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
       if (monitor.categories.list
           .any((category) => categories.list.contains(category))) {
         yield monitor;
+      }
+    }
+  }
+
+  @override
+  Stream<model.MonitorScheme?> watchById(int id) async* {
+    database.monitorSchemes.select().where((row) => row.id.equals(id));
+    final jointQuery = _join(database.monitorSchemes.select());
+    await for (final results in jointQuery.watch()) {
+      final scheme = results.first.readTable(database.monitorSchemes);
+      final currency = results.first.readTable(database.currencies);
+      final categories =
+          results.map((row) => row.readTableOrNull(database.categories));
+      if (categories.first == null) {
+        yield _parseIntoModel([], scheme, currency);
+      } else {
+        yield _parseIntoModel(
+          categories
+              .map((category) => model.Category(
+                    id: category!.id,
+                    name: category.name,
+                  ))
+              .toList(),
+          scheme,
+          currency,
+        );
       }
     }
   }
@@ -1160,5 +1396,16 @@ class ExternalEnvironmentInterfaceImpl implements ExternalEnvironmentInterface {
       }
     }
     if (line.isNotEmpty) yield utf8.decode(line);
+  }
+}
+
+class InitializationRepositoryImpl implements InitializationRepository {
+  static final keyValue = KeyValueStore();
+  @override
+  Future<void> initializeAppDate() async {
+    final startUsingApp = await keyValue.getStartUsingApp();
+    if (startUsingApp == null) {
+      await keyValue.setStartUsingApp(Date.today());
+    }
   }
 }

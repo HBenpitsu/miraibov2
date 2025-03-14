@@ -20,6 +20,7 @@ class KeyValueStore {
 
   static const _startUsingApp = 'startUsingApp'; // Date
   static const _defaultCurrencyId = 'defaultCurrencyId'; // int
+  static const _lastPlanInstanciation = 'lastPlanInstanciation'; // Date
 
   // <dump/load>
   Future<String> dump() async {
@@ -61,6 +62,16 @@ class KeyValueStore {
 
   Future<int?> getDefaultCurrencyId() {
     return _prefs.getInt(key(_defaultCurrencyId));
+  }
+
+  Future<void> setLastPlanInstanciation(model.Date value) async {
+    await _prefs.setString(key(_lastPlanInstanciation), jsonEncode(value));
+  }
+
+  Future<model.Date?> getLastPlanInstanciation() async {
+    final json = await _prefs.getString(key(_lastPlanInstanciation));
+    if (json == null) return null;
+    return model.Date.fromJson(jsonDecode(json));
   }
   // </getter/setter>
 }

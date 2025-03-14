@@ -28,6 +28,15 @@ class Currency {
     return _repository.find(symbol, ratio);
   }
 
+  static Future<Currency?> get(int id) async {
+    for (final currency in await _repository.getAll()) {
+      if (currency.id == id) {
+        return currency;
+      }
+    }
+    return null;
+  }
+
   static Future<Currency> findOrCreate(String symbol, double ratio) async {
     final found = await find(symbol, ratio);
     return found ?? create(symbol, ratio);

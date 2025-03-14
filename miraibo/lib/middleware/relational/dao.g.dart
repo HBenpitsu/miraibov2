@@ -12,6 +12,7 @@ mixin _$PlansMixin on DatabaseAccessor<AppDatabase> {
   WeeklyPlans get weeklyPlans => attachedDatabase.weeklyPlans;
   MonthlyPlans get monthlyPlans => attachedDatabase.monthlyPlans;
   AnnualPlans get annualPlans => attachedDatabase.annualPlans;
+  InstanciatedPlans get instanciatedPlans => attachedDatabase.instanciatedPlans;
   EstimationSchemes get estimationSchemes => attachedDatabase.estimationSchemes;
   MonitorSchemes get monitorSchemes => attachedDatabase.monitorSchemes;
   MonitorSchemeCategoryLinkers get monitorSchemeCategoryLinkers =>
