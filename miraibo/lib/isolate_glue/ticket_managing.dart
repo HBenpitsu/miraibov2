@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:miraibo/core-model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/shared/enumeration.dart';
+import 'package:miraibo/repository/impl.dart' as repository;
 
 // <for ReceiptLog>
 
 // <createReceiptLog>
 Future<int> __createReceiptLog((Date, int, int, int, String, bool) param) {
+  repository.bind();
   return usecase.createReceiptLog(
       originDate: param.$1,
       amount: param.$2,
@@ -32,6 +34,7 @@ Future<int> createReceiptLog({
 
 // <editReceiptLog>
 Future<void> __editReceiptLog((int, Date, int, int, int, String, bool) param) {
+  repository.bind();
   return usecase.editReceiptLog(
     id: param.$1,
     originDate: param.$2,
@@ -58,8 +61,13 @@ Future<void> editReceiptLog({
 // </editReceiptLog>
 
 // <deleteReceiptLog>
+Future<void> __deleteReceiptLog(int id) {
+  repository.bind();
+  return usecase.deleteReceiptLog(id);
+}
+
 Future<void> deleteReceiptLog(int id) {
-  return compute(usecase.deleteReceiptLog, id);
+  return compute(__deleteReceiptLog, id);
 }
 // </deleteReceiptLog>
 
@@ -68,6 +76,7 @@ Future<void> deleteReceiptLog(int id) {
 
 // <createPlan>
 Future<int> __createPlan((Schedule, int, int, int, String) param) {
+  repository.bind();
   return usecase.createPlan(param.$1, param.$2, param.$3, param.$4, param.$5);
 }
 
@@ -86,6 +95,7 @@ Future<int> createPlan({
 
 // <editPlan>
 Future<void> __editPlan((int, Schedule, int, int, int, String) param) async {
+  repository.bind();
   return usecase.editPlan(
       param.$1, param.$2, param.$3, param.$4, param.$5, param.$6);
 }
@@ -104,8 +114,13 @@ Future<void> editPlan({
 // </editPlan>
 
 // <deletePlan>
+Future<void> __deletePlan(int id) {
+  repository.bind();
+  return usecase.deletePlan(id);
+}
+
 Future<void> deletePlan(int id) {
-  return compute(usecase.deletePlan, id);
+  return compute(__deletePlan, id);
 }
 // </deletePlan>
 
@@ -119,6 +134,7 @@ Future<int> __createEstimationScheme(
       EstimationDisplayOption,
       int,
     ) param) {
+  repository.bind();
   return usecase.createEstimationScheme(param.$1, param.$2, param.$3, param.$4);
 }
 
@@ -135,6 +151,7 @@ Future<int> createEstimationScheme({
 
 Future<void> __editEstimationScheme(
     (int, OpenPeriod, List<int>, EstimationDisplayOption, int) param) {
+  repository.bind();
   return usecase.editEstimationScheme(
       param.$1, param.$2, param.$3, param.$4, param.$5);
 }
@@ -150,8 +167,13 @@ Future<void> editEstimationScheme({
       (id, period, categoryIds, displayOption, currencyId));
 }
 
+Future<void> __deleteEstimationScheme(int id) {
+  repository.bind();
+  return usecase.deleteEstimationScheme(id);
+}
+
 Future<void> deleteEstimationScheme(int id) async {
-  return compute(usecase.deleteEstimationScheme, id);
+  return compute(__deleteEstimationScheme, id);
 }
 
 // </for EstimationScheme>
@@ -159,6 +181,7 @@ Future<void> deleteEstimationScheme(int id) async {
 
 Future<int> __createMonitorScheme(
     (OpenPeriod, List<int>, MonitorDisplayOption, int) param) {
+  repository.bind();
   return usecase.createMonitorScheme(param.$1, param.$2, param.$3, param.$4);
 }
 
@@ -175,6 +198,7 @@ Future<int> createMonitorScheme(
 
 Future<void> __editMonitorScheme(
     (int, OpenPeriod, List<int>, MonitorDisplayOption, int) param) {
+  repository.bind();
   return usecase.editMonitorScheme(
       param.$1, param.$2, param.$3, param.$4, param.$5);
 }
@@ -190,8 +214,13 @@ Future<void> editMonitorScheme(
       (id, period, categoryIds, displayOption, currencyId));
 }
 
+Future<void> __deleteMonitorScheme(int id) {
+  repository.bind();
+  return usecase.deleteMonitorScheme(id);
+}
+
 Future<void> deleteMonitorScheme(int id) async {
-  return compute(usecase.deleteMonitorScheme, id);
+  return compute(__deleteMonitorScheme, id);
 }
 
 // </for MonitorScheme>

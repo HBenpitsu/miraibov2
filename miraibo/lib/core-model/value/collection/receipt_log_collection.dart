@@ -11,6 +11,10 @@ class ReceiptLogCollection {
   static const int _cacheSize = 200;
   static _Cache _cache = _Cache.empty();
 
+  static Future<void> deleteAll() async {
+    await _repository.deleteAll();
+  }
+
   static Stream<ReceiptLog?> watchFor(int index) {
     final logStream = _cache.get(index);
     if (logStream != null) {

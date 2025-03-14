@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart' show compute;
 import 'package:miraibo/core-model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/repository/impl.dart' as repository;
 
 // <createCurrency>
 Future<int> __createCurrency((String, double) param) {
+  repository.bind();
   return usecase.createCurrency(param.$1, param.$2);
 }
 
@@ -15,6 +17,7 @@ Future<int> createCurrency(String name, double ratio) {
 
 // <editCurrency>
 Future<void> __editCurrency((int, String, double) param) {
+  repository.bind();
   return usecase.editCurrency(param.$1, param.$2, param.$3);
 }
 
@@ -25,6 +28,7 @@ Future<void> editCurrency(int id, String name, double ratio) {
 
 // <integrateCurrency>
 Future<void> __integrateCurrency((int, int) param) {
+  repository.bind();
   return usecase.integrateCurrency(param.$1, param.$2);
 }
 
@@ -34,14 +38,21 @@ Future<void> integrateCurrency(int replaceeId, int replacerId) {
 // </integrateCurrency>
 
 // <setCurrencyAsDefault>
+
+Future<void> __setCurrencyAsDefault(int id) {
+  repository.bind();
+  return usecase.setCurrencyAsDefault(id);
+}
+
 /// {@macro setCurrencyAsDefault}
 Future<void> setCurrencyAsDefault(int id) {
-  return compute(usecase.setCurrencyAsDefault, id);
+  return compute(__setCurrencyAsDefault, id);
 }
 // </setCurrencyAsDefault>
 
 // <fetchAllCurrencies>
 Future<List<Currency>> __fetchAllCurrencies(() param) {
+  repository.bind();
   return usecase.fetchAllCurrencies();
 }
 
@@ -53,11 +64,10 @@ Future<List<Currency>> fetchAllCurrencies() {
 
 // <fetchDefaultCurrency>
 Future<Currency> __fetchDefaultCurrency(() param) {
+  repository.bind();
   return usecase.fetchDefaultCurrency();
 }
-// </fetchDefaultCurrency>
 
-// <fetchDefaultCurrency>
 /// {@macro fetchDefaultCurrency}
 Future<Currency> fetchDefaultCurrency() {
   return compute(__fetchDefaultCurrency, ());

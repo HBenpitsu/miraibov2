@@ -3,9 +3,11 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:miraibo/core-model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/shared/enumeration.dart';
+import 'package:miraibo/repository/impl.dart' as repository;
 
 Future<EstimationTicket> __estimateWithScheme(
     (int, int, EstimationDisplayOption) param) {
+  repository.bind();
   return usecase.estimateWithScheme(param.$1, param.$2, param.$3);
 }
 
@@ -17,6 +19,7 @@ Future<EstimationTicket> estimateWithScheme(
 }
 
 __estimateFor((int, SendPort) params) async {
+  repository.bind();
   final estimationSchemeId = params.$1;
   final sendPort = params.$2;
   final logStream = usecase.estimateFor(estimationSchemeId);
@@ -43,6 +46,7 @@ Stream<EstimationTicket> estimateFor(int estimationSchemeId) async* {
 
 Future<MonitorTicket> __monitorWithScheme(
     (OpenPeriod, List<int>, MonitorDisplayOption, int) param) {
+  repository.bind();
   return usecase.monitorWithScheme(param.$1, param.$2, param.$3, param.$4);
 }
 
@@ -54,6 +58,7 @@ Future<MonitorTicket> monitorWithScheme(OpenPeriod period,
 }
 
 __monitorFor((int, SendPort) params) async {
+  repository.bind();
   final monitorSchemeId = params.$1;
   final sendPort = params.$2;
   final logStream = usecase.monitorFor(monitorSchemeId);

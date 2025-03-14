@@ -1,16 +1,23 @@
 import 'package:flutter/foundation.dart' show compute;
 import 'package:miraibo/core-model/usecase/usecase.dart' as usecase;
 import 'package:miraibo/dto/dto.dart';
+import 'package:miraibo/repository/impl.dart' as repository;
 
 // <createCategory>
+Future<int> __createCategory(String name) {
+  repository.bind();
+  return usecase.createCategory(name);
+}
+
 /// {@macro createCategory}
 Future<int> createCategory(String name) {
-  return compute(usecase.createCategory, name);
+  return compute(__createCategory, name);
 }
 // </createCategory>
 
 // <editCategory>
 Future<void> __editCategory((int, String) param) {
+  repository.bind();
   return usecase.editCategory(param.$1, param.$2);
 }
 
@@ -21,6 +28,7 @@ Future<void> editCategory(int id, String name) {
 
 // <integrateCategory>
 Future<void> __integrateCategory((int, int) param) {
+  repository.bind();
   return usecase.integrateCategory(param.$1, param.$2);
 }
 
@@ -31,6 +39,7 @@ Future<void> integrateCategory(int replaceeId, int replacerId) {
 
 // <fetchAllCategories>
 Future<List<Category>> __fetchAllCategories(() param) {
+  repository.bind();
   return usecase.fetchAllCategories();
 }
 
