@@ -28,3 +28,19 @@ Future<List<Ticket>> fetchReceiptLogsAndMonitorsForToday() async {
   // return compute(__fetchReceiptLogsAndMonitorsForToday, ());
 }
 // </fetchReceiptLogsAndMonitorsForToday>
+
+Future<EstimationScheme> fetchEstimationScheme(int id) {
+  return usecase.fetchEstimationScheme(id);
+}
+
+Future<MonitorScheme> fetchMonitorScheme(int id) {
+  return usecase.fetchMonitorScheme(id);
+}
+
+Future<PlanScheme> fetchPlanScheme(int id) {
+  return usecase.fetchPlanScheme(id);
+}
+
+Future<ReceiptLogScheme> fetchReceiptLogScheme(int id) {
+  return usecase.fetchReceiptLogScheme(id);
+}

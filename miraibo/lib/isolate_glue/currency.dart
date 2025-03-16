@@ -79,3 +79,7 @@ Future<Currency> fetchDefaultCurrency() {
   // return compute(__fetchDefaultCurrency, ());
 }
 // </fetchDefaultCurrency>
+
+Future<List<CurrencyInstance>> fetchAllConfiguableCurrencies() {
+  return usecase.fetchAllConfiguableCurrencies();
+}

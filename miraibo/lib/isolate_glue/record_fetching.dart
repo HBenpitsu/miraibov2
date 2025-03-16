@@ -28,3 +28,14 @@ Stream<ReceiptLogSchemeInstance?> fetchLoggedReceiptRecord(int index) async* {
   // }
   // isolate.kill();
 }
+
+Stream<int> receiptLogCount() async* {
+  yield* usecase.receiptLogCount();
+  // final receivePort = ReceivePort();
+  // final isolate = await Isolate.spawn(
+  //     __fetchReceiptLogCount, receivePort.sendPort);
+  // await for (final count in receivePort) {
+  //   yield count;
+  // }
+  // isolate.kill();
+}

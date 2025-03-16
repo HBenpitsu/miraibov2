@@ -66,6 +66,7 @@ abstract class ReceiptLogRepository {
   Stream<ReceiptLog> get(Period period, CategoryCollection categories,
       {bool? confirmed});
   Stream<ReceiptLog?> watchById(int id);
+  Stream<int> countRows();
   Stream<List<ReceiptLog>> watchRows(int skip, int limit);
   Future<List<ReceiptLog>> getRows(int skip, int limit);
   Future<void> replaceCategory(Category oldCategory, Category newCategory);

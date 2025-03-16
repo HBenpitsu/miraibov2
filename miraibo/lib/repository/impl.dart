@@ -279,6 +279,19 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
   }
 
   @override
+  Stream<int> countRows() async* {
+    final countExp = database.receiptLogs.id.count();
+    final query = database.select(database.receiptLogs).addColumns([countExp]);
+    await for (final count in query
+        .map(
+          (row) => row.read(countExp),
+        )
+        .watchSingle()) {
+      yield count ?? 0;
+    }
+  }
+
+  @override
   Stream<List<model.ReceiptLog>> watchRows(int skip, int limit) {
     final query = database.receiptLogs.select();
     query.limit(limit, offset: skip);

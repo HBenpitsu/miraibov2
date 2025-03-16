@@ -52,6 +52,18 @@ Future<List<Currency>> fetchAllCurrencies() async {
       .toList();
 }
 
+Future<List<CurrencyInstance>> fetchAllConfiguableCurrencies() async {
+  final currencies = await model.CurrencyCollection.getAll();
+  final defaultCurrency = await model.CurrencyCollection.getDefault();
+  return currencies
+      .map((currency) => CurrencyInstance(
+          id: currency.id,
+          symbol: currency.symbol,
+          ratio: currency.ratio,
+          isDefault: currency.id == defaultCurrency.id))
+      .toList();
+}
+
 /// {@template fetchDefaultCurrency}
 /// returns the default currency (list of pairs of name and id of currency)
 /// {@endtemplate}

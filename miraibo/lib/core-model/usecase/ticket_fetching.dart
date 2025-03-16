@@ -3,6 +3,10 @@ import 'package:miraibo/core-model/value/collection/ticket_collection.dart'
     as model;
 import 'package:miraibo/core-model/value/date.dart' as model;
 import 'package:miraibo/core-model/value/schedule.dart' as model;
+import 'package:miraibo/core-model/entity/receipt_log.dart' as model;
+import 'package:miraibo/core-model/entity/estimation_scheme.dart' as model;
+import 'package:miraibo/core-model/entity/monitor_scheme.dart' as model;
+import 'package:miraibo/core-model/entity/plan.dart' as model;
 
 /// {@template fetchTicketsOn}
 /// fetches tickets on the given date
@@ -233,4 +237,179 @@ Future<List<Ticket>> fetchReceiptLogsAndMonitorsForToday() async {
     );
   }
   return result;
+}
+
+Future<EstimationScheme> fetchEstimationScheme(int id) async {
+  final schemeModel = await model.EstimationScheme.watch(id).first;
+  if (schemeModel == null) {
+    throw ArgumentError('Estimation scheme with id $id does not exist');
+  }
+  return EstimationScheme(
+    category:
+        Category(id: schemeModel.category.id, name: schemeModel.category.name),
+    displayOption: schemeModel.displayOption,
+    currency: Currency(
+        id: schemeModel.currency.id, symbol: schemeModel.currency.symbol),
+    period: OpenPeriod(
+      begins: schemeModel.period.isStartless
+          ? null
+          : Date(schemeModel.period.begins.year,
+              schemeModel.period.begins.month, schemeModel.period.begins.day),
+      ends: schemeModel.period.isEndless
+          ? null
+          : Date(schemeModel.period.ends.year, schemeModel.period.ends.month,
+              schemeModel.period.ends.day),
+    ),
+  );
+}
+
+Future<MonitorScheme> fetchMonitorScheme(int id) async {
+  final monitorScheme = await model.MonitorScheme.watch(id).first;
+  if (monitorScheme == null) {
+    throw ArgumentError('Monitor scheme with id $id does not exist');
+  }
+  final begins = monitorScheme.period.isStartless
+      ? null
+      : Date(
+          monitorScheme.period.begins.year,
+          monitorScheme.period.begins.month,
+          monitorScheme.period.begins.day,
+        );
+  final ends = monitorScheme.period.isEndless
+      ? null
+      : Date(
+          monitorScheme.period.ends.year,
+          monitorScheme.period.ends.month,
+          monitorScheme.period.ends.day,
+        );
+  return MonitorScheme(
+    currency: Currency(
+        id: monitorScheme.currency.id, symbol: monitorScheme.currency.symbol),
+    displayOption: monitorScheme.displayOption,
+    period: OpenPeriod(begins: begins, ends: ends),
+    categories: monitorScheme.categories.containsAll
+        ? []
+        : monitorScheme.categories.list
+            .map((e) => Category(id: e.id, name: e.name))
+            .toList(),
+    isAllCategoriesIncluded: monitorScheme.categories.containsAll,
+  );
+}
+
+Future<ReceiptLogScheme> fetchReceiptLogScheme(int id) async {
+  final receiptLog = await model.ReceiptLog.watch(id).first;
+  if (receiptLog == null) {
+    throw ArgumentError('Receipt log with id $id does not exist');
+  }
+  return ReceiptLogScheme(
+    date:
+        Date(receiptLog.date.year, receiptLog.date.month, receiptLog.date.day),
+    price: ConfigureblePrice(
+        amount: receiptLog.price.amount.toInt(),
+        currencyId: receiptLog.price.currency.id,
+        currencySymbol: receiptLog.price.currency.symbol),
+    description: receiptLog.description,
+    category:
+        Category(id: receiptLog.category.id, name: receiptLog.category.name),
+    confirmed: receiptLog.confirmed,
+  );
+}
+
+Future<PlanScheme> fetchPlanScheme(int id) async {
+  final plan = await model.Plan.watch(id).first;
+  if (plan == null) {
+    throw ArgumentError('Plan with id $id does not exist');
+  }
+  final Schedule schedule = switch (plan.schedule) {
+    model.OneshotSchedule oneshotSchedule => OneshotSchedule(
+        date: Date(oneshotSchedule.date.year, oneshotSchedule.date.month,
+            oneshotSchedule.date.day),
+      ),
+    model.IntervalSchedule intervalSchedule => IntervalSchedule(
+        interval: intervalSchedule.interval,
+        originDate: Date(intervalSchedule.originDate.year,
+            intervalSchedule.originDate.month, intervalSchedule.originDate.day),
+        period: OpenPeriod(
+          begins: intervalSchedule.period.isStartless
+              ? null
+              : Date(
+                  intervalSchedule.period.begins.year,
+                  intervalSchedule.period.begins.month,
+                  intervalSchedule.period.begins.day),
+          ends: intervalSchedule.period.isEndless
+              ? null
+              : Date(
+                  intervalSchedule.period.ends.year,
+                  intervalSchedule.period.ends.month,
+                  intervalSchedule.period.ends.day),
+        ),
+      ),
+    model.WeeklySchedule weeklySchedule => WeeklySchedule(
+        period: OpenPeriod(
+          begins: weeklySchedule.period.isStartless
+              ? null
+              : Date(
+                  weeklySchedule.period.begins.year,
+                  weeklySchedule.period.begins.month,
+                  weeklySchedule.period.begins.day),
+          ends: weeklySchedule.period.isEndless
+              ? null
+              : Date(
+                  weeklySchedule.period.ends.year,
+                  weeklySchedule.period.ends.month,
+                  weeklySchedule.period.ends.day),
+        ),
+        sunday: weeklySchedule.sunday,
+        monday: weeklySchedule.monday,
+        tuesday: weeklySchedule.tuesday,
+        wednesday: weeklySchedule.wednesday,
+        thursday: weeklySchedule.thursday,
+        friday: weeklySchedule.friday,
+        saturday: weeklySchedule.saturday,
+      ),
+    model.MonthlySchedule monthlySchedule => MonthlySchedule(
+        period: OpenPeriod(
+          begins: monthlySchedule.period.isStartless
+              ? null
+              : Date(
+                  monthlySchedule.period.begins.year,
+                  monthlySchedule.period.begins.month,
+                  monthlySchedule.period.begins.day),
+          ends: monthlySchedule.period.isEndless
+              ? null
+              : Date(
+                  monthlySchedule.period.ends.year,
+                  monthlySchedule.period.ends.month,
+                  monthlySchedule.period.ends.day),
+        ),
+        offset: monthlySchedule.offset,
+      ),
+    model.AnnualSchedule annualSchedule => AnnualSchedule(
+        originDate: Date(annualSchedule.originDate.year,
+            annualSchedule.originDate.month, annualSchedule.originDate.day),
+        period: OpenPeriod(
+          begins: annualSchedule.period.isStartless
+              ? null
+              : Date(
+                  annualSchedule.period.begins.year,
+                  annualSchedule.period.begins.month,
+                  annualSchedule.period.begins.day),
+          ends: annualSchedule.period.isEndless
+              ? null
+              : Date(
+                  annualSchedule.period.ends.year,
+                  annualSchedule.period.ends.month,
+                  annualSchedule.period.ends.day),
+        ),
+      ),
+  };
+  return PlanScheme(
+    schedule: schedule,
+    description: plan.description,
+    category: Category(id: plan.category.id, name: plan.category.name),
+    price: ConfigureblePrice(
+        amount: plan.price.amount.toInt(),
+        currencyId: plan.price.currency.id,
+        currencySymbol: plan.price.currency.symbol),
+  );
 }

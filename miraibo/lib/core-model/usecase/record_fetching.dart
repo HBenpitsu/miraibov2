@@ -26,3 +26,10 @@ Stream<ReceiptLogSchemeInstance?> fetchLoggedReceiptRecord(int index) async* {
     );
   }
 }
+
+Stream<int> receiptLogCount() async* {
+  final countStream = model.ReceiptLogCollection.count();
+  await for (final count in countStream) {
+    yield count;
+  }
+}

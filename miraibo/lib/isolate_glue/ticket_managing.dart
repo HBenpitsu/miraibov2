@@ -174,7 +174,7 @@ Future<int> createEstimationScheme({
 }
 
 Future<void> __editEstimationScheme(
-    (int, OpenPeriod, List<int>, EstimationDisplayOption, int) param) {
+    (int, OpenPeriod, int, EstimationDisplayOption, int) param) {
   repository.bind();
   return usecase.editEstimationScheme(
       param.$1, param.$2, param.$3, param.$4, param.$5);
@@ -184,11 +184,11 @@ Future<void> editEstimationScheme({
   required int id,
   required OpenPeriod period,
   required EstimationDisplayOption displayOption,
-  required List<int> categoryIds,
+  required int categoryId,
   required int currencyId,
 }) async {
   return usecase.editEstimationScheme(
-      id, period, categoryIds, displayOption, currencyId);
+      id, period, categoryId, displayOption, currencyId);
   // return compute(__editEstimationScheme,
   //     (id, period, categoryIds, displayOption, currencyId));
 }

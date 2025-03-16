@@ -15,6 +15,10 @@ class ReceiptLogCollection {
     await _repository.deleteAll();
   }
 
+  static Stream<int> count() {
+    return _repository.countRows();
+  }
+
   static Stream<ReceiptLog?> watchFor(int index) {
     final logStream = _cache.get(index);
     if (logStream != null) {

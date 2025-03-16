@@ -351,13 +351,13 @@ Future<int> createEstimationScheme(
 Future<void> editEstimationScheme(
   int id,
   OpenPeriod period,
-  List<int> categoryIds,
+  int categoryId,
   EstimationDisplayOption displayOption,
   int currencyId, // displayOption
 ) async {
   final estimationScheme = await model.EstimationScheme.watch(id).first;
   final currency = await model.Currency.get(currencyId);
-  final category = await model.Category.get(categoryIds.first);
+  final category = await model.Category.get(categoryId);
   if (currency == null) {
     ErrorHandlingService.logException(
         Exception('currency not found: $currencyId'));
@@ -365,7 +365,7 @@ Future<void> editEstimationScheme(
   }
   if (category == null) {
     ErrorHandlingService.logException(
-        Exception('category not found: ${categoryIds.first}'));
+        Exception('category not found: ${categoryId}'));
     return;
   }
   if (estimationScheme == null) {
