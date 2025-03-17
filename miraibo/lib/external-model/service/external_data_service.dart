@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:logger/logger.dart';
 import 'package:miraibo/middleware/csv_handler.dart';
 import 'package:miraibo/middleware/key_value.dart' show KeyValueStore;
 import 'package:miraibo/middleware/relational/database.dart' show AppDatabase;
@@ -27,8 +28,10 @@ class ReceiptLogCSVService {
 
   static Stream<String> _exportCSV() async* {
     yield csvHeader;
-    await for (final log
-        in repository.get(Period.entirePeriod, CategoryCollection.phantomAll)) {
+    await for (final log in repository.get(
+      Period.entirePeriod,
+      CategoryCollection.phantomAll,
+    )) {
       yield '''${CSVLineHandler.encode([
             log.date.year,
             log.date.month,
@@ -38,13 +41,17 @@ class ReceiptLogCSVService {
             log.price.amount,
             log.price.currency.symbol,
             log.price.currency.ratio,
-            log.confirmed,
+            log.confirmed
           ])}\n''';
     }
   }
 
   static Future<void> exportCSVToFile(String path) async {
-    await externalEnvironment.generateFile(path, _exportCSV());
+    Logger().i('making $path/miraibo-data.csv...');
+    await externalEnvironment.generateFile(
+      '$path/miraibo-data.csv',
+      _exportCSV(),
+    );
   }
 
   /// return error message.
@@ -115,7 +122,7 @@ class BackupService {
       ExternalEnvironmentInterface.instance;
 
   static Future<String?> dump(String path) async {
-    final dumpTo = File(path);
+    final dumpTo = File('$path/miraibo-backup-file.xml');
     final IOSink sink;
     try {
       sink = dumpTo.openWrite();
@@ -123,7 +130,7 @@ class BackupService {
       return 'Failed to open file: $e';
     }
     final dumpStreamController = StreamController<String>();
-    dumpStreamController.stream.listen(sink.write);
+    final subscription = dumpStreamController.stream.listen(sink.write);
     final dumper = XmlDumper(dumpStreamController.sink);
     dumper.open('meta');
     dumper.appendEnclosedContent('purpose', 'miraibo backup');
@@ -140,10 +147,11 @@ class BackupService {
     dumper.open('relational');
     final rdb = AppDatabase();
     await for (final chunk in rdb.dump()) {
-      dumper.appendContent(base64Encode(utf8.encode(chunk)));
+      dumper.appendEnclosedContent('chunk', base64Encode(chunk));
     }
     dumper.close('relational');
     dumper.done();
+    await subscription.cancel();
     await sink.flush();
     await sink.close();
     return null;
@@ -152,62 +160,71 @@ class BackupService {
   static int chunkSize = 1024;
 
   static Stream<String> _getChunkStream(File file) async* {
-    int cursor = 0;
+    final fd = await file.open();
     while (true) {
-      final chunk = await file.openRead(cursor, cursor + chunkSize).first;
+      final chunk = await fd.read(chunkSize);
       if (chunk.isEmpty) break;
       yield utf8.decode(chunk);
-      cursor += chunk.length;
     }
+    await fd.close();
   }
 
-  static load(String path) async {
+  static Future<String?> load(String path) async {
     final loadFrom = File(path);
     try {
-      loadFrom.openRead(0, 0);
+      final fd = (await loadFrom.open());
+      await fd.read(0);
+      await fd.close();
     } catch (e) {
       return 'Failed to open file: $e';
     }
 
-    final rdbChunks = StreamController<String>();
-    AppDatabase rdb = AppDatabase();
-    rdb.load(rdbChunks.stream);
-
     final parser = XmlParser(_getChunkStream(loadFrom));
 
     final fragmentBuffer = StringBuffer();
-    List<String> lastContext = [];
+    String lastContextToken = [].toString();
     bool ready = false;
+
+    StreamController<List<int>>? rdbChunks;
+    Future<void>? rdbLoadingTask;
+
     await for (final (context, fragment) in parser.getFragments()) {
-      if (context != lastContext) {
+      if (context.toString() != lastContextToken) {
         // on context changed
-        if (lastContext == ['meta', 'purpose']) {
+        if (!ready && lastContextToken == ['meta', 'purpose'].toString()) {
           if (fragmentBuffer.toString() != 'miraibo backup') {
             return 'Invalid backup file';
           } else {
+            AppDatabase rdb = AppDatabase();
+            rdbChunks = StreamController<List<int>>();
+            rdbLoadingTask = rdb.load(rdbChunks.stream);
             ready = true;
           }
-        } else if (lastContext == ['key-value']) {
-          final kdb = KeyValueStore();
-          await kdb.load(utf8.decode(base64Decode(fragmentBuffer.toString())));
-        } else if (lastContext == ['relational']) {
-          rdbChunks.close();
         }
-      }
-      if (!ready) {
-        // wait for validating meta
-        if (context == ['meta', 'purpose']) {
-          fragmentBuffer.write(fragment);
+        if (ready) {
+          if (lastContextToken == ['key-value'].toString()) {
+            final kdb = KeyValueStore();
+            await kdb
+                .load(utf8.decode(base64Decode(fragmentBuffer.toString())));
+          } else if (lastContextToken == ['relational', 'chunk'].toString()) {
+            rdbChunks!.add(base64Decode(fragmentBuffer.toString()));
+          }
         }
-      } else {
-        if (context == ['key-value']) {
-          fragmentBuffer.write(fragment);
-        } else if (context == ['relational']) {
-          rdbChunks.add(fragment);
-        }
+        fragmentBuffer.clear();
       }
 
-      lastContext = context;
+      fragmentBuffer.write(fragment);
+
+      lastContextToken = context.toString();
     }
+
+    await rdbChunks?.close();
+    await rdbLoadingTask;
+
+    if (!ready) {
+      return 'Invalid backup file';
+    }
+
+    return null;
   }
 }

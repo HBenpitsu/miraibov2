@@ -13,57 +13,82 @@ class EventExistenceCheckingService {
   static final MonitorSchemeRepository _monitorSchemeRepository =
       MonitorSchemeRepository.instance;
   static const _cacheSize = 200;
-  static _Cache _cache = _Cache.empty();
-  static Future<EventExistence> get(Date date) async {
-    final cachedValue = EventExistenceCheckingService._cache.get(date);
+
+  static EventExistenceCheckingService? _instance;
+
+  EventExistenceCheckingService._();
+
+  factory EventExistenceCheckingService.getInstance() {
+    if (_instance == null || _instance!.busy) {
+      _instance = EventExistenceCheckingService._();
+    }
+    return _instance!;
+  }
+
+  _Cache _cache = _Cache.empty();
+  bool busy = false;
+  Future<EventExistence> get(Date date) async {
+    final cachedValue = _cache.get(date);
     if (cachedValue != null) {
       return cachedValue;
     }
 
+    busy = true;
+
     final firstDate = date.withDelta(days: -(_cacheSize ~/ 2));
     final lastDate = firstDate.withDelta(days: _cacheSize - 1);
-    final period = Period(begins: firstDate, ends: lastDate);
+    final cachingPeriod = Period(begins: firstDate, ends: lastDate);
 
     _cache = _Cache(
-      period: period,
+      period: cachingPeriod,
       events: List.filled(_cacheSize, EventExistence.none),
     );
 
     await for (final estimation in _estimationSchemeRepository.get(
-        period, CategoryCollection.phantomAll)) {
-      _cache.markUpAsImportant(estimation.period.begins);
-      _cache.markUpAsImportant(estimation.period.ends);
-      for (final date in estimation.period.dates()) {
+        cachingPeriod, CategoryCollection.phantomAll)) {
+      if (cachingPeriod.contains(estimation.period.begins)) {
+        _cache.markUpAsImportant(estimation.period.begins);
+      }
+      if (cachingPeriod.contains(estimation.period.ends)) {
+        _cache.markUpAsImportant(estimation.period.ends);
+      }
+      final intersection = estimation.period.intersection(cachingPeriod);
+      if (intersection == null) continue;
+      for (final date in intersection.dates()) {
         _cache.markUpAsTrivial(date);
       }
     }
 
-    await for (final log
-        in _receiptLogRepository.get(period, CategoryCollection.phantomAll)) {
+    await for (final log in _receiptLogRepository.get(
+        cachingPeriod, CategoryCollection.phantomAll)) {
       _cache.markUpAsTrivial(log.date);
     }
 
     await for (final plan
-        in _planRepository.get(period, CategoryCollection.phantomAll)) {
-      final dates = plan.schedule.getScheduledDates(period);
+        in _planRepository.get(cachingPeriod, CategoryCollection.phantomAll)) {
+      final dates = plan.schedule.getScheduledDates(cachingPeriod);
       if (dates.isEmpty) continue;
-      _cache.markUpAsImportant(dates.first);
-      Date last = dates.first;
       for (final date in dates) {
         _cache.markUpAsTrivial(date);
-        last = date;
       }
-      _cache.markUpAsImportant(last);
     }
 
     await for (final monitorScheme in _monitorSchemeRepository.get(
-        period, CategoryCollection.phantomAll)) {
-      _cache.markUpAsImportant(monitorScheme.period.begins);
-      _cache.markUpAsImportant(monitorScheme.period.ends);
-      for (final date in monitorScheme.period.dates()) {
+        cachingPeriod, CategoryCollection.phantomAll)) {
+      if (cachingPeriod.contains(monitorScheme.period.begins)) {
+        _cache.markUpAsImportant(monitorScheme.period.begins);
+      }
+      if (cachingPeriod.contains(monitorScheme.period.ends)) {
+        _cache.markUpAsImportant(monitorScheme.period.ends);
+      }
+      final intersection = monitorScheme.period.intersection(cachingPeriod);
+      if (intersection == null) continue;
+      for (final date in intersection.dates()) {
         _cache.markUpAsTrivial(date);
       }
     }
+
+    busy = false;
 
     return _cache.get(date)!;
   }
@@ -88,7 +113,8 @@ class _Cache {
 
   void markUpAsTrivial(Date date) {
     if (period == null || !period!.contains(date)) {
-      throw ArgumentError('date must be in period');
+      throw ArgumentError(
+          'date must be in period (date: $date, period: $period)');
     }
     if (events[(date - period!.begins).inDays] == EventExistence.none) {
       events[(date - period!.begins).inDays] = EventExistence.trivial;
@@ -97,7 +123,8 @@ class _Cache {
 
   void markUpAsImportant(Date date) {
     if (period == null || !period!.contains(date)) {
-      throw ArgumentError('date must be in period');
+      throw ArgumentError(
+          'date must be in period (date: $date, period: $period)');
     }
     events[(date - period!.begins).inDays] = EventExistence.important;
   }

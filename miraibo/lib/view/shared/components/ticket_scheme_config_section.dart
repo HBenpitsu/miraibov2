@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/web.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
+import 'package:miraibo/dto/general.dart';
 import 'package:miraibo/view/shared/components/form_components/form_components.dart';
 import 'package:miraibo/view/shared/components/valed_container.dart';
 import 'package:miraibo/shared/enumeration.dart';
@@ -66,13 +67,12 @@ class _ReceiptLogConfigSectionState extends State<ReceiptLogConfigSection> {
       Text('Category', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<int>.fromTuple(
+        SingleSelector<Category>.fromTuple(
             initialIndex: categoryIdx,
             onChanged: (selected) {
-              current =
-                  current.copyWith(category: widget.categoryOptions[selected]);
+              current = current.copyWith(category: selected);
             },
-            items: widget.categoryOptions.map((e) => (e.name, e.id))),
+            items: widget.categoryOptions.map((e) => (e.name, e))),
       ),
       sectionMargine,
       Text('Description', style: textTheme.headlineMedium),
@@ -104,19 +104,17 @@ class _ReceiptLogConfigSectionState extends State<ReceiptLogConfigSection> {
           const SizedBox(width: 10),
           Expanded(
               flex: 3,
-              child: SingleSelector<int>.fromTuple(
+              child: SingleSelector<Currency>.fromTuple(
                   initialIndex: currencyIdx,
-                  onChanged: (index) {
-                    final currency = widget.currencyOptions[index];
+                  onChanged: (selected) {
+                    final currency = selected;
                     current = current.copyWith(
                         price: dto.ConfigureblePrice(
                             amount: current.price.amount,
                             currencyId: currency.id,
                             currencySymbol: currency.symbol));
                   },
-                  items: widget.currencyOptions.indexed.map((e) => (
-                        e.$2.symbol, e.$1, // this is the index
-                      )))),
+                  items: widget.currencyOptions.map((e) => (e.symbol, e)))),
           const Spacer(flex: 1),
         ],
       ),
@@ -181,13 +179,12 @@ class _PlanConfigSectionState extends State<PlanConfigSection> {
       Text('Category', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        SingleSelector<int>.fromTuple(
+        SingleSelector<Category>.fromTuple(
             initialIndex: categoryIdx,
             onChanged: (selected) {
-              current =
-                  current.copyWith(category: widget.categoryOptions[selected]);
+              current = current.copyWith(category: selected);
             },
-            items: widget.categoryOptions.map((e) => (e.name, e.id))),
+            items: widget.categoryOptions.map((e) => (e.name, e))),
       ),
       sectionMargine,
       Text('Description', style: textTheme.headlineMedium),
@@ -219,18 +216,18 @@ class _PlanConfigSectionState extends State<PlanConfigSection> {
           const SizedBox(width: 10),
           Expanded(
               flex: 3,
-              child: SingleSelector<int>.fromTuple(
+              child: SingleSelector<Currency>.fromTuple(
                   initialIndex: currencyIdx,
-                  onChanged: (index) {
-                    final currency = widget.currencyOptions[index];
+                  onChanged: (selected) {
                     current = current.copyWith(
                         price: dto.ConfigureblePrice(
                             amount: current.price.amount,
-                            currencyId: currency.id,
-                            currencySymbol: currency.symbol));
+                            currencyId: selected.id,
+                            currencySymbol: selected.symbol));
                   },
-                  items: widget.currencyOptions.indexed.map((e) => (
-                        e.$2.symbol, e.$1, // this is the index
+                  items: widget.currencyOptions.map((e) => (
+                        e.symbol,
+                        e,
                       )))),
           const Spacer(flex: 1),
         ],

@@ -39,7 +39,7 @@ class RecordCollection {
         }
       }
     }
-    final past = period.intersection(Period.past());
+    final past = period.intersection(Period.pastOrToday());
     if (past != null) {
       await for (final log in _receiptLogRepository.get(past, categories)) {
         records.add(ReceiptRecord(price: log.price, date: log.date));

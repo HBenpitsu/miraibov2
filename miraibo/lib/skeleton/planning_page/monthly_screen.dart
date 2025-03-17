@@ -47,7 +47,7 @@ class Calender {
   /// Each element represents the existence of an event on the day.
   /// Watch out for the index of the list. It starts from 0.
   /// Do not forget to add 1 to the index to get the day.
-  final Future<List<EventExistence>> events;
+  final Future<List<EventExistence>> Function() events;
 
   const Calender(this.year, this.month, this.daysInMonth, this.firstDayOfWeek,
       this.events);

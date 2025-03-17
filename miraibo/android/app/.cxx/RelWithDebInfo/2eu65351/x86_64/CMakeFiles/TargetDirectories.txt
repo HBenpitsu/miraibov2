@@ -1,0 +1,2 @@
+/mnt/secondaryStorage/miraibov2/miraibo/android/app/.cxx/RelWithDebInfo/2eu65351/x86_64/CMakeFiles/edit_cache.dir
+/mnt/secondaryStorage/miraibov2/miraibo/android/app/.cxx/RelWithDebInfo/2eu65351/x86_64/CMakeFiles/rebuild_cache.dir

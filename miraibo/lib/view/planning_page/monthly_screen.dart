@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math' show min;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/skeleton/planning_page/planning_page.dart' as skt;
 import 'package:miraibo/view/planning_page/bidirectional_infinite_list.dart';
@@ -23,6 +25,9 @@ class MonthlyScreen extends StatefulWidget {
 
 class _MonthlyScreenState extends State<MonthlyScreen> {
   final ScrollController scrollController = ScrollController();
+  bool currentEventFetchingAllowance = true;
+  final StreamController<bool> eventFetchingAllowanceNotifier =
+      StreamController<bool>.broadcast();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,10 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
             return Calender(calenderData, onTap: (date) {
               widget.navigateToDailyScreen(widget.skeleton
                   .navigateToDailyScreen(date.year, date.month, date.day));
-            }, key: ValueKey(index));
+            },
+                initialAllowance: currentEventFetchingAllowance,
+                eventFetchingAllowanceNotifier: eventFetchingAllowanceNotifier,
+                key: ValueKey(index));
           }),
       bottomNavigationBar: SizedBox(
           height: bottomNavigationBarHeight,
@@ -43,30 +51,42 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
             children: [
               const Spacer(),
               IconButton(
-                onPressed: () {
-                  scrollController.animateTo(
+                onPressed: () async {
+                  currentEventFetchingAllowance = false;
+                  eventFetchingAllowanceNotifier.add(false);
+                  await scrollController.animateTo(
                       scrollController.position.pixels - screenHeight * 12,
                       duration: MonthlyScreen.scrollDuration,
                       curve: Curves.easeOut);
+                  currentEventFetchingAllowance = true;
+                  eventFetchingAllowanceNotifier.add(true);
                 },
                 icon: const Icon(Icons.arrow_upward),
               ),
               const Spacer(),
               IconButton(
-                onPressed: () {
-                  scrollController.animateTo(0,
+                onPressed: () async {
+                  currentEventFetchingAllowance = false;
+                  eventFetchingAllowanceNotifier.add(false);
+                  await scrollController.animateTo(0,
                       duration: MonthlyScreen.scrollDuration,
                       curve: Curves.easeOut);
+                  currentEventFetchingAllowance = true;
+                  eventFetchingAllowanceNotifier.add(true);
                 },
                 icon: const Icon(Icons.autorenew),
               ),
               const Spacer(),
               IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  currentEventFetchingAllowance = false;
+                  eventFetchingAllowanceNotifier.add(false);
                   scrollController.animateTo(
                       scrollController.position.pixels + screenHeight * 12,
                       duration: MonthlyScreen.scrollDuration,
                       curve: Curves.easeOut);
+                  currentEventFetchingAllowance = true;
+                  eventFetchingAllowanceNotifier.add(true);
                 },
                 icon: const Icon(Icons.arrow_downward),
               ),
@@ -84,14 +104,45 @@ class _MonthlyScreenState extends State<MonthlyScreen> {
   }
 }
 
-class Calender extends StatelessWidget {
+class Calender extends StatefulWidget {
   final skt.Calender viewModel;
 
   /// onTap is called when a date is tapped
   /// the argument is the date that is tapped
   final void Function(Date) onTap;
-  const Calender(this.viewModel, {required this.onTap, super.key});
+  final bool initialAllowance;
+  final StreamController<bool> eventFetchingAllowanceNotifier;
+  const Calender(this.viewModel,
+      {required this.onTap,
+      required this.initialAllowance,
+      required this.eventFetchingAllowanceNotifier,
+      super.key});
   static const double maxWidth = 350;
+
+  @override
+  State<Calender> createState() => _CalenderState();
+}
+
+class _CalenderState extends State<Calender> {
+  late bool eventFetchingAllowed;
+  late StreamSubscription<bool> eventFetchingAllowanceSubscription;
+  @override
+  void initState() {
+    super.initState();
+    eventFetchingAllowed = widget.initialAllowance;
+    eventFetchingAllowanceSubscription =
+        widget.eventFetchingAllowanceNotifier.stream.listen((event) {
+      eventFetchingAllowed = event;
+      if (!mounted || !eventFetchingAllowed) return;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    eventFetchingAllowanceSubscription.cancel();
+  }
 
   double width(BuildContext context) =>
       min(Calender.maxWidth, MediaQuery.of(context).size.width);
@@ -104,16 +155,25 @@ class Calender extends StatelessWidget {
 
   Text label(BuildContext context) {
     return Text(
-      '${viewModel.year} - ${viewModel.month}',
+      '${widget.viewModel.year} - ${widget.viewModel.month}',
       style: Theme.of(context).textTheme.headlineLarge,
     );
   }
 
+  Future<List<EventExistence>> events() async {
+    if (eventFetchingAllowed) {
+      return await widget.viewModel.events();
+    } else {
+      return List.filled(widget.viewModel.daysInMonth, EventExistence.none);
+    }
+  }
+
   SizedBox calenderBox(BuildContext context) {
     final loadingEvents = FutureBuilder(
-        future: viewModel.events,
+        future: events(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
+            Logger().e(snapshot.error);
             return const Center(child: Text('Error: failed to load events'));
           }
           if (!snapshot.hasData) {
@@ -123,8 +183,8 @@ class Calender extends StatelessWidget {
         });
     return SizedBox(
         width: width(context),
-        height: sizeOfCell(context) * viewModel.numberOfRow,
-        child: loadingEvents);
+        height: sizeOfCell(context) * widget.viewModel.numberOfRow,
+        child: eventFetchingAllowed ? loadingEvents : Container());
   }
 
   Widget calender(BuildContext context, List<EventExistence> events) {
@@ -137,10 +197,10 @@ class Calender extends StatelessWidget {
       painter: CalenderPainter(
           cellSize: sizeOfCell(context),
           colorScheme: Theme.of(context).colorScheme,
-          firstDayOfWeek: viewModel.firstDayOfWeek,
+          firstDayOfWeek: widget.viewModel.firstDayOfWeek,
           events: events,
           onTap: (day) {
-            dateToGo = Date(viewModel.year, viewModel.month, day);
+            dateToGo = Date(widget.viewModel.year, widget.viewModel.month, day);
           }),
     );
     // Because bere hitTest of CustomPaint (onTap of CalenderPainter) is to sensitive,
@@ -150,7 +210,7 @@ class Calender extends StatelessWidget {
       child: paint,
       onTap: () {
         if (dateToGo != null) {
-          onTap(dateToGo!);
+          widget.onTap(dateToGo!);
         }
       },
     );

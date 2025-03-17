@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:async';
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart' show NativeDatabase;
@@ -7,7 +7,7 @@ import 'package:flutter/material.dart' show WidgetsFlutterBinding;
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart'
-    show getApplicationSupportDirectory;
+    show getApplicationSupportDirectory, getTemporaryDirectory;
 import 'package:miraibo/middleware/relational/dao.dart';
 import 'package:miraibo/shared/enumeration.dart';
 
@@ -15,11 +15,32 @@ part 'database.g.dart';
 
 @DriftDatabase(include: {'primary_tables.drift'}, daos: [Plans])
 class AppDatabase extends _$AppDatabase {
-  static AppDatabase? _instance;
-  AppDatabase._() : super(_openConnection());
-  factory AppDatabase() {
-    return _instance ??= AppDatabase._();
+  static bool connectable = true;
+  static StreamController<void> reconnectionNotifier =
+      StreamController<void>.broadcast();
+  disconnect() {
+    connectable = false;
   }
+
+  reconnect() {
+    connectable = true;
+    reconnectionNotifier.add(null);
+  }
+
+  static late final LazyDatabase lazyDatabase;
+  static QueryExecutor _openConnection() {
+    WidgetsFlutterBinding.ensureInitialized();
+    return lazyDatabase = LazyDatabase(() async {
+      if (!connectable) {
+        await reconnectionNotifier.stream.first;
+      }
+      return NativeDatabase(await getDatabaseFile());
+    });
+  }
+
+  AppDatabase._() : super(_openConnection());
+  static AppDatabase? _instance;
+  factory AppDatabase() => _instance ??= AppDatabase._();
 
   @override
   int get schemaVersion => 1;
@@ -50,29 +71,32 @@ class AppDatabase extends _$AppDatabase {
 
   static int chunkSize = 1024;
 
-  Stream<String> dump() async* {
+  Stream<List<int>> dump() async* {
+    final tempDir = await getTemporaryDirectory();
     final file = await getDatabaseFile();
     // take a snapshot
-    final snapshot = await file.copy('miraibo-db.sqlite.dump');
-    int cursor = 0;
+    final snapshot =
+        await file.copy(join(tempDir.path, 'miraibo-db.sqlite.dump'));
+    final fd = await snapshot.open();
     while (true) {
-      final chunk = await snapshot.openRead(cursor, cursor + chunkSize).first;
+      final chunk = await fd.read(chunkSize);
       if (chunk.isEmpty) break;
-      yield utf8.decode(chunk);
-      cursor += chunk.length;
+      yield chunk;
     }
+    await fd.close();
     await snapshot.delete();
   }
 
-  Future<void> load(Stream<String> chunks) async {
-    await close();
+  Future<void> load(Stream<List<int>> chunks) async {
+    disconnect();
     final file = await getDatabaseFile();
-    final sink = file.openWrite();
+    final fd = await file.open(mode: FileMode.write);
     await for (final chunk in chunks) {
-      sink.write(chunk);
+      await fd.writeFrom(chunk);
     }
-    await sink.flush();
-    await sink.close();
+    await fd.flush();
+    await fd.close();
+    reconnect();
   }
 
   static File? _databaseFile;
@@ -86,12 +110,5 @@ class AppDatabase extends _$AppDatabase {
     }
     Logger().i('Using databse file at $directory');
     return File(join(directory, 'miraibo-db.sqlite'));
-  }
-
-  static QueryExecutor _openConnection() {
-    WidgetsFlutterBinding.ensureInitialized();
-    return LazyDatabase(() async {
-      return NativeDatabase(await getDatabaseFile());
-    });
   }
 }

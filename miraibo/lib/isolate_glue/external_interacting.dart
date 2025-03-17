@@ -10,7 +10,7 @@ Future<void> __exportDataTo(String path) async {
 
 /// {@macro exportDataTo}
 Future<bool> exportDataTo(String path) {
-  return usecase.backupDataTo(path);
+  return usecase.exportDataTo(path);
   // return compute(__exportDataTo, path);
 }
 
@@ -21,7 +21,7 @@ Future<void> __importDataFrom(String path) async {
 
 /// {@macro importDataFrom}
 Future<bool> importDataFrom(String path) {
-  return usecase.restoreDataFrom(path);
+  return usecase.importDataFrom(path);
   // return compute(__importDataFrom, path);
 }
 
@@ -32,7 +32,7 @@ Future<void> __overwriteDataWith(String path) async {
 
 /// {@macro overwriteDataWith}
 Future<bool> overwriteDataWith(String path) {
-  return usecase.restoreDataFrom(path);
+  return usecase.overwriteDataWith(path);
   // return compute(__overwriteDataWith, path);
 }
 

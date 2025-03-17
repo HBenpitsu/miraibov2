@@ -1,0 +1,1 @@
+/mnt/secondaryStorage/miraibov2/miraibo/build/app/intermediates/cxx/RelWithDebInfo/2eu65351/obj/armeabi-v7a

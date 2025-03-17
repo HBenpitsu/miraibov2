@@ -514,7 +514,7 @@ class MockMonthlyScreen implements MonthlyScreen {
       }
     });
     return Calender(firstDay.year, firstDay.month, lastDay.day, firstWeekday,
-        Future.value(events));
+        () async => events);
   }
 
   @override

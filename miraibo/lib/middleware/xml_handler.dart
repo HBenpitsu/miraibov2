@@ -1,3 +1,5 @@
+import 'package:logger/logger.dart';
+
 class XmlDumper {
   final Sink<String> dumpTo;
   XmlDumper(this.dumpTo);

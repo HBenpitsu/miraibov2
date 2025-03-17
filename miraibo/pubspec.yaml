@@ -51,6 +51,7 @@ dependencies:
   shared_preferences_platform_interface: ^2.4.1
   shared_preferences_linux: ^2.4.1
   shared_preferences_android: ^2.4.8
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:

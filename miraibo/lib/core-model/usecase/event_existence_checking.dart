@@ -9,6 +9,6 @@ import 'package:miraibo/core-model/value/date.dart' as model;
 /// see `docs/architecture/3.2.2.7. EventExistence` for details
 /// {@endtemplate}
 Future<EventExistence> fetchEventExistenceOn(Date date) async {
-  return await model.EventExistenceCheckingService.get(
-      model.Date(date.year, date.month, date.day));
+  final checkingService = model.EventExistenceCheckingService.getInstance();
+  return await checkingService.get(model.Date(date.year, date.month, date.day));
 }
