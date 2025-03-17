@@ -1300,8 +1300,9 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
 
   @override
   Stream<model.MonitorScheme?> watchById(int id) async* {
-    database.monitorSchemes.select().where((row) => row.id.equals(id));
-    final jointQuery = _join(database.monitorSchemes.select());
+    final query = database.monitorSchemes.select()
+      ..where((row) => row.id.equals(id));
+    final jointQuery = _join(query);
     await for (final results in jointQuery.watch()) {
       final scheme = results.first.readTable(database.monitorSchemes);
       final currency = results.first.readTable(database.currencies);
@@ -1315,15 +1316,12 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
               .add(model.Category(id: rawCategory.id, name: rawCategory.name));
         }
       }
-      if (categories.isEmpty) {
-        yield _parseIntoModel([], scheme, currency);
-      } else {
-        yield _parseIntoModel(
-          categories,
-          scheme,
-          currency,
-        );
-      }
+
+      yield _parseIntoModel(
+        categories,
+        scheme,
+        currency,
+      );
     }
   }
 

@@ -98,7 +98,6 @@ class MonitorScheme {
 
   static Stream<MonitorScheme?> watch(int id) async* {
     await for (final scheme in repository.watchById(id)) {
-      Logger().d(scheme);
       yield scheme;
     }
   }

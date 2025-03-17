@@ -220,7 +220,6 @@ class MonitorSchemeEditWindowImpl implements MonitorSchemeEditWindow {
 
   @override
   Future<MonitorScheme> getOriginalMonitorScheme() {
-    Logger().d(targetTicketId);
     return model.fetchMonitorScheme(targetTicketId);
   }
 

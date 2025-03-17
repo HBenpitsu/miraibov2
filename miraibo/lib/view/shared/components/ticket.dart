@@ -213,7 +213,10 @@ class MonitorTicket extends StatelessWidget {
         currencySymbol += '/week';
       case MonitorDisplayOption.meanInMonths:
         currencySymbol += '/month';
-      default:
+      case MonitorDisplayOption.meanInYears:
+        currencySymbol += '/year';
+      case MonitorDisplayOption.summation:
+        break;
     }
     return TicketAppearanceTemplate(
       ticketType: 'Monitor',
