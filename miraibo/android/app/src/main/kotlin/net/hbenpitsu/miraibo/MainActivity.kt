@@ -1,4 +1,4 @@
-package com.example.miraibo
+package net.hbenpitsu.miraibo
 
 import io.flutter.embedding.android.FlutterActivity
 

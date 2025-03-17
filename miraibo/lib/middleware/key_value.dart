@@ -28,6 +28,14 @@ class KeyValueStore {
     return _instance ??= KeyValueStore._();
   }
 
+  Future<void> prune() async {
+    await _prefs.clear();
+  }
+
+  Future<void> clear() async {
+    await _prefs.clear();
+  }
+
   static const int version = 1;
   // HISTORY:
   // 1: initial version (2025/3/3)
@@ -54,6 +62,10 @@ class KeyValueStore {
     }
     if (_mapHasValue(map, _defaultCurrencyId)) {
       await setDefaultCurrencyId(map[_defaultCurrencyId]);
+    }
+    if (_mapHasValue(map, _lastPlanInstanciation)) {
+      await setLastPlanInstanciation(
+          model.Date.fromJson(map[_lastPlanInstanciation]));
     }
   }
 

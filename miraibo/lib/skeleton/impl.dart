@@ -6,6 +6,17 @@ import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/shared/enumeration.dart';
 import 'package:miraibo/isolate_glue/isolate_glue.dart' as model;
 
+void dispatchEvents() async {
+  await model.initializeApp();
+  await model.instanciateScheduleUntilToday();
+  await model.autoConfirmIgnoredReceiptLogs();
+  Timer.periodic(Duration(seconds: 5), (_) async {
+    await model.instanciateScheduleUntilToday();
+    await model.autoConfirmIgnoredReceiptLogs();
+    ticketMutationNotifier.add(null);
+  });
+}
+
 final ticketMutationNotifier = StreamController<void>.broadcast();
 
 class RootImpl implements Root {
@@ -1406,6 +1417,7 @@ class UtilsPageImpl implements UtilsPage {
   @override
   Future<void> setDefaultCurrency(int currencyId) async {
     await model.setCurrencyAsDefault(currencyId);
+    currencyMutationNotifier.add(null);
   }
 
   @override

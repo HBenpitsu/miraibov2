@@ -295,10 +295,10 @@ class _ScheduleSectionState extends State<_ScheduleSection> {
     oneshot = dto.OneshotSchedule(date: axis);
     interval = dto.IntervalSchedule(
         originDate: axis,
-        period: const dto.OpenPeriod(begins: null, ends: null),
+        period: dto.OpenPeriod(begins: axis, ends: axis),
         interval: 1);
-    weekly = const dto.WeeklySchedule(
-        period: dto.OpenPeriod(begins: null, ends: null),
+    weekly = dto.WeeklySchedule(
+        period: dto.OpenPeriod(begins: axis, ends: axis),
         sunday: false,
         monday: false,
         tuesday: false,
@@ -306,11 +306,10 @@ class _ScheduleSectionState extends State<_ScheduleSection> {
         thursday: false,
         friday: false,
         saturday: false);
-    monthly = const dto.MonthlySchedule(
-        period: dto.OpenPeriod(begins: null, ends: null), offset: 0);
+    monthly = dto.MonthlySchedule(
+        period: dto.OpenPeriod(begins: axis, ends: axis), offset: 0);
     annual = dto.AnnualSchedule(
-        originDate: axis,
-        period: const dto.OpenPeriod(begins: null, ends: null));
+        originDate: axis, period: dto.OpenPeriod(begins: axis, ends: axis));
     switch (current) {
       case dto.OneshotSchedule current:
         oneshot = current;

@@ -30,16 +30,14 @@ Future<bool> overwriteDataWith(String path) async {
 /// backup all app data to the file at [path].
 /// {@endtemplate}
 Future<bool> backupDataTo(String path) async {
-  // TODO: IMPLEMENT THIS
-  return false;
-  throw UnimplementedError();
+  final error = await BackupService.dump(path);
+  return error == null;
 }
 
 /// {@template restoreDataFrom}
 /// reset whole database and restore all app data from the file at [path].
 /// {@endtemplate}
 Future<bool> restoreDataFrom(String path) async {
-  // TODO: IMPLEMENT THIS
-  return false;
-  throw UnimplementedError();
+  final load = await BackupService.load(path);
+  return load == null;
 }

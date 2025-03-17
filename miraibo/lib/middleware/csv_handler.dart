@@ -1,4 +1,4 @@
-class CSVLineParser {
+class CSVLineHandler {
   static List<String> parse(String csvLine) {
     List<String> parsed = [];
     String buffer = '';

@@ -47,6 +47,10 @@ Future<List<Ticket>> fetchTicketsOn(Date date) async {
     );
   }
   for (final plan in tickets.plans) {
+    if (!plan.schedule
+        .isScheduled(model.Date(date.year, date.month, date.day))) {
+      continue;
+    }
     final Schedule schedule = switch (plan.schedule) {
       model.OneshotSchedule oneshotSchedule => OneshotSchedule(
           date: Date(oneshotSchedule.date.year, oneshotSchedule.date.month,

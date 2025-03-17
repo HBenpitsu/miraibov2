@@ -1,3 +1,4 @@
+import 'package:logger/web.dart';
 import 'package:miraibo/external-model/service/error_handling_service.dart';
 
 enum Weekday {

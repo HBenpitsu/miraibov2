@@ -1,3 +1,4 @@
+import 'package:logger/web.dart';
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/core-model/entity/currency.dart' as model;
 import 'package:miraibo/core-model/value/collection/currency_collection.dart'

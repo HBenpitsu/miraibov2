@@ -193,7 +193,6 @@ class MonitorTicket extends StatelessWidget {
             return 'would be earned for the categories in average';
           }
         case MonitorDisplayOption.summation:
-          Logger().d('period.ends: ${period.ends}');
           if (period.ends == null) {
             return 'is earned for the categories in total until today';
           } else {

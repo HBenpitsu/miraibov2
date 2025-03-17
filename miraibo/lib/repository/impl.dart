@@ -531,7 +531,7 @@ class PlanRepositoryImpl implements PlanRepository {
     final plan = row.readTable(database.weeklyPlans);
     final category = row.readTable(database.categories);
     final currency = row.readTable(database.currencies);
-    return model.Plan(
+    final response = model.Plan(
       id: plan.id,
       category: model.Category(id: category.id, name: category.name),
       description: plan.description,
@@ -551,12 +551,13 @@ class PlanRepositoryImpl implements PlanRepository {
         sunday: plan.sunday,
         monday: plan.monday,
         tuesday: plan.tuesday,
-        wednesday: plan.tuesday,
-        thursday: plan.tuesday,
+        wednesday: plan.wednesday,
+        thursday: plan.thursday,
         friday: plan.friday,
         saturday: plan.saturday,
       ),
     );
+    return response;
   }
 
   model.Plan _parseMonthly(TypedResult row) {

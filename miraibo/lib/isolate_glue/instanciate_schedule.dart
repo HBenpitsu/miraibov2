@@ -13,3 +13,7 @@ Future<void> instanciateScheduleUntilToday() async {
   return usecase.instanciateScheduleUntilToday();
   // await compute(__instanciateScheduleUntilToday, ());
 }
+
+Future<void> autoConfirmIgnoredReceiptLogs() async {
+  return usecase.autoConfirmIgnoredReceiptLogs();
+}

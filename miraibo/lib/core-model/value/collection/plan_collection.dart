@@ -27,6 +27,7 @@ class PlanCollection {
         if (alreadyInstanciatedOnes[date]!.contains(plan.id)) continue;
         ReceiptLog.create(
             date, plan.price, plan.description, plan.category, false);
+        _repository.markAsInstanciated(plan, date);
       }
     }
     await _repository.setLastInstanciatedDate(today);
