@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:miraibo/dto/dto.dart' as dto;
 import 'package:miraibo/shared/enumeration.dart';
 
@@ -186,9 +187,18 @@ class MonitorTicket extends StatelessWidget {
         case MonitorDisplayOption.meanInWeeks:
         case MonitorDisplayOption.meanInMonths:
         case MonitorDisplayOption.meanInYears:
-          return 'would be earned for the categories in average';
+          if (period.ends == null) {
+            return 'is earned for the categories in average';
+          } else {
+            return 'would be earned for the categories in average';
+          }
         case MonitorDisplayOption.summation:
-          return 'would be earned for the categories in total';
+          Logger().d('period.ends: ${period.ends}');
+          if (period.ends == null) {
+            return 'is earned for the categories in total until today';
+          } else {
+            return 'would be earned for the categories in total';
+          }
       }
     } else {
       switch (displayOption) {
@@ -196,9 +206,17 @@ class MonitorTicket extends StatelessWidget {
         case MonitorDisplayOption.meanInWeeks:
         case MonitorDisplayOption.meanInMonths:
         case MonitorDisplayOption.meanInYears:
-          return 'would be spent for the categories in average';
+          if (period.ends == null) {
+            return 'is spent for the categories in average';
+          } else {
+            return 'would be spent for the categories in average';
+          }
         case MonitorDisplayOption.summation:
-          return 'would be  spent for the categories in total';
+          if (period.ends == null) {
+            return 'is spent for the categories in total until today';
+          } else {
+            return 'would be spent for the categories in total';
+          }
       }
     }
   }

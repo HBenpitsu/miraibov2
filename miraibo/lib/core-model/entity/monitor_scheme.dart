@@ -1,5 +1,6 @@
 import 'package:logger/logger.dart';
 import 'package:miraibo/core-model/value/collection/category_collection.dart';
+import 'package:miraibo/core-model/value/date.dart';
 import 'package:miraibo/core-model/value/period.dart';
 import 'package:miraibo/core-model/entity/currency.dart';
 import 'package:miraibo/repository/core.dart';
@@ -68,7 +69,15 @@ class MonitorScheme {
         _categories = categories;
 
   Future<Price> getValue() async {
-    final records = await RecordCollection.get(period, categories);
+    final Period ajustedPeriod;
+    if (period.isEndless) {
+      ajustedPeriod =
+          period.intersection(Period.startless(ends: Date.today())) ??
+              Period.singleDay(Date.today());
+    } else {
+      ajustedPeriod = period;
+    }
+    final records = await RecordCollection.get(ajustedPeriod, categories);
     Price price;
     switch (displayOption.statisticsKind) {
       case MonitorDisplayStatisticsKind.summation:

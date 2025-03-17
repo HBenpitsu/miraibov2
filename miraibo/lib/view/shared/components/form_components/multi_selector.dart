@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:logger/web.dart';
 import 'package:miraibo/view/shared/components/form_components/shared_constants.dart';
 import 'package:miraibo/view/shared/components/modal_window.dart';
 import 'package:miraibo/view/shared/components/form_components/custom_search_bar.dart';

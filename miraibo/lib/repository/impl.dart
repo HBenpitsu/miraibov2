@@ -1195,7 +1195,7 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
     MonitorScheme scheme,
     Currency currency,
   ) {
-    return model.MonitorScheme(
+    final response = model.MonitorScheme(
       id: scheme.id,
       period: Period(
         begins: Date.fromDateTime(scheme.periodBegins),
@@ -1211,6 +1211,7 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
           ? CategoryCollection.phantomAll
           : CategoryCollection(categories: categoryList),
     );
+    return response;
   }
 
   JoinedSelectStatement<HasResultSet, dynamic> _join(
@@ -1243,6 +1244,7 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
     List<model.Category> buffer = [];
     MonitorScheme? lastScheme;
     Currency? lastCurrency;
+
     for (final row in await jointQuery.get()) {
       final scheme = row.readTable(database.monitorSchemes);
       final currency = row.readTable(database.currencies);
@@ -1251,18 +1253,19 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
       if (lastScheme?.id != scheme.id &&
           lastScheme != null &&
           lastCurrency != null) {
-        yield _parseIntoModel(buffer, lastScheme, lastCurrency);
+        yield _parseIntoModel([...buffer], lastScheme, lastCurrency);
         buffer.clear();
       }
 
       if (category != null) {
         buffer.add(model.Category(id: category.id, name: category.name));
       }
+
       lastScheme = scheme;
       lastCurrency = currency;
     }
     if (lastScheme != null && lastCurrency != null) {
-      yield _parseIntoModel(buffer, lastScheme, lastCurrency);
+      yield _parseIntoModel([...buffer], lastScheme, lastCurrency);
     }
   }
 

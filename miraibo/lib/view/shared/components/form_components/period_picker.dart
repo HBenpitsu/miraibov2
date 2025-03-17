@@ -63,6 +63,9 @@ class _OpenPeriodPickerState extends State<OpenPeriodPicker> {
       case (false, true):
         widget.onChanged(dto.OpenPeriod(begins: begins, ends: null));
       case (false, false):
+        if (begins.asDateTime().isAfter(ends.asDateTime())) {
+          begins = ends;
+        }
         widget.onChanged(dto.OpenPeriod(begins: begins, ends: ends));
     }
   }

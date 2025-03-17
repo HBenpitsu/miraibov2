@@ -230,8 +230,8 @@ class MonitorSchemeEditWindowImpl implements MonitorSchemeEditWindow {
       required OpenPeriod period,
       required MonitorDisplayOption displayOption,
       required int currencyId}) async {
-    await model.editMonitorScheme(
-        targetTicketId, period, categoryIds, displayOption, currencyId);
+    await model.editMonitorScheme(targetTicketId, period,
+        isAllCategoriesIncluded ? [] : categoryIds, displayOption, currencyId);
     ticketMutationNotifier.add(null);
   }
 
@@ -485,8 +485,8 @@ class MonitorSchemeSectionImpl implements MonitorSchemeSection {
     required MonitorDisplayOption displayOption,
     required int currencyId,
   }) async {
-    await model.createMonitorScheme(
-        period, categoryIds, displayOption, currencyId);
+    await model.createMonitorScheme(period,
+        isAllCategoriesIncluded ? [] : categoryIds, displayOption, currencyId);
     ticketMutationNotifier.add(null);
   }
 
