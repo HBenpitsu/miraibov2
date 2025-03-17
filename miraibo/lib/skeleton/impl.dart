@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:logger/logger.dart';
 import 'package:miraibo/skeleton/root.dart';
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/shared/enumeration.dart';
@@ -145,7 +146,10 @@ class DailyScreenImpl implements DailyScreen {
 
   @override
   TicketCreateWindow openTicketCreateWindow() {
-    return TicketCreateWindowImpl();
+    return TicketCreateWindowImpl(initiallyCenteredDate
+        .asDateTime()
+        .add(Duration(days: offset))
+        .cutOffTime());
   }
 
   @override
@@ -216,6 +220,7 @@ class MonitorSchemeEditWindowImpl implements MonitorSchemeEditWindow {
 
   @override
   Future<MonitorScheme> getOriginalMonitorScheme() {
+    Logger().d(targetTicketId);
     return model.fetchMonitorScheme(targetTicketId);
   }
 
@@ -390,22 +395,29 @@ class ReceiptLogEditWindowImpl implements ReceiptLogEditWindow {
 class TicketCreateWindowImpl implements TicketCreateWindow {
   @override
   EstimationSchemeSection get estimationSchemeSection =>
-      EstimationSchemeSectionImpl();
+      EstimationSchemeSectionImpl(axisDate);
 
   @override
-  MonitorSchemeSection get monitorSchemeSection => MonitorSchemeSectionImpl();
+  MonitorSchemeSection get monitorSchemeSection =>
+      MonitorSchemeSectionImpl(axisDate);
 
   @override
-  PlanSection get planSection => PlanSectionImpl();
+  PlanSection get planSection => PlanSectionImpl(axisDate);
 
   @override
-  ReceiptLogSection get receiptLogSection => ReceiptLogSectionImpl();
+  ReceiptLogSection get receiptLogSection => ReceiptLogSectionImpl(axisDate);
+
+  final model.Date axisDate;
+  TicketCreateWindowImpl(this.axisDate);
 
   @override
   void dispose() {}
 }
 
 class EstimationSchemeSectionImpl implements EstimationSchemeSection {
+  final model.Date axisDate;
+  EstimationSchemeSectionImpl(this.axisDate);
+
   @override
   Future<List<Category>> getCategoryOptions() {
     return model.fetchAllCategories();
@@ -442,7 +454,7 @@ class EstimationSchemeSectionImpl implements EstimationSchemeSection {
       category = recentLog.category;
     }
     return EstimationScheme(
-        period: OpenPeriod(begins: null, ends: null),
+        period: OpenPeriod(begins: axisDate, ends: null),
         currency: currency,
         displayOption: EstimationDisplayOption.perDay,
         category: category);
@@ -453,6 +465,9 @@ class EstimationSchemeSectionImpl implements EstimationSchemeSection {
 }
 
 class MonitorSchemeSectionImpl implements MonitorSchemeSection {
+  final model.Date axisDate;
+  MonitorSchemeSectionImpl(this.axisDate);
+
   @override
   Future<List<Category>> getCategoryOptions() {
     return model.fetchAllCategories();
@@ -479,7 +494,7 @@ class MonitorSchemeSectionImpl implements MonitorSchemeSection {
   @override
   Future<MonitorScheme> getInitialScheme() async {
     return MonitorScheme(
-        period: OpenPeriod(begins: null, ends: null),
+        period: OpenPeriod(begins: axisDate, ends: null),
         currency: await model.fetchDefaultCurrency(),
         displayOption: MonitorDisplayOption.summation,
         categories: [],
@@ -491,6 +506,9 @@ class MonitorSchemeSectionImpl implements MonitorSchemeSection {
 }
 
 class ReceiptLogSectionImpl implements ReceiptLogSection {
+  final model.Date axisDate;
+  ReceiptLogSectionImpl(this.axisDate);
+
   @override
   Future<List<Category>> getCategoryOptions() {
     return model.fetchAllCategories();
@@ -529,9 +547,8 @@ class ReceiptLogSectionImpl implements ReceiptLogSection {
       category = recentLog.category;
     }
     final currency = await model.fetchDefaultCurrency();
-    final now = DateTime.now();
     return ReceiptLogScheme(
-        date: Date(now.year, now.month, now.day),
+        date: axisDate,
         price: ConfigureblePrice(
             amount: 0,
             currencyId: currency.id,
@@ -549,7 +566,7 @@ class ReceiptLogSectionImpl implements ReceiptLogSection {
       if (recentLog == null) return buffer;
       buffer.add(ReceiptLogSchemePreset(
           price: ConfigureblePrice(
-              amount: 0,
+              amount: recentLog.price.amount,
               currencyId: recentLog.price.currencyId,
               currencySymbol: recentLog.price.currencySymbol),
           description: recentLog.description,
@@ -563,6 +580,9 @@ class ReceiptLogSectionImpl implements ReceiptLogSection {
 }
 
 class PlanSectionImpl implements PlanSection {
+  final model.Date axisDate;
+  PlanSectionImpl(this.axisDate);
+
   @override
   Future<List<Category>> getCategoryOptions() {
     return model.fetchAllCategories();
@@ -595,9 +615,8 @@ class PlanSectionImpl implements PlanSection {
   Future<PlanScheme> getInitialScheme() async {
     final currency = await model.fetchDefaultCurrency();
     final category = (await model.fetchAllCategories()).first;
-    final now = DateTime.now();
     return PlanScheme(
-        schedule: OneshotSchedule(date: Date(now.year, now.month, now.day)),
+        schedule: OneshotSchedule(date: axisDate),
         price: ConfigureblePrice(
             amount: 0,
             currencyId: currency.id,
@@ -657,8 +676,8 @@ class ReceiptLogCreateWindowImpl implements ReceiptLogCreateWindow {
       required String description,
       required int amount,
       required int currencyId,
-      required Date date}) {
-    return model.createReceiptLog(
+      required Date date}) async {
+    await model.createReceiptLog(
       categoryId: categoryId,
       description: description,
       amount: amount,
@@ -666,6 +685,7 @@ class ReceiptLogCreateWindowImpl implements ReceiptLogCreateWindow {
       originDate: date,
       confirmed: true,
     );
+    ticketMutationNotifier.add(null);
   }
 
   @override
@@ -708,7 +728,7 @@ class ReceiptLogCreateWindowImpl implements ReceiptLogCreateWindow {
       if (recentLog == null) return buffer;
       buffer.add(ReceiptLogSchemePreset(
           price: ConfigureblePrice(
-              amount: 0,
+              amount: recentLog.price.amount,
               currencyId: recentLog.price.currencyId,
               currencySymbol: recentLog.price.currencySymbol),
           description: recentLog.description,

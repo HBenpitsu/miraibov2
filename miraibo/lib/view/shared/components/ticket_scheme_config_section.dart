@@ -41,23 +41,32 @@ class _ReceiptLogConfigSectionState extends State<ReceiptLogConfigSection> {
   late final TextEditingController descriptionController;
   final FocusNode descriptionFocusNode = FocusNode();
 
+  late final List<int> currencyIds;
+  late final List<int> categoryIds;
+
   @override
   void initState() {
     super.initState();
     current = widget.initial;
     descriptionController = TextEditingController(text: current.description);
+    currencyIds = widget.currencyOptions.map((e) => e.id).toList();
+    categoryIds = widget.categoryOptions.map((e) => e.id).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    var currencyIdx = currencyIds.indexOf(current.price.currencyId);
+    if (currencyIdx == -1) currencyIdx = 0;
+    var categoryIdx = categoryIds.indexOf(current.category.id);
+    if (categoryIdx == -1) categoryIdx = 0;
     return Column(children: [
       sectionMargine,
       Text('Category', style: textTheme.headlineMedium),
       lineMargine,
       expands(
         SingleSelector<int>.fromTuple(
-            initialIndex: current.category.id,
+            initialIndex: categoryIdx,
             onChanged: (selected) {
               current =
                   current.copyWith(category: widget.categoryOptions[selected]);
@@ -95,7 +104,7 @@ class _ReceiptLogConfigSectionState extends State<ReceiptLogConfigSection> {
           Expanded(
               flex: 3,
               child: SingleSelector<int>.fromTuple(
-                  initialIndex: current.price.currencyId,
+                  initialIndex: currencyIdx,
                   onChanged: (index) {
                     final currency = widget.currencyOptions[index];
                     current = current.copyWith(
@@ -147,24 +156,32 @@ class _PlanConfigSectionState extends State<PlanConfigSection> {
 
   late final TextEditingController descriptionController;
   final FocusNode descriptionFocusNode = FocusNode();
+  late final List<int> currencyIds;
+  late final List<int> categoryIds;
 
   @override
   void initState() {
     super.initState();
     current = widget.initial;
     descriptionController = TextEditingController(text: current.description);
+    currencyIds = widget.currencyOptions.map((e) => e.id).toList();
+    categoryIds = widget.categoryOptions.map((e) => e.id).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    var currencyIdx = currencyIds.indexOf(current.price.currencyId);
+    if (currencyIdx == -1) currencyIdx = 0;
+    var categoryIdx = categoryIds.indexOf(current.category.id);
+    if (categoryIdx == -1) categoryIdx = 0;
     return Column(children: [
       sectionMargine,
       Text('Category', style: textTheme.headlineMedium),
       lineMargine,
       expands(
         SingleSelector<int>.fromTuple(
-            initialIndex: current.category.id,
+            initialIndex: categoryIdx,
             onChanged: (selected) {
               current =
                   current.copyWith(category: widget.categoryOptions[selected]);
@@ -202,7 +219,7 @@ class _PlanConfigSectionState extends State<PlanConfigSection> {
           Expanded(
               flex: 3,
               child: SingleSelector<int>.fromTuple(
-                  initialIndex: current.price.currencyId,
+                  initialIndex: currencyIdx,
                   onChanged: (index) {
                     final currency = widget.currencyOptions[index];
                     current = current.copyWith(
@@ -793,15 +810,19 @@ class _MonitorConfigSectionState extends State<MonitorConfigSection> {
       Text('Target Categories', style: textTheme.headlineMedium),
       lineMargine,
       expands(
-        MultiSelector<dto.Category>.fromTuple(items: widget.categoryOptions.map(
-          (e) {
-            final selected = current.categories.contains(e);
-            return (e.name, e, selected);
+        MultiSelector<dto.Category>.fromTuple(
+          items: widget.categoryOptions.map(
+            (e) {
+              final selected = current.categories.contains(e);
+              return (e.name, e, selected);
+            },
+          ),
+          onChanged: (selected, isAll) {
+            current = current.copyWith(
+                categories: selected, isAllCategoriesIncluded: isAll);
           },
-        ), onChanged: (selected, isAll) {
-          current = current.copyWith(
-              categories: selected, isAllCategoriesIncluded: isAll);
-        }),
+          initiallyAllSelected: current.isAllCategoriesIncluded,
+        ),
       ),
       sectionMargine,
       Text('Display Currency', style: textTheme.headlineMedium),

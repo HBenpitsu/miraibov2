@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
@@ -42,10 +43,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
   Stream<List<model.Category>> watchAll() {
     return database.categories.select().watch().map((rows) {
       return rows.map((row) {
-        return model.Category(
-          id: row.id,
-          name: row.name,
-        );
+        return model.Category(id: row.id, name: row.name);
       }).toList();
     });
   }
@@ -54,10 +52,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
   Future<List<model.Category>> getAll() async {
     final response = await database.categories.select().get();
     return response.map((row) {
-      return model.Category(
-        id: row.id,
-        name: row.name,
-      );
+      return model.Category(id: row.id, name: row.name);
     }).toList();
   }
 
@@ -67,10 +62,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
     query.where((row) => row.name.equals(name));
     final response = await query.getSingleOrNull();
     if (response == null) return null;
-    return model.Category(
-      id: response.id,
-      name: response.name,
-    );
+    return model.Category(id: response.id, name: response.name);
   }
 
   @override
@@ -79,45 +71,48 @@ class CategoryRepositoryImpl implements CategoryRepository {
       ..where((row) => row.id.equals(id));
     return query.watchSingleOrNull().map((row) {
       if (row == null) return null;
-      return model.Category(
-        id: row.id,
-        name: row.name,
-      );
+      return model.Category(id: row.id, name: row.name);
     });
   }
 
   @override
   Future<void> insertAll(Iterable<model.Category> categories) async {
     await database.categories.insertAll(
-        categories.map((modelCategory) => Category(
-              id: modelCategory.id,
-              name: modelCategory.name,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-            )),
-        mode: InsertMode.insertOrRollback);
+      categories.map(
+        (modelCategory) => Category(
+          id: modelCategory.id,
+          name: modelCategory.name,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ),
+      mode: InsertMode.insertOrRollback,
+    );
   }
 
   @override
   Future<void> insert(model.Category category) async {
     await database.categories.insert().insert(
-        Category(
-          id: category.id,
-          name: category.name,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-        mode: InsertMode.insertOrRollback);
+          Category(
+            id: category.id,
+            name: category.name,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrRollback,
+        );
   }
 
   @override
   Future<void> update(model.Category category) async {
     final statement = database.categories.update()
       ..where((row) => row.id.equals(category.id));
-    await statement.write(CategoriesCompanion(
-      name: Value(category.name),
-      updatedAt: Value(DateTime.now()),
-    ));
+    await statement.write(
+      CategoriesCompanion(
+        name: Value(category.name),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   @override
@@ -136,11 +131,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
   Stream<List<model.Currency>> watchAll() {
     return database.currencies.select().watch().map((rows) {
       return rows.map((row) {
-        return model.Currency(
-          id: row.id,
-          symbol: row.symbol,
-          ratio: row.ratio,
-        );
+        return model.Currency(id: row.id, symbol: row.symbol, ratio: row.ratio);
       }).toList();
     });
   }
@@ -148,11 +139,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
   @override
   Future<List<model.Currency>> getAll() async {
     return (await database.currencies.select().get()).map((row) {
-      return model.Currency(
-        id: row.id,
-        symbol: row.symbol,
-        ratio: row.ratio,
-      );
+      return model.Currency(id: row.id, symbol: row.symbol, ratio: row.ratio);
     }).toList();
   }
 
@@ -175,11 +162,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
       ..where((row) => row.id.equals(id));
     return query.watchSingleOrNull().map((row) {
       if (row == null) return null;
-      return model.Currency(
-        id: row.id,
-        symbol: row.symbol,
-        ratio: row.ratio,
-      );
+      return model.Currency(id: row.id, symbol: row.symbol, ratio: row.ratio);
     });
   }
 
@@ -206,25 +189,28 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
   @override
   Future<void> insert(model.Currency currency) {
     return database.currencies.insert().insert(
-        Currency(
-          id: currency.id,
-          symbol: currency.symbol,
-          ratio: currency.ratio,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-        mode: InsertMode.insertOrRollback);
+          Currency(
+            id: currency.id,
+            symbol: currency.symbol,
+            ratio: currency.ratio,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrRollback,
+        );
   }
 
   @override
   Future<void> update(model.Currency currency) {
     final statement = database.currencies.update()
       ..where((row) => row.id.equals(currency.id));
-    return statement.write(CurrenciesCompanion(
-      symbol: Value(currency.symbol),
-      ratio: Value(currency.ratio),
-      updatedAt: Value(DateTime.now()),
-    ));
+    return statement.write(
+      CurrenciesCompanion(
+        symbol: Value(currency.symbol),
+        ratio: Value(currency.ratio),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   @override
@@ -239,19 +225,18 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
   static final database = AppDatabase();
 
   JoinedSelectStatement<HasResultSet, dynamic> _join(
-      SimpleSelectStatement<ReceiptLogs, ReceiptLog> query) {
-    return query.join(
-      [
-        innerJoin(
-          database.categories,
-          database.categories.id.equalsExp(database.receiptLogs.categoryId),
-        ),
-        innerJoin(
-          database.currencies,
-          database.currencies.id.equalsExp(database.receiptLogs.currencyId),
-        ),
-      ],
-    );
+    SimpleSelectStatement<ReceiptLogs, ReceiptLog> query,
+  ) {
+    return query.join([
+      innerJoin(
+        database.categories,
+        database.categories.id.equalsExp(database.receiptLogs.categoryId),
+      ),
+      innerJoin(
+        database.currencies,
+        database.currencies.id.equalsExp(database.receiptLogs.currencyId),
+      ),
+    ]);
   }
 
   model.ReceiptLog _parse(TypedResult row) {
@@ -262,18 +247,16 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
     return model.ReceiptLog(
       id: receiptLog.id,
       date: Date.fromDateTime(receiptLog.date),
-      category: model.Category(
-        id: category.id,
-        name: category.name,
-      ),
+      category: model.Category(id: category.id, name: category.name),
       description: receiptLog.description,
       price: Price(
-          amount: receiptLog.amount,
-          currency: model.Currency(
-            id: currency.id,
-            symbol: currency.symbol,
-            ratio: currency.ratio,
-          )),
+        amount: receiptLog.amount,
+        currency: model.Currency(
+          id: currency.id,
+          symbol: currency.symbol,
+          ratio: currency.ratio,
+        ),
+      ),
       confirmed: receiptLog.confirmed,
     );
   }
@@ -282,11 +265,8 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
   Stream<int> countRows() async* {
     final countExp = database.receiptLogs.id.count();
     final query = database.select(database.receiptLogs).addColumns([countExp]);
-    await for (final count in query
-        .map(
-          (row) => row.read(countExp),
-        )
-        .watchSingle()) {
+    await for (final count
+        in query.map((row) => row.read(countExp)).watchSingle()) {
       yield count ?? 0;
     }
   }
@@ -311,7 +291,8 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
   }
 
   Stream<model.ReceiptLog> _queryToStream(
-      SimpleSelectStatement<ReceiptLogs, ReceiptLog> query) async* {
+    SimpleSelectStatement<ReceiptLogs, ReceiptLog> query,
+  ) async* {
     final jointQuery = _join(query);
     for (final row in await jointQuery.get()) {
       yield _parse(row);
@@ -319,16 +300,21 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
   }
 
   @override
-  Stream<model.ReceiptLog> get(Period period, CategoryCollection categories,
-      {bool? confirmed}) {
+  Stream<model.ReceiptLog> get(
+    Period period,
+    CategoryCollection categories, {
+    bool? confirmed,
+  }) {
     final query = database.receiptLogs.select();
     if (!period.isStartless) {
       query.where(
-          (row) => row.date.isBiggerOrEqualValue(period.begins.toDateTime()));
+        (row) => row.date.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
     }
     if (!period.isEndless) {
       query.where(
-          (row) => row.date.isSmallerOrEqualValue(period.ends.toDateTime()));
+        (row) => row.date.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
     }
     if (!categories.containsAll) {
       query.where((row) => row.categoryId.isIn(categories.ids()));
@@ -353,33 +339,36 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
   @override
   Future<void> insert(model.ReceiptLog receiptLog) async {
     await database.receiptLogs.insert().insert(
-        ReceiptLog(
-          id: receiptLog.id,
-          date: receiptLog.date.toDateTime(),
-          categoryId: receiptLog.category.id,
-          description: receiptLog.description,
-          amount: receiptLog.price.amount,
-          currencyId: receiptLog.price.currency.id,
-          confirmed: receiptLog.confirmed,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-        mode: InsertMode.insertOrRollback);
+          ReceiptLog(
+            id: receiptLog.id,
+            date: receiptLog.date.toDateTime(),
+            categoryId: receiptLog.category.id,
+            description: receiptLog.description,
+            amount: receiptLog.price.amount,
+            currencyId: receiptLog.price.currency.id,
+            confirmed: receiptLog.confirmed,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrRollback,
+        );
   }
 
   @override
   Future<void> update(model.ReceiptLog receiptLog) async {
     final statement = database.receiptLogs.update()
       ..where((row) => row.id.equals(receiptLog.id));
-    await statement.write(ReceiptLogsCompanion(
-      date: Value(receiptLog.date.toDateTime()),
-      categoryId: Value(receiptLog.category.id),
-      description: Value(receiptLog.description),
-      amount: Value(receiptLog.price.amount),
-      currencyId: Value(receiptLog.price.currency.id),
-      confirmed: Value(receiptLog.confirmed),
-      updatedAt: Value(DateTime.now()),
-    ));
+    await statement.write(
+      ReceiptLogsCompanion(
+        date: Value(receiptLog.date.toDateTime()),
+        categoryId: Value(receiptLog.category.id),
+        description: Value(receiptLog.description),
+        amount: Value(receiptLog.price.amount),
+        currencyId: Value(receiptLog.price.currency.id),
+        confirmed: Value(receiptLog.confirmed),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   @override
@@ -391,12 +380,14 @@ class ReceiptLogRepositoryImpl implements ReceiptLogRepository {
 
   @override
   Future<void> replaceCategory(
-      model.Category oldCategory, model.Category newCategory) async {
+    model.Category oldCategory,
+    model.Category newCategory,
+  ) async {
     final command = database.receiptLogs.update()
       ..where((row) => row.categoryId.equals(oldCategory.id));
-    await command.write(ReceiptLogsCompanion(
-      categoryId: Value(newCategory.id),
-    ));
+    await command.write(
+      ReceiptLogsCompanion(categoryId: Value(newCategory.id)),
+    );
   }
 
   @override
@@ -429,66 +420,56 @@ class PlanRepositoryImpl implements PlanRepository {
     SimpleSelectStatement<MonthlyPlans, MonthlyPlan> monthlyPlanQuery,
     SimpleSelectStatement<AnnualPlans, AnnualPlan> annualPlanQuery,
   ) {
-    final oneshotPlanJointQuery = oneshotPlanQuery.join(
-      [
-        innerJoin(
-          database.categories,
-          database.categories.id.equalsExp(database.oneshotPlans.categoryId),
-        ),
-        innerJoin(
-          database.currencies,
-          database.currencies.id.equalsExp(database.oneshotPlans.currencyId),
-        ),
-      ],
-    );
-    final intervalPlanJointQuery = intervalPlanQuery.join(
-      [
-        innerJoin(
-          database.categories,
-          database.categories.id.equalsExp(database.intervalPlans.categoryId),
-        ),
-        innerJoin(
-          database.currencies,
-          database.currencies.id.equalsExp(database.intervalPlans.currencyId),
-        ),
-      ],
-    );
-    final weeklyPlanJointQuery = weeklyPlanQuery.join(
-      [
-        innerJoin(
-          database.categories,
-          database.categories.id.equalsExp(database.weeklyPlans.categoryId),
-        ),
-        innerJoin(
-          database.currencies,
-          database.currencies.id.equalsExp(database.weeklyPlans.currencyId),
-        ),
-      ],
-    );
-    final monthlyPlanJointQuery = monthlyPlanQuery.join(
-      [
-        innerJoin(
-          database.categories,
-          database.categories.id.equalsExp(database.monthlyPlans.categoryId),
-        ),
-        innerJoin(
-          database.currencies,
-          database.currencies.id.equalsExp(database.monthlyPlans.currencyId),
-        ),
-      ],
-    );
-    final annualPlanJointQuery = annualPlanQuery.join(
-      [
-        innerJoin(
-          database.categories,
-          database.categories.id.equalsExp(database.annualPlans.categoryId),
-        ),
-        innerJoin(
-          database.currencies,
-          database.currencies.id.equalsExp(database.annualPlans.currencyId),
-        ),
-      ],
-    );
+    final oneshotPlanJointQuery = oneshotPlanQuery.join([
+      innerJoin(
+        database.categories,
+        database.categories.id.equalsExp(database.oneshotPlans.categoryId),
+      ),
+      innerJoin(
+        database.currencies,
+        database.currencies.id.equalsExp(database.oneshotPlans.currencyId),
+      ),
+    ]);
+    final intervalPlanJointQuery = intervalPlanQuery.join([
+      innerJoin(
+        database.categories,
+        database.categories.id.equalsExp(database.intervalPlans.categoryId),
+      ),
+      innerJoin(
+        database.currencies,
+        database.currencies.id.equalsExp(database.intervalPlans.currencyId),
+      ),
+    ]);
+    final weeklyPlanJointQuery = weeklyPlanQuery.join([
+      innerJoin(
+        database.categories,
+        database.categories.id.equalsExp(database.weeklyPlans.categoryId),
+      ),
+      innerJoin(
+        database.currencies,
+        database.currencies.id.equalsExp(database.weeklyPlans.currencyId),
+      ),
+    ]);
+    final monthlyPlanJointQuery = monthlyPlanQuery.join([
+      innerJoin(
+        database.categories,
+        database.categories.id.equalsExp(database.monthlyPlans.categoryId),
+      ),
+      innerJoin(
+        database.currencies,
+        database.currencies.id.equalsExp(database.monthlyPlans.currencyId),
+      ),
+    ]);
+    final annualPlanJointQuery = annualPlanQuery.join([
+      innerJoin(
+        database.categories,
+        database.categories.id.equalsExp(database.annualPlans.categoryId),
+      ),
+      innerJoin(
+        database.currencies,
+        database.currencies.id.equalsExp(database.annualPlans.currencyId),
+      ),
+    ]);
 
     return (
       oneshotPlanJointQuery,
@@ -504,20 +485,19 @@ class PlanRepositoryImpl implements PlanRepository {
     final category = row.readTable(database.categories);
     final currency = row.readTable(database.currencies);
     return model.Plan(
-        id: plan.id,
-        category: model.Category(
-          id: category.id,
-          name: category.name,
+      id: plan.id,
+      category: model.Category(id: category.id, name: category.name),
+      description: plan.description,
+      price: Price(
+        amount: plan.amount,
+        currency: model.Currency(
+          id: currency.id,
+          symbol: currency.symbol,
+          ratio: currency.ratio,
         ),
-        description: plan.description,
-        price: Price(
-            amount: plan.amount,
-            currency: model.Currency(
-              id: currency.id,
-              symbol: currency.symbol,
-              ratio: currency.ratio,
-            )),
-        schedule: model.OneshotSchedule(date: Date.fromDateTime(plan.date)));
+      ),
+      schedule: model.OneshotSchedule(date: Date.fromDateTime(plan.date)),
+    );
   }
 
   model.Plan _parseInterval(TypedResult row) {
@@ -525,25 +505,26 @@ class PlanRepositoryImpl implements PlanRepository {
     final category = row.readTable(database.categories);
     final currency = row.readTable(database.currencies);
     return model.Plan(
-        id: plan.id,
-        category: model.Category(
-          id: category.id,
-          name: category.name,
+      id: plan.id,
+      category: model.Category(id: category.id, name: category.name),
+      description: plan.description,
+      price: Price(
+        amount: plan.amount,
+        currency: model.Currency(
+          id: currency.id,
+          symbol: currency.symbol,
+          ratio: currency.ratio,
         ),
-        description: plan.description,
-        price: Price(
-            amount: plan.amount,
-            currency: model.Currency(
-              id: currency.id,
-              symbol: currency.symbol,
-              ratio: currency.ratio,
-            )),
-        schedule: model.IntervalSchedule(
-            originDate: Date.fromDateTime(plan.origin),
-            period: Period(
-                begins: Date.fromDateTime(plan.periodBegins),
-                ends: Date.fromDateTime(plan.periodEnds)),
-            interval: plan.interval));
+      ),
+      schedule: model.IntervalSchedule(
+        originDate: Date.fromDateTime(plan.origin),
+        period: Period(
+          begins: Date.fromDateTime(plan.periodBegins),
+          ends: Date.fromDateTime(plan.periodEnds),
+        ),
+        interval: plan.interval,
+      ),
+    );
   }
 
   model.Plan _parseWeekly(TypedResult row) {
@@ -551,30 +532,31 @@ class PlanRepositoryImpl implements PlanRepository {
     final category = row.readTable(database.categories);
     final currency = row.readTable(database.currencies);
     return model.Plan(
-        id: plan.id,
-        category: model.Category(
-          id: category.id,
-          name: category.name,
+      id: plan.id,
+      category: model.Category(id: category.id, name: category.name),
+      description: plan.description,
+      price: Price(
+        amount: plan.amount,
+        currency: model.Currency(
+          id: currency.id,
+          symbol: currency.symbol,
+          ratio: currency.ratio,
         ),
-        description: plan.description,
-        price: Price(
-            amount: plan.amount,
-            currency: model.Currency(
-              id: currency.id,
-              symbol: currency.symbol,
-              ratio: currency.ratio,
-            )),
-        schedule: model.WeeklySchedule(
-            period: Period(
-                begins: Date.fromDateTime(plan.periodBegins),
-                ends: Date.fromDateTime(plan.periodEnds)),
-            sunday: plan.sunday,
-            monday: plan.monday,
-            tuesday: plan.tuesday,
-            wednesday: plan.tuesday,
-            thursday: plan.tuesday,
-            friday: plan.friday,
-            saturday: plan.saturday));
+      ),
+      schedule: model.WeeklySchedule(
+        period: Period(
+          begins: Date.fromDateTime(plan.periodBegins),
+          ends: Date.fromDateTime(plan.periodEnds),
+        ),
+        sunday: plan.sunday,
+        monday: plan.monday,
+        tuesday: plan.tuesday,
+        wednesday: plan.tuesday,
+        thursday: plan.tuesday,
+        friday: plan.friday,
+        saturday: plan.saturday,
+      ),
+    );
   }
 
   model.Plan _parseMonthly(TypedResult row) {
@@ -582,24 +564,25 @@ class PlanRepositoryImpl implements PlanRepository {
     final category = row.readTable(database.categories);
     final currency = row.readTable(database.currencies);
     return model.Plan(
-        id: plan.id,
-        category: model.Category(
-          id: category.id,
-          name: category.name,
+      id: plan.id,
+      category: model.Category(id: category.id, name: category.name),
+      description: plan.description,
+      price: Price(
+        amount: plan.amount,
+        currency: model.Currency(
+          id: currency.id,
+          symbol: currency.symbol,
+          ratio: currency.ratio,
         ),
-        description: plan.description,
-        price: Price(
-            amount: plan.amount,
-            currency: model.Currency(
-              id: currency.id,
-              symbol: currency.symbol,
-              ratio: currency.ratio,
-            )),
-        schedule: model.MonthlySchedule(
-            period: Period(
-                begins: Date.fromDateTime(plan.periodBegins),
-                ends: Date.fromDateTime(plan.periodEnds)),
-            offset: plan.offset));
+      ),
+      schedule: model.MonthlySchedule(
+        period: Period(
+          begins: Date.fromDateTime(plan.periodBegins),
+          ends: Date.fromDateTime(plan.periodEnds),
+        ),
+        offset: plan.offset,
+      ),
+    );
   }
 
   model.Plan _parseAnnual(TypedResult row) {
@@ -607,38 +590,40 @@ class PlanRepositoryImpl implements PlanRepository {
     final category = row.readTable(database.categories);
     final currency = row.readTable(database.currencies);
     return model.Plan(
-        id: plan.id,
-        category: model.Category(
-          id: category.id,
-          name: category.name,
+      id: plan.id,
+      category: model.Category(id: category.id, name: category.name),
+      description: plan.description,
+      price: Price(
+        amount: plan.amount,
+        currency: model.Currency(
+          id: currency.id,
+          symbol: currency.symbol,
+          ratio: currency.ratio,
         ),
-        description: plan.description,
-        price: Price(
-            amount: plan.amount,
-            currency: model.Currency(
-              id: currency.id,
-              symbol: currency.symbol,
-              ratio: currency.ratio,
-            )),
-        schedule: model.AnnualSchedule(
-            period: Period(
-                begins: Date.fromDateTime(plan.periodBegins),
-                ends: Date.fromDateTime(plan.periodEnds)),
-            originDate: Date.fromDateTime(plan.origin)));
+      ),
+      schedule: model.AnnualSchedule(
+        period: Period(
+          begins: Date.fromDateTime(plan.periodBegins),
+          ends: Date.fromDateTime(plan.periodEnds),
+        ),
+        originDate: Date.fromDateTime(plan.origin),
+      ),
+    );
   }
 
   Stream<model.Plan> _queryToStream(
-      SimpleSelectStatement<OneshotPlans, OneshotPlan> oneshotPlanQuery,
-      SimpleSelectStatement<IntervalPlans, IntervalPlan> intervalPlanQuery,
-      SimpleSelectStatement<WeeklyPlans, WeeklyPlan> weeklyPlanQuery,
-      SimpleSelectStatement<MonthlyPlans, MonthlyPlan> monthlyPlanQuery,
-      SimpleSelectStatement<AnnualPlans, AnnualPlan> annualPlanQuery) async* {
+    SimpleSelectStatement<OneshotPlans, OneshotPlan> oneshotPlanQuery,
+    SimpleSelectStatement<IntervalPlans, IntervalPlan> intervalPlanQuery,
+    SimpleSelectStatement<WeeklyPlans, WeeklyPlan> weeklyPlanQuery,
+    SimpleSelectStatement<MonthlyPlans, MonthlyPlan> monthlyPlanQuery,
+    SimpleSelectStatement<AnnualPlans, AnnualPlan> annualPlanQuery,
+  ) async* {
     final (
       oneshotPlanJointQuery,
       intervalPlanJointQuery,
       weeklyPlanJointQuery,
       monthlyPlanJointQuery,
-      annualPlanJointQuery
+      annualPlanJointQuery,
     ) = _join(
       oneshotPlanQuery,
       intervalPlanQuery,
@@ -677,27 +662,45 @@ class PlanRepositoryImpl implements PlanRepository {
     final annualPlanQuery = database.annualPlans.select();
     if (!period.isStartless) {
       oneshotPlanQuery.where(
-          (row) => row.date.isBiggerOrEqualValue(period.begins.toDateTime()));
-      intervalPlanQuery.where((row) =>
-          row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()));
-      weeklyPlanQuery.where((row) =>
-          row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()));
-      monthlyPlanQuery.where((row) =>
-          row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()));
-      annualPlanQuery.where((row) =>
-          row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()));
+        (row) => row.date.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
+      intervalPlanQuery.where(
+        (row) =>
+            row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
+      weeklyPlanQuery.where(
+        (row) =>
+            row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
+      monthlyPlanQuery.where(
+        (row) =>
+            row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
+      annualPlanQuery.where(
+        (row) =>
+            row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
     }
     if (!period.isEndless) {
       oneshotPlanQuery.where(
-          (row) => row.date.isSmallerOrEqualValue(period.ends.toDateTime()));
-      intervalPlanQuery.where((row) =>
-          row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()));
-      weeklyPlanQuery.where((row) =>
-          row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()));
-      monthlyPlanQuery.where((row) =>
-          row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()));
-      annualPlanQuery.where((row) =>
-          row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()));
+        (row) => row.date.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
+      intervalPlanQuery.where(
+        (row) =>
+            row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
+      weeklyPlanQuery.where(
+        (row) =>
+            row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
+      monthlyPlanQuery.where(
+        (row) =>
+            row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
+      annualPlanQuery.where(
+        (row) =>
+            row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
     }
     if (!categories.containsAll) {
       oneshotPlanQuery.where((row) => row.categoryId.isIn(categories.ids()));
@@ -706,8 +709,13 @@ class PlanRepositoryImpl implements PlanRepository {
       monthlyPlanQuery.where((row) => row.categoryId.isIn(categories.ids()));
       annualPlanQuery.where((row) => row.categoryId.isIn(categories.ids()));
     }
-    return _queryToStream(oneshotPlanQuery, intervalPlanQuery, weeklyPlanQuery,
-        monthlyPlanQuery, annualPlanQuery);
+    return _queryToStream(
+      oneshotPlanQuery,
+      intervalPlanQuery,
+      weeklyPlanQuery,
+      monthlyPlanQuery,
+      annualPlanQuery,
+    );
   }
 
   @override
@@ -727,7 +735,7 @@ class PlanRepositoryImpl implements PlanRepository {
       intervalPlanJointQuery,
       weeklyPlanJointQuery,
       monthlyPlanJointQuery,
-      annualPlanJointQuery
+      annualPlanJointQuery,
     ) = _join(
       oneshotPlanQuery,
       intervalPlanQuery,
@@ -769,20 +777,21 @@ class PlanRepositoryImpl implements PlanRepository {
     switch (plan.schedule) {
       case model.OneshotSchedule schedule:
         return database.oneshotPlans.insert().insert(
-            OneshotPlan(
-              id: plan.id,
-              date: schedule.date.toDateTime(),
-              categoryId: plan.category.id,
-              description: plan.description,
-              amount: plan.price.amount,
-              currencyId: plan.price.currency.id,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-            ),
-            mode: InsertMode.insertOrRollback);
+              OneshotPlan(
+                id: plan.id,
+                date: schedule.date.toDateTime(),
+                categoryId: plan.category.id,
+                description: plan.description,
+                amount: plan.price.amount,
+                currencyId: plan.price.currency.id,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.IntervalSchedule schedule:
         return database.intervalPlans.insert().insert(
-            IntervalPlan(
+              IntervalPlan(
                 id: plan.id,
                 origin: schedule.originDate.toDateTime(),
                 periodBegins: schedule.period.begins.toDateTime(),
@@ -793,11 +802,13 @@ class PlanRepositoryImpl implements PlanRepository {
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
                 createdAt: DateTime.now(),
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.WeeklySchedule schedule:
         return database.weeklyPlans.insert().insert(
-            WeeklyPlan(
+              WeeklyPlan(
                 id: plan.id,
                 periodBegins: schedule.period.begins.toDateTime(),
                 periodEnds: schedule.period.ends.toDateTime(),
@@ -813,11 +824,13 @@ class PlanRepositoryImpl implements PlanRepository {
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
                 createdAt: DateTime.now(),
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.MonthlySchedule schedule:
         return database.monthlyPlans.insert().insert(
-            MonthlyPlan(
+              MonthlyPlan(
                 id: plan.id,
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
@@ -827,11 +840,13 @@ class PlanRepositoryImpl implements PlanRepository {
                 periodBegins: schedule.period.begins.toDateTime(),
                 periodEnds: schedule.period.ends.toDateTime(),
                 createdAt: DateTime.now(),
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.AnnualSchedule schedule:
         return database.annualPlans.insert().insert(
-            AnnualPlan(
+              AnnualPlan(
                 id: plan.id,
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
@@ -841,8 +856,10 @@ class PlanRepositoryImpl implements PlanRepository {
                 periodBegins: schedule.period.begins.toDateTime(),
                 periodEnds: schedule.period.ends.toDateTime(),
                 createdAt: DateTime.now(),
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
     }
   }
 
@@ -854,20 +871,21 @@ class PlanRepositoryImpl implements PlanRepository {
     switch (plan.schedule) {
       case model.OneshotSchedule schedule:
         await database.oneshotPlans.insert().insert(
-            OneshotPlan(
-              id: plan.id,
-              date: schedule.date.toDateTime(),
-              categoryId: plan.category.id,
-              description: plan.description,
-              amount: plan.price.amount,
-              currencyId: plan.price.currency.id,
-              createdAt: createdAt,
-              updatedAt: DateTime.now(),
-            ),
-            mode: InsertMode.insertOrRollback);
+              OneshotPlan(
+                id: plan.id,
+                date: schedule.date.toDateTime(),
+                categoryId: plan.category.id,
+                description: plan.description,
+                amount: plan.price.amount,
+                currencyId: plan.price.currency.id,
+                createdAt: createdAt,
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.IntervalSchedule schedule:
         await database.intervalPlans.insert().insert(
-            IntervalPlan(
+              IntervalPlan(
                 id: plan.id,
                 origin: schedule.originDate.toDateTime(),
                 periodBegins: schedule.period.begins.toDateTime(),
@@ -878,11 +896,13 @@ class PlanRepositoryImpl implements PlanRepository {
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
                 createdAt: createdAt,
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.WeeklySchedule schedule:
         await database.weeklyPlans.insert().insert(
-            WeeklyPlan(
+              WeeklyPlan(
                 id: plan.id,
                 periodBegins: schedule.period.begins.toDateTime(),
                 periodEnds: schedule.period.ends.toDateTime(),
@@ -898,11 +918,13 @@ class PlanRepositoryImpl implements PlanRepository {
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
                 createdAt: createdAt,
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.MonthlySchedule schedule:
         await database.monthlyPlans.insert().insert(
-            MonthlyPlan(
+              MonthlyPlan(
                 id: plan.id,
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
@@ -912,11 +934,13 @@ class PlanRepositoryImpl implements PlanRepository {
                 periodBegins: schedule.period.begins.toDateTime(),
                 periodEnds: schedule.period.ends.toDateTime(),
                 createdAt: createdAt,
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
       case model.AnnualSchedule schedule:
         await database.annualPlans.insert().insert(
-            AnnualPlan(
+              AnnualPlan(
                 id: plan.id,
                 amount: plan.price.amount,
                 currencyId: plan.price.currency.id,
@@ -926,8 +950,10 @@ class PlanRepositoryImpl implements PlanRepository {
                 periodBegins: schedule.period.begins.toDateTime(),
                 periodEnds: schedule.period.ends.toDateTime(),
                 createdAt: createdAt,
-                updatedAt: DateTime.now()),
-            mode: InsertMode.insertOrRollback);
+                updatedAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrRollback,
+            );
     }
   }
 
@@ -938,7 +964,9 @@ class PlanRepositoryImpl implements PlanRepository {
 
   @override
   Future<void> replaceCategory(
-      model.Category oldCategory, model.Category newCategory) async {
+    model.Category oldCategory,
+    model.Category newCategory,
+  ) async {
     final oneshotPlanCommand = database.oneshotPlans.update()
       ..where((row) => row.categoryId.equals(oldCategory.id));
     final intervalPlanCommand = database.intervalPlans.update()
@@ -950,21 +978,21 @@ class PlanRepositoryImpl implements PlanRepository {
     final annualPlanCommand = database.annualPlans.update()
       ..where((row) => row.categoryId.equals(oldCategory.id));
     await database.transaction(() async {
-      await oneshotPlanCommand.write(OneshotPlansCompanion(
-        categoryId: Value(newCategory.id),
-      ));
-      await intervalPlanCommand.write(IntervalPlansCompanion(
-        categoryId: Value(newCategory.id),
-      ));
-      await weeklyPlanCommand.write(WeeklyPlansCompanion(
-        categoryId: Value(newCategory.id),
-      ));
-      await monthlyPlanCommand.write(MonthlyPlansCompanion(
-        categoryId: Value(newCategory.id),
-      ));
-      await annualPlanCommand.write(AnnualPlansCompanion(
-        categoryId: Value(newCategory.id),
-      ));
+      await oneshotPlanCommand.write(
+        OneshotPlansCompanion(categoryId: Value(newCategory.id)),
+      );
+      await intervalPlanCommand.write(
+        IntervalPlansCompanion(categoryId: Value(newCategory.id)),
+      );
+      await weeklyPlanCommand.write(
+        WeeklyPlansCompanion(categoryId: Value(newCategory.id)),
+      );
+      await monthlyPlanCommand.write(
+        MonthlyPlansCompanion(categoryId: Value(newCategory.id)),
+      );
+      await annualPlanCommand.write(
+        AnnualPlansCompanion(categoryId: Value(newCategory.id)),
+      );
     });
   }
 
@@ -980,8 +1008,13 @@ class PlanRepositoryImpl implements PlanRepository {
       ..where((row) => row.currencyId.equals(currency.id));
     final annualPlanQuery = database.annualPlans.select()
       ..where((row) => row.currencyId.equals(currency.id));
-    return _queryToStream(oneshotPlanQuery, intervalPlanQuery, weeklyPlanQuery,
-        monthlyPlanQuery, annualPlanQuery);
+    return _queryToStream(
+      oneshotPlanQuery,
+      intervalPlanQuery,
+      weeklyPlanQuery,
+      monthlyPlanQuery,
+      annualPlanQuery,
+    );
   }
 
   @override
@@ -995,11 +1028,9 @@ class PlanRepositoryImpl implements PlanRepository {
   @override
   Future<void> markAsInstanciated(model.Plan plan, Date date) {
     return database.instanciatedPlans.insert().insert(
-        InstanciatedPlan(
-          planId: plan.id,
-          date: date.toDateTime(),
-        ),
-        mode: InsertMode.insertOrRollback);
+          InstanciatedPlan(planId: plan.id, date: date.toDateTime()),
+          mode: InsertMode.insertOrRollback,
+        );
   }
 
   @override
@@ -1019,7 +1050,8 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
   static final database = AppDatabase();
 
   JoinedSelectStatement<HasResultSet, dynamic> _join(
-      SimpleSelectStatement<EstimationSchemes, EstimationScheme> query) {
+    SimpleSelectStatement<EstimationSchemes, EstimationScheme> query,
+  ) {
     return query.join([
       innerJoin(
         database.currencies,
@@ -1028,7 +1060,7 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
       innerJoin(
         database.categories,
         database.estimationSchemes.categoryId.equalsExp(database.categories.id),
-      )
+      ),
     ]);
   }
 
@@ -1040,22 +1072,21 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
       id: scheme.id,
       displayOption: scheme.displayOption,
       period: Period(
-          begins: Date.fromDateTime(scheme.periodBegins),
-          ends: Date.fromDateTime(scheme.periodEnds)),
+        begins: Date.fromDateTime(scheme.periodBegins),
+        ends: Date.fromDateTime(scheme.periodEnds),
+      ),
       currency: model.Currency(
         id: currency.id,
         symbol: currency.symbol,
         ratio: currency.ratio,
       ),
-      category: model.Category(
-        id: category.id,
-        name: category.name,
-      ),
+      category: model.Category(id: category.id, name: category.name),
     );
   }
 
   Stream<model.EstimationScheme> _queryToStream(
-      SimpleSelectStatement<EstimationSchemes, EstimationScheme> query) async* {
+    SimpleSelectStatement<EstimationSchemes, EstimationScheme> query,
+  ) async* {
     final jointQuery = _join(query);
     for (final row in await jointQuery.get()) {
       yield _parse(row);
@@ -1064,15 +1095,21 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
 
   @override
   Stream<model.EstimationScheme> get(
-      Period period, CategoryCollection categories) {
+    Period period,
+    CategoryCollection categories,
+  ) {
     final query = database.estimationSchemes.select();
     if (!period.isStartless) {
-      query.where((row) =>
-          row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()));
+      query.where(
+        (row) =>
+            row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
     }
     if (!period.isEndless) {
-      query.where((row) =>
-          row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()));
+      query.where(
+        (row) =>
+            row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
     }
     if (!categories.containsAll) {
       query.where((row) => row.categoryId.isIn(categories.ids()));
@@ -1093,17 +1130,18 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
   @override
   Future<void> insert(model.EstimationScheme estimationScheme) async {
     await database.estimationSchemes.insert().insert(
-        EstimationScheme(
-          id: estimationScheme.id,
-          periodBegins: estimationScheme.period.begins.toDateTime(),
-          periodEnds: estimationScheme.period.ends.toDateTime(),
-          currencyId: estimationScheme.currency.id,
-          categoryId: estimationScheme.category.id,
-          displayOption: estimationScheme.displayOption,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ),
-        mode: InsertMode.insertOrRollback);
+          EstimationScheme(
+            id: estimationScheme.id,
+            periodBegins: estimationScheme.period.begins.toDateTime(),
+            periodEnds: estimationScheme.period.ends.toDateTime(),
+            currencyId: estimationScheme.currency.id,
+            categoryId: estimationScheme.category.id,
+            displayOption: estimationScheme.displayOption,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrRollback,
+        );
   }
 
   @override
@@ -1131,12 +1169,14 @@ class EstimationSchemeRepositoryImpl implements EstimationSchemeRepository {
 
   @override
   Future<void> replaceCategory(
-      model.Category oldCategory, model.Category newCategory) async {
+    model.Category oldCategory,
+    model.Category newCategory,
+  ) async {
     final command = database.estimationSchemes.update();
     command.where((row) => row.categoryId.equals(oldCategory.id));
-    await command.write(EstimationSchemesCompanion(
-      categoryId: Value(newCategory.id),
-    ));
+    await command.write(
+      EstimationSchemesCompanion(categoryId: Value(newCategory.id)),
+    );
   }
 
   @override
@@ -1158,8 +1198,9 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
     return model.MonitorScheme(
       id: scheme.id,
       period: Period(
-          begins: Date.fromDateTime(scheme.periodBegins),
-          ends: Date.fromDateTime(scheme.periodEnds)),
+        begins: Date.fromDateTime(scheme.periodBegins),
+        ends: Date.fromDateTime(scheme.periodEnds),
+      ),
       currency: model.Currency(
         id: currency.id,
         symbol: currency.symbol,
@@ -1173,7 +1214,8 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
   }
 
   JoinedSelectStatement<HasResultSet, dynamic> _join(
-      SimpleSelectStatement<MonitorSchemes, MonitorScheme> query) {
+    SimpleSelectStatement<MonitorSchemes, MonitorScheme> query,
+  ) {
     return query.join([
       innerJoin(
         database.currencies,
@@ -1181,19 +1223,22 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
       ),
       leftOuterJoin(
         database.monitorSchemeCategoryLinkers,
-        database.monitorSchemes.id
-            .equalsExp(database.monitorSchemeCategoryLinkers.scheme),
+        database.monitorSchemes.id.equalsExp(
+          database.monitorSchemeCategoryLinkers.scheme,
+        ),
       ),
       leftOuterJoin(
         database.categories,
-        database.monitorSchemeCategoryLinkers.category
-            .equalsExp(database.categories.id),
+        database.monitorSchemeCategoryLinkers.category.equalsExp(
+          database.categories.id,
+        ),
       ),
     ]);
   }
 
   Stream<model.MonitorScheme> _queryToStream(
-      SimpleSelectStatement<MonitorSchemes, MonitorScheme> query) async* {
+    SimpleSelectStatement<MonitorSchemes, MonitorScheme> query,
+  ) async* {
     final jointQuery = _join(query);
     List<model.Category> buffer = [];
     MonitorScheme? lastScheme;
@@ -1211,10 +1256,7 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
       }
 
       if (category != null) {
-        buffer.add(model.Category(
-          id: category.id,
-          name: category.name,
-        ));
+        buffer.add(model.Category(id: category.id, name: category.name));
       }
       lastScheme = scheme;
       lastCurrency = currency;
@@ -1226,15 +1268,21 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
 
   @override
   Stream<model.MonitorScheme> get(
-      Period period, CategoryCollection categories) async* {
+    Period period,
+    CategoryCollection categories,
+  ) async* {
     final query = database.monitorSchemes.select();
     if (!period.isStartless) {
-      query.where((row) =>
-          row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()));
+      query.where(
+        (row) =>
+            row.periodEnds.isBiggerOrEqualValue(period.begins.toDateTime()),
+      );
     }
     if (!period.isEndless) {
-      query.where((row) =>
-          row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()));
+      query.where(
+        (row) =>
+            row.periodBegins.isSmallerOrEqualValue(period.ends.toDateTime()),
+      );
     }
     await for (final monitor in _queryToStream(query)) {
       if (categories.containsAll || monitor.categories.containsAll) {
@@ -1242,8 +1290,9 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
         continue;
       }
       // return it if there is intersection between monitor's categories and given categories
-      if (monitor.categories.list
-          .any((category) => categories.list.contains(category))) {
+      if (monitor.categories.list.any(
+        (category) => categories.list.contains(category),
+      )) {
         yield monitor;
       }
     }
@@ -1256,18 +1305,21 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
     await for (final results in jointQuery.watch()) {
       final scheme = results.first.readTable(database.monitorSchemes);
       final currency = results.first.readTable(database.currencies);
-      final categories =
-          results.map((row) => row.readTableOrNull(database.categories));
-      if (categories.first == null) {
+      final rawCategories = results
+          .map((row) => row.readTableOrNull(database.categories))
+          .toList();
+      final List<model.Category> categories = [];
+      for (final rawCategory in rawCategories) {
+        if (rawCategory != null) {
+          categories
+              .add(model.Category(id: rawCategory.id, name: rawCategory.name));
+        }
+      }
+      if (categories.isEmpty) {
         yield _parseIntoModel([], scheme, currency);
       } else {
         yield _parseIntoModel(
-          categories
-              .map((category) => model.Category(
-                    id: category!.id,
-                    name: category.name,
-                  ))
-              .toList(),
+          categories,
           scheme,
           currency,
         );
@@ -1277,12 +1329,14 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
 
   @override
   Future<void> replaceCategory(
-      model.Category oldCategory, model.Category newCategory) async {
+    model.Category oldCategory,
+    model.Category newCategory,
+  ) async {
     final command = database.monitorSchemeCategoryLinkers.update();
     command.where((row) => row.category.equals(oldCategory.id));
-    await command.write(MonitorSchemeCategoryLinkersCompanion(
-      category: Value(newCategory.id),
-    ));
+    await command.write(
+      MonitorSchemeCategoryLinkersCompanion(category: Value(newCategory.id)),
+    );
   }
 
   @override
@@ -1295,14 +1349,17 @@ class MonitorSchemeRepositoryImpl implements MonitorSchemeRepository {
   @override
   Future<void> insert(model.MonitorScheme monitorScheme) async {
     final now = DateTime.now();
-    await database.monitorSchemes.insert().insert(MonitorScheme(
-        id: monitorScheme.id,
-        periodBegins: monitorScheme.period.begins.toDateTime(),
-        periodEnds: monitorScheme.period.ends.toDateTime(),
-        displayOption: monitorScheme.displayOption,
-        currencyId: monitorScheme.currency.id,
-        createdAt: now,
-        updatedAt: now));
+    await database.monitorSchemes.insert().insert(
+          MonitorScheme(
+            id: monitorScheme.id,
+            periodBegins: monitorScheme.period.begins.toDateTime(),
+            periodEnds: monitorScheme.period.ends.toDateTime(),
+            displayOption: monitorScheme.displayOption,
+            currencyId: monitorScheme.currency.id,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
     if (monitorScheme.categories.containsAll) return;
     await database.monitorSchemeCategoryLinkers.insertAll([
       for (final category in monitorScheme.categories.list)

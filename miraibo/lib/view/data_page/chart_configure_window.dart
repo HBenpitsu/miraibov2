@@ -231,14 +231,17 @@ class _AccumulationChartSectionState
       sectorMargin,
       sectorTitle('Category'),
       MultiSelector<dto.Category>.fromTuple(
-          items: categories.map((category) => (
-                category.name,
-                category,
-                currentScheme!.categories.contains(category)
-              )),
-          onChanged: (selection, isAll) {
-            currentScheme = currentScheme!.copyWith(categories: selection);
-          }),
+        items: categories.map((category) => (
+              category.name,
+              category,
+              currentScheme!.categories.contains(category)
+            )),
+        onChanged: (selection, isAll) {
+          currentScheme =
+              currentScheme!.copyWith(categories: isAll ? [] : selection);
+        },
+        initiallyAllSelected: currentScheme!.categories.isEmpty,
+      ),
       sectorMargin,
       sectorTitle('Currency'),
       SingleSelector<dto.Currency>.fromTuple(
@@ -344,7 +347,8 @@ class _SubtotalChartSectionState
           onChanged: (selection, isAll) {
             currentScheme = currentScheme!.copyWith(
                 categories: selection, isAllCategoriesIncluded: isAll);
-          }),
+          },
+          initiallyAllSelected: currentScheme!.categories.isEmpty),
       sectorMargin,
       sectorTitle('Currency'),
       SingleSelector<dto.Currency>.fromTuple(
@@ -441,7 +445,8 @@ class _PieChartSectionState extends _SectionPreState<_PieChartSection> {
           onChanged: (selection, isAll) {
             currentScheme = currentScheme!.copyWith(
                 categories: selection, isAllCategoriesIncluded: isAll);
-          }),
+          },
+          initiallyAllSelected: currentScheme!.categories.isEmpty),
       sectorMargin,
       sectorTitle('Currency'),
       SingleSelector<dto.Currency>.fromTuple(

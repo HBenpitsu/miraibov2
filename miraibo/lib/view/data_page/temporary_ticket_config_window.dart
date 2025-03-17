@@ -222,7 +222,7 @@ class _MonitorSchemeSectionState
           currency: scheme.currency,
           displayOption: scheme.displayOption,
           categories: scheme.categories,
-          isAllCategoriesIncluded: currentScheme!.isAllCategoriesIncluded,
+          isAllCategoriesIncluded: scheme.isAllCategoriesIncluded,
         );
       },
     );

@@ -17,6 +17,7 @@ class MultiSelector<T> extends StatefulWidget {
   /// the initial selection of each item
   /// true for initially selected
   final List<bool> initial;
+  final bool initiallyAllSelected;
 
   /// callback function that takes selected items
   /// and a boolean that indicates whether all items are selected or not
@@ -33,10 +34,12 @@ class MultiSelector<T> extends StatefulWidget {
       required this.values,
       required this.initial,
       required this.onChanged,
+      required this.initiallyAllSelected,
       super.key});
   factory MultiSelector.fromTuple(
       {required Iterable<(String, T, bool)> items,
-      required void Function(List<T>, bool) onChanged}) {
+      required void Function(List<T>, bool) onChanged,
+      required bool initiallyAllSelected}) {
     final labels = <String>[];
     final values = <T>[];
     final initial = <bool>[];
@@ -46,7 +49,11 @@ class MultiSelector<T> extends StatefulWidget {
       initial.add(item.$3);
     }
     return MultiSelector(
-        labels: labels, values: values, initial: initial, onChanged: onChanged);
+        labels: labels,
+        values: values,
+        initial: initial,
+        onChanged: onChanged,
+        initiallyAllSelected: initiallyAllSelected);
   }
 
   @override
@@ -55,7 +62,7 @@ class MultiSelector<T> extends StatefulWidget {
 
 class _MultiSelectorState<T> extends State<MultiSelector<T>> {
   // <init>
-  bool _isAllSelected = false;
+  late bool _isAllSelected;
   bool get isAllSelected => _isAllSelected;
   set isAllSelected(bool value) {
     _isAllSelected = value;
@@ -78,6 +85,7 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
     super.initState();
     expanded = false;
     _currentlySelected = widget.initial;
+    _isAllSelected = widget.initiallyAllSelected;
   }
   // </init>
 
@@ -137,6 +145,7 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
         vale: Theme.of(context).colorScheme.surfaceContainer,
         onTap: (index) {
           currentlySelected[index] = false;
+          selectionNotifier?.add(currentlySelected);
         });
     return Container(
         width: double.infinity,

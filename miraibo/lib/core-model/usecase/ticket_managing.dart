@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:miraibo/dto/dto.dart';
 import 'package:miraibo/shared/enumeration.dart';
 import 'package:miraibo/core-model/value/price.dart' as model;
@@ -337,9 +338,13 @@ Future<int> createEstimationScheme(
   }
   final estimationScheme = await model.EstimationScheme.create(
     model.Period(
-      begins: model.Date(
-          period.begins!.year, period.begins!.month, period.begins!.day),
-      ends: model.Date(period.ends!.year, period.ends!.month, period.ends!.day),
+      begins: period.begins != null
+          ? model.Date(
+              period.begins!.year, period.begins!.month, period.begins!.day)
+          : model.Date.earliest,
+      ends: period.ends != null
+          ? model.Date(period.ends!.year, period.ends!.month, period.ends!.day)
+          : model.Date.latest,
     ),
     currency,
     displayOption,
@@ -374,9 +379,13 @@ Future<void> editEstimationScheme(
   }
   await estimationScheme.update(
     period: model.Period(
-      begins: model.Date(
-          period.begins!.year, period.begins!.month, period.begins!.day),
-      ends: model.Date(period.ends!.year, period.ends!.month, period.ends!.day),
+      begins: period.begins != null
+          ? model.Date(
+              period.begins!.year, period.begins!.month, period.begins!.day)
+          : model.Date.earliest,
+      ends: period.ends != null
+          ? model.Date(period.ends!.year, period.ends!.month, period.ends!.day)
+          : model.Date.latest,
     ),
     currency: currency,
     displayOption: displayOption,
@@ -418,6 +427,7 @@ Future<int> createMonitorScheme(
             Exception('category not found: $categoryId'));
         return -1;
       }
+      categoryList.add(category);
     }
     categories = model.CategoryCollection(categories: categoryList);
   }
@@ -428,9 +438,13 @@ Future<int> createMonitorScheme(
   }
   final monitorScheme = await model.MonitorScheme.create(
     model.Period(
-      begins: model.Date(
-          period.begins!.year, period.begins!.month, period.begins!.day),
-      ends: model.Date(period.ends!.year, period.ends!.month, period.ends!.day),
+      begins: period.begins != null
+          ? model.Date(
+              period.begins!.year, period.begins!.month, period.begins!.day)
+          : model.Date.earliest,
+      ends: period.ends != null
+          ? model.Date(period.ends!.year, period.ends!.month, period.ends!.day)
+          : model.Date.latest,
     ),
     currency,
     displayOption,
@@ -460,6 +474,7 @@ Future<void> editMonitorScheme(
             Exception('category not found: $categoryId'));
         return;
       }
+      categoryList.add(category);
     }
     categories = model.CategoryCollection(categories: categoryList);
   }
@@ -474,9 +489,13 @@ Future<void> editMonitorScheme(
   }
   await monitorScheme.update(
     period: model.Period(
-      begins: model.Date(
-          period.begins!.year, period.begins!.month, period.begins!.day),
-      ends: model.Date(period.ends!.year, period.ends!.month, period.ends!.day),
+      begins: period.begins != null
+          ? model.Date(
+              period.begins!.year, period.begins!.month, period.begins!.day)
+          : model.Date.earliest,
+      ends: period.ends != null
+          ? model.Date(period.ends!.year, period.ends!.month, period.ends!.day)
+          : model.Date.latest,
     ),
     currency: currency,
     displayOption: displayOption,
