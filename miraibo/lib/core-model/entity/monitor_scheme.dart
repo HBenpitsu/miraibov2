@@ -96,8 +96,11 @@ class MonitorScheme {
     return newEntity;
   }
 
-  static Stream<MonitorScheme?> watch(int id) {
-    return repository.watchById(id);
+  static Stream<MonitorScheme?> watch(int id) async* {
+    await for (final scheme in repository.watchById(id)) {
+      Logger().d(scheme);
+      yield scheme;
+    }
   }
 
   Future<void> update({

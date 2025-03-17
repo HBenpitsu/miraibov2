@@ -145,6 +145,7 @@ class _MultiSelectorState<T> extends State<MultiSelector<T>> {
         vale: Theme.of(context).colorScheme.surfaceContainer,
         onTap: (index) {
           currentlySelected[index] = false;
+          currentlySelected = currentlySelected; // to notify the change
           selectionNotifier?.add(currentlySelected);
         });
     return Container(
