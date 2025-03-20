@@ -931,6 +931,7 @@ class DataPageImpl implements DataPage {
 
   @override
   Stream<int> getTableSize() async* {
+    yield* model.receiptLogCount();
     await for (final _ in tableMutationNotifier.stream) {
       yield* model.receiptLogCount();
     }
